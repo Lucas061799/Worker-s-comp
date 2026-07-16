@@ -1,0 +1,618 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+input, select, textarea, button {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Custom thin scrollbar for main content */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+.custom-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 99px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #c7cfd8;
+}
+[data-dark="true"] .custom-scroll {
+  scrollbar-color: rgba(255,255,255,0.18) transparent;
+}
+[data-dark="true"] .custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);
+}
+[data-dark="true"] .custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.32);
+}
+
+/* ── BOP pages: dark mode overrides ────────────────────────────── */
+/* Field group card backgrounds (light gray #F9FAFB → subtle dark inset)
+   Slightly lighter than the white→dark mapping (#252948) so nested
+   surfaces read as "raised on the card", matching the gentle light-mode
+   step from white → #F9FAFB.
+   IMPORTANT: scoped to "background" prefix so we don't accidentally
+   match elements that use #F9FAFB as a *text color* (e.g. the big
+   'Charged today $465' value in the BopSubmission top card). */
+[data-dark="true"] .bop-page div[style*="background: rgb(249, 250, 251)"],
+[data-dark="true"] .bop-page div[style*="background:rgb(249, 250, 251)"],
+[data-dark="true"] .bop-page div[style*="background: #F9FAFB"],
+[data-dark="true"] .bop-page div[style*="background:#F9FAFB"] {
+  background: #2A2D45 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+/* Disabled buttons (#D1D5DB gray-300) — light grey blob on dark bg
+   reads as a focus-magnet. Mute it to a translucent surface instead. */
+[data-dark="true"] .bop-page button[style*="rgb(209, 213, 219)"],
+[data-dark="true"] .bop-page button[style*="#D1D5DB"] {
+  background: rgba(255,255,255,0.06) !important;
+  color: rgba(255,255,255,0.35) !important;
+}
+/* Inner white cards in BOP (e.g. coverage rows, premium card) → dark.
+   Multiple variants because browsers serialize style="background: white"
+   differently (some keep "white", some normalize to rgb()). */
+[data-dark="true"] .bop-page div[style*="background: white"],
+[data-dark="true"] .bop-page div[style*="background:white"],
+[data-dark="true"] .bop-page div[style*="background: rgb(255, 255, 255)"],
+[data-dark="true"] .bop-page div[style*="background:rgb(255, 255, 255)"],
+[data-dark="true"] .bop-page div[style*="background-color: white"],
+[data-dark="true"] .bop-page div[style*="background-color: rgb(255, 255, 255)"] {
+  background: #252948 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+/* Buttons with white bg (Select trigger, Yes/No toggles, etc.) */
+[data-dark="true"] .bop-page button[style*="background: white"],
+[data-dark="true"] .bop-page button[style*="background:white"],
+[data-dark="true"] .bop-page button[style*="background: rgb(255, 255, 255)"],
+[data-dark="true"] .bop-page button[style*="background:rgb(255, 255, 255)"] {
+  background: #252948 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #F9FAFB !important;
+}
+/* Spans with white bg (e.g. badge chips) */
+[data-dark="true"] .bop-page span[style*="background: white"],
+[data-dark="true"] .bop-page span[style*="background: rgb(255, 255, 255)"] {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+/* Tailwind .bg-white inside bop-page (e.g. native <select> in Compare) */
+[data-dark="true"] .bop-page .bg-white {
+  background-color: #252948 !important;
+}
+/* All light-gray border lines (gray-200 / gray-100) → translucent white */
+[data-dark="true"] .bop-page [style*="border-color: rgb(243, 244, 246)"],
+[data-dark="true"] .bop-page [style*="border-color: rgb(229, 231, 235)"],
+[data-dark="true"] .bop-page [style*="border-color: #E5E7EB"],
+[data-dark="true"] .bop-page [style*="border-color: #F3F4F6"],
+[data-dark="true"] .bop-page [style*="border-color: #EAEAEA"],
+[data-dark="true"] .bop-page [style*="border-color: rgb(234, 234, 234)"] {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+/* Tailwind border-t / border-b / border default to gray-200 — too bright in dark */
+[data-dark="true"] .bop-page .border-t {
+  border-top-color: rgba(255,255,255,0.08) !important;
+}
+[data-dark="true"] .bop-page .border-b {
+  border-bottom-color: rgba(255,255,255,0.08) !important;
+}
+[data-dark="true"] .bop-page .border {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Preview modal header icon — 12% brand gradient is invisible in dark mode,
+   bump to 35% so the document badge actually reads. */
+[data-dark="true"] .bop-page div[style*="rgba(92, 46, 212, 0.12) 0%, rgba(166, 20, 195, 0.12)"] {
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.45) 0%, rgba(166,20,195,0.45) 100%) !important;
+}
+/* Preview modal close button — keep it visible without using pure white */
+[data-dark="true"] .bop-page button[aria-label="Close"][style*="background: white"] {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+}
+/* Brand SVG gradients (#prevHdrG used in preview modal icon + close X) —
+   default stops are dark purple→magenta which read black on a dark
+   surface; override to bright lavender→pink. */
+[data-dark="true"] #prevHdrG stop:first-child { stop-color: #C4B5FD !important; }
+[data-dark="true"] #prevHdrG stop:last-child  { stop-color: #F0ABFC !important; }
+
+/* Select dropdown panel — fixed-position, lives outside .bop-page in the DOM */
+[data-dark="true"] .bop-select-dropdown {
+  background: #252948 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+[data-dark="true"] .bop-select-dropdown button {
+  color: #E5E7EB !important;
+}
+[data-dark="true"] .bop-select-dropdown button[style*="color: rgb(166, 20, 195)"],
+[data-dark="true"] .bop-select-dropdown button[style*="color: #A614C3"] {
+  color: #F0ABFC !important;
+}
+/* Inputs / selects keep white text on dark background */
+[data-dark="true"] .bop-page input,
+[data-dark="true"] .bop-page select,
+[data-dark="true"] .bop-page textarea {
+  background: #13162A !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #F9FAFB !important;
+}
+[data-dark="true"] .bop-page input::placeholder,
+[data-dark="true"] .bop-page textarea::placeholder {
+  color: rgba(255,255,255,0.3) !important;
+}
+/* Graduated text scale for dark mode:
+   gray-900 (headings)     → #F9FAFB (true white)
+   gray-800 (body/labels)  → #E5E7EB (off-white)
+   gray-700 (sub-labels)   → #D1D5DB
+   gray-600 (helper text)  → #C4C8D4
+   gray-500 (subtle)       → #9CA3AF
+   gray-400 (very subtle)  → #8B8FA8
+   gray-300 (placeholders) → #4B5063 */
+[data-dark="true"] .bop-page .text-gray-900 { color: #F9FAFB !important; }
+[data-dark="true"] .bop-page .text-gray-800 { color: #E5E7EB !important; }
+[data-dark="true"] .bop-page .text-gray-700 { color: #D1D5DB !important; }
+[data-dark="true"] .bop-page .text-gray-600 { color: #C4C8D4 !important; }
+[data-dark="true"] .bop-page .text-gray-500 { color: #9CA3AF !important; }
+[data-dark="true"] .bop-page .text-gray-400 { color: #8B8FA8 !important; }
+[data-dark="true"] .bop-page .placeholder-gray-300::placeholder { color: rgba(255,255,255,0.25) !important; }
+/* "Answers ready" banner — dark navy text → light */
+[data-dark="true"] .bop-page p[style*="color: rgb(27, 7, 80)"],
+[data-dark="true"] .bop-page p[style*="#1B0750"],
+[data-dark="true"] .bop-page .text-\[\#1B0750\] {
+  color: #F9FAFB !important;
+}
+[data-dark="true"] .bop-page p[style*="color: rgb(107, 33, 168)"],
+[data-dark="true"] .bop-page p[style*="#6B21A8"] {
+  color: #C4B5FD !important;
+}
+/* Norbie quick-fill banner — light gradient bg → subtle dark gradient */
+[data-dark="true"] .bop-page div[style*="248, 246, 255"] {
+  background: linear-gradient(135deg, rgba(92,46,212,0.15) 0%, rgba(166,20,195,0.10) 100%) !important;
+  border-color: rgba(124,58,237,0.32) !important;
+}
+/* PSection / preview modal section title (#121723 dark navy → light) */
+[data-dark="true"] .bop-page h3[style*="rgb(18, 23, 35)"],
+[data-dark="true"] .bop-page h3[style*="#121723"] {
+  color: #F9FAFB !important;
+}
+/* Brand purple text (#5C2ED4) too dark on dark bg → bright lavender */
+[data-dark="true"] .bop-page [style*="color: rgb(92, 46, 212)"],
+[data-dark="true"] .bop-page [style*="color: #5C2ED4"] {
+  color: #C4B5FD !important;
+}
+/* Brand magenta text (#A614C3) → bright pink in dark */
+[data-dark="true"] .bop-page [style*="color: rgb(166, 20, 195)"],
+[data-dark="true"] .bop-page [style*="color: #A614C3"] {
+  color: #F0ABFC !important;
+}
+/* Brand outline pills (purple-tinted bg) — strengthen in dark mode */
+[data-dark="true"] .bop-page span[style*="rgba(92, 46, 212, 0.08)"],
+[data-dark="true"] .bop-page span[style*="rgba(92, 46, 212, 0.12)"] {
+  background: rgba(124, 58, 237, 0.22) !important;
+  border-color: rgba(167, 139, 250, 0.5) !important;
+}
+/* PYNRow "No" pill — light gray bg → translucent in dark mode */
+[data-dark="true"] .bop-page span[style*="rgba(156, 163, 175"] {
+  background: rgba(255,255,255,0.06) !important;
+  color: #D1D5DB !important;
+}
+/* Package Select / inactive plan tier buttons (bg #F9FAFB + dark text) */
+[data-dark="true"] .bop-page button[style*="background: rgb(249, 250, 251)"] {
+  background: rgba(255,255,255,0.04) !important;
+  color: #D1D5DB !important;
+  border-top-color: rgba(255,255,255,0.08) !important;
+}
+/* Dark navy text colors inline (both rgb and hex variants) → light */
+[data-dark="true"] .bop-page [style*="color: rgb(31, 41, 55)"],
+[data-dark="true"] .bop-page [style*="color:#1F2937"],
+[data-dark="true"] .bop-page [style*="color: #1F2937"] {
+  color: #E5E7EB !important;
+}
+[data-dark="true"] .bop-page [style*="color: rgb(55, 65, 81)"],
+[data-dark="true"] .bop-page [style*="color:#374151"],
+[data-dark="true"] .bop-page [style*="color: #374151"] {
+  color: #D1D5DB !important;
+}
+[data-dark="true"] .bop-page [style*="color: rgb(17, 24, 39)"],
+[data-dark="true"] .bop-page [style*="color:#111827"],
+[data-dark="true"] .bop-page [style*="color: #111827"] {
+  color: #F9FAFB !important;
+}
+/* Exception: 'Return to the Jungle' CTA sits on a light jungle background
+   image that's the SAME in both light and dark mode. Don't flip its
+   dark text to white — that makes it invisible on the lighter parts of
+   the image. Keep the original gray-900. */
+[data-dark="true"] .jungle-cta [style*="color: rgb(17, 24, 39)"],
+[data-dark="true"] .jungle-cta [style*="color:#111827"],
+[data-dark="true"] .jungle-cta [style*="color: #111827"] {
+  color: #111827 !important;
+}
+/* Subtitle '...Norbielink' line uses Tailwind text-gray-400. Dark-mode
+   would lighten that too — keep it readable on the jungle bg. */
+[data-dark="true"] .jungle-cta .text-gray-400 {
+  color: #4B5563 !important;
+}
+/* Green "Included" badge — strengthen in dark mode for contrast */
+[data-dark="true"] .bop-page span[style*="rgba(52, 211, 153"] {
+  background: rgba(52, 211, 153, 0.18) !important;
+  color: #6EE7B7 !important;
+}
+/* Section header titles (h2 from SectionHeader) */
+[data-dark="true"] section h2 {
+  color: #F9FAFB !important;
+}
+
+/* Gradient button */
+.btn-gradient {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
+  color: white;
+  -webkit-text-fill-color: white !important;
+}
+.btn-gradient:hover { opacity: 0.9; }
+
+/* Force white text — overrides any dark-mode -webkit-text-fill-color cascade */
+button.force-white-text,
+[data-dark="true"] button.force-white-text {
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+/* Gradient text — brighter in dark mode so it's readable */
+[data-dark="true"] .text-gradient {
+  background: linear-gradient(88.09deg, #A78BFA 0.11%, #E879F9 63.8%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+/* Inline gradient-text pattern (style={{ background: BRAND_GRADIENT,
+   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }})
+   — match any element where the inline BRAND_GRADIENT is paired with
+   webkit-text-fill-color: transparent so we only swap *text* gradients,
+   not solid gradient backgrounds (buttons, pills, accent bars).
+   We use -webkit-text-fill-color: transparent (not background-clip:
+   text) as the scope marker, because browsers fold background-clip
+   into the `background` shorthand at serialization time and the
+   substring 'background-clip: text' disappears from the rendered
+   style attribute. */
+[data-dark="true"] [style*="linear-gradient(88.09deg, rgb(92, 46, 212)"][style*="-webkit-text-fill-color: transparent"],
+[data-dark="true"] [style*="linear-gradient(88.09deg, #5C2ED4"][style*="-webkit-text-fill-color: transparent"] {
+  background: linear-gradient(88.09deg, #A78BFA 0.11%, #E879F9 63.8%) text !important;
+}
+/* Companion: solid #5C2ED4 dot that sits beside the gradient text
+   (e.g. the Status 'Quoted' pill's purple dot). The dot uses
+   -webkit-text-fill-color: initial to opt out of the gradient-text
+   trick its parent <p> applies. In dark mode, brighten it to the
+   same A78BFA stop so dot + text feel like one unit. */
+[data-dark="true"] [style*="background: rgb(92, 46, 212)"][style*="-webkit-text-fill-color: initial"],
+[data-dark="true"] [style*="background:#5C2ED4"][style*="-webkit-text-fill-color: initial"],
+[data-dark="true"] [style*="background: #5C2ED4"][style*="-webkit-text-fill-color: initial"] {
+  background: #A78BFA !important;
+}
+
+/* Cross-sell product icons (icon-worker / icon-general-liability /
+   icon-business-owner) are small dark-colored illustrations that
+   get lost on the dark navy card background. Bump brightness so
+   the illustration colors pop on the dark surface, and lighten the
+   tile background a touch for more contrast against the page. */
+[data-dark="true"] .cross-sell-icon-tile {
+  background: rgba(167,139,250,0.18) !important;
+}
+[data-dark="true"] .cross-sell-icon-tile img {
+  filter: brightness(1.35) saturate(1.1);
+}
+
+/* Upload card outer glow pulse after popup dismiss */
+@keyframes uploadPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(92,46,212,0); border-color: rgba(92,46,212,0.1); }
+  40%  { box-shadow: 0 0 0 8px rgba(92,46,212,0.14), 0 0 28px rgba(166,20,195,0.2); border-color: rgba(166,20,195,0.6); }
+  60%  { box-shadow: 0 0 0 8px rgba(92,46,212,0.14), 0 0 28px rgba(166,20,195,0.2); border-color: rgba(166,20,195,0.6); }
+  100% { box-shadow: 0 0 0 0 rgba(92,46,212,0); border-color: rgba(92,46,212,0.1); }
+}
+.upload-pulse {
+  animation: uploadPulse 1.2s ease-in-out 2;
+}
+
+
+/* Add Another button hover — transparent gradient */
+.add-another-btn:hover {
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.08) 0.11%, rgba(166,20,195,0.08) 63.8%);
+}
+
+/* Gradient border pill */
+.badge-gradient {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
+}
+
+/* Sidebar nav thin scrollbar */
+.sidebar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.sidebar-nav:hover {
+  scrollbar-color: #e2e8f0 transparent;
+}
+.sidebar-nav::-webkit-scrollbar {
+  width: 3px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 99px;
+}
+.sidebar-nav:hover::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+}
+[data-dark="true"] .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+}
+[data-dark="true"] .sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
+   DARK MODE — [data-dark="true"] overrides
+   ============================================================ */
+
+/* Base text */
+[data-dark="true"] .text-navy,
+[data-dark="true"] .text-gray-800,
+[data-dark="true"] .text-gray-700,
+[data-dark="true"] .text-gray-600 {
+  color: #F9FAFB !important;
+}
+[data-dark="true"] .text-gray-500,
+[data-dark="true"] .text-gray-400 {
+  color: #9CA3AF !important;
+}
+
+/* Section/card backgrounds */
+[data-dark="true"] .bg-gray-50 {
+  background-color: #1F2543 !important;
+}
+[data-dark="true"] .bg-gray-100 {
+  background-color: #252948 !important;
+}
+[data-dark="true"] .bg-white {
+  background-color: #1A1E38 !important;
+}
+
+/* Borders */
+[data-dark="true"] .border-gray-100,
+[data-dark="true"] .border-gray-200,
+[data-dark="true"] .border-gray-300 {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+[data-dark="true"] .divide-gray-100 > * + * {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Inputs, selects, textareas */
+[data-dark="true"] input,
+[data-dark="true"] select,
+[data-dark="true"] textarea {
+  background-color: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #F9FAFB !important;
+}
+[data-dark="true"] input::placeholder,
+[data-dark="true"] textarea::placeholder {
+  color: #6B7280 !important;
+}
+[data-dark="true"] select option {
+  background-color: #252948;
+  color: #F9FAFB;
+}
+
+/* Radio / button group items (not selected) */
+[data-dark="true"] button.border-gray-200 {
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #FFFFFF !important;
+  background: transparent !important;
+}
+[data-dark="true"] button.border-gray-200:hover {
+  border-color: rgba(166,20,195,0.6) !important;
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.15) 0%, rgba(166,20,195,0.15) 100%) !important;
+  color: #FFFFFF !important;
+}
+
+/* Labels */
+[data-dark="true"] label {
+  color: #9CA3AF !important;
+}
+[data-dark="true"] label.font-semibold,
+[data-dark="true"] label .font-semibold {
+  color: #D1D5DB !important;
+}
+
+/* Selected radio button text → white in dark mode */
+[data-dark="true"] button[class*="text-[#5C2ED4]"],
+[data-dark="true"] button[class*="text-[#A614C3]"],
+[data-dark="true"] button[class*="border-[#5C2ED4]"],
+[data-dark="true"] button[class*="border-[#A614C3]"] {
+  color: #FFFFFF !important;
+}
+
+/* "Add another" dashed button */
+[data-dark="true"] .add-another-btn {
+  border-color: rgba(166,20,195,0.55) !important;
+  color: #E879F9 !important;
+}
+[data-dark="true"] .add-another-btn svg {
+  color: #E879F9 !important;
+}
+[data-dark="true"] .add-another-btn:hover {
+  background: rgba(167,139,250,0.15) !important;
+  border-color: rgba(216,180,254,0.5) !important;
+}
+
+/* Print Submission / outline action buttons in dark */
+[data-dark="true"] .btn-outline-action {
+  border-color: rgba(216,180,254,0.35) !important;
+  background: rgba(167,139,250,0.08) !important;
+}
+[data-dark="true"] .btn-outline-action:hover {
+  background: rgba(167,139,250,0.15) !important;
+}
+
+/* Warning/info banners */
+[data-dark="true"] .bg-\[\#F3F0FF\],
+[data-dark="true"] .bg-brand-light {
+  background-color: rgba(92,46,212,0.15) !important;
+}
+
+/* Warning/info banners with gradient bg — boost visibility in dark */
+[data-dark="true"] .warning-banner {
+  background: rgba(167,139,250,0.08) !important;
+  border-color: rgba(167,139,250,0.3) !important;
+}
+
+/* Same-as-applicant / address copy button in dark */
+[data-dark="true"] .addr-copy-btn {
+  background: #252948 !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+[data-dark="true"] .addr-copy-btn p {
+  color: #D1D5DB !important;
+}
+
+/* Scrollbar in dark */
+[data-dark="true"] .custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+}
+[data-dark="true"] .custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Fix focus ring color in dark mode */
+[data-dark="true"] input:focus,
+[data-dark="true"] select:focus,
+[data-dark="true"] textarea:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(166,20,195,0.25) !important;
+  border-color: rgba(166,20,195,0.65) !important;
+}
+
+/* Screen-only / print-only helpers */
+.print-only { display: none !important; }
+
+@media print {
+  @page { size: A4 portrait; margin: 0.35in; }
+
+  /* Force browsers to print backgrounds + gradients exactly as on screen.
+     Without this, white-card backgrounds, brand gradient strips, gradient
+     text (background-clip: text), and tinted icon tiles all drop out. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Hide everything, then reveal only the print area */
+  body * { visibility: hidden !important; }
+  #submission-print-area,
+  #submission-print-area *,
+  #uw-preview-print-area,
+  #uw-preview-print-area *,
+  #bop-submission-print-area,
+  #bop-submission-print-area * { visibility: visible !important; }
+
+  #submission-print-area,
+  #uw-preview-print-area,
+  #bop-submission-print-area {
+    position: fixed !important;
+    inset: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    padding: 18px 22px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    /* Strip modal chrome so the body content prints flat */
+    max-height: none !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Show print-only elements */
+  #submission-print-area .print-only,
+  #uw-preview-print-area .print-only,
+  #bop-submission-print-area .print-only { display: flex !important; }
+
+  /* Hide screen-only elements inside print area */
+  #submission-print-area .screen-only,
+  #uw-preview-print-area .screen-only,
+  #bop-submission-print-area .screen-only,
+  .no-print { display: none !important; }
+
+  /* Kill the dimmed backdrop on the Underwriting preview modal */
+  .uw-preview-backdrop {
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ── Gradient button white text — highest-priority fix ─────────────────────
+   Must come last in the file to beat all [data-dark] .text-gradient rules.
+   Uses html element + attribute + element + class for max specificity (0,2,2).
+   ──────────────────────────────────────────────────────────────────────── */
+html[data-dark="true"] button.btn-gradient,
+html[data-dark="true"] .btn-gradient,
+html button.btn-gradient,
+html .btn-gradient {
+  color: white !important;
+  -webkit-text-fill-color: white !important;
+}
+
+/* ── Print button text — absolute last word in the cascade ─────────────────
+   No background-clip trick. Just a solid color that nothing can override.
+   ──────────────────────────────────────────────────────────────────────── */
+html body .print-btn-text {
+  color: #7C3AED !important;
+  -webkit-text-fill-color: #7C3AED !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+}
+html[data-dark="true"] body .print-btn-text {
+  color: #E879F9 !important;
+  -webkit-text-fill-color: #E879F9 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+}
+
