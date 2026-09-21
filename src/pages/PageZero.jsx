@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import norbielinkLogo from '../assets/norbielink-logo.png'
 import btisLogo from '../assets/btislogo.png'
-import heroImg from '../assets/norbie-heroimg.png'
+import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
 import { Select, DateInput } from '../components/FormField'
 
