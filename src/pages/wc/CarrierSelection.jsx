@@ -278,7 +278,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
           return (
             <div
               key={c.id}
-              className="relative rounded-xl transition-all cursor-pointer overflow-hidden group"
+              className="relative rounded-xl transition-all cursor-pointer group"
               style={{
                 background: 'white',
                 border: `1.5px solid ${isChecked ? '#7C3AED' : '#E5E7EB'}`,
@@ -298,22 +298,31 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                 }
               }}
             >
-              {/* Corner badges — top-right, absolute-positioned so the
-                  name row stays clean. */}
+              {/* Corner ribbon badges — straddle the top border of the
+                  card so they read as "attached" tags instead of
+                  floating inside. */}
               {(c.reco || c.promo) && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
+                <div
+                  className="absolute right-3 flex items-center gap-1.5 z-10"
+                  style={{ top: '-9px' }}
+                >
                   {c.reco && (
                     <span
-                      className="text-[9px] font-bold px-1.5 py-0.5 rounded-md text-white uppercase tracking-wider shrink-0"
-                      style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 6px rgba(92,46,212,0.25)' }}
+                      className="text-[9px] font-bold px-2 py-1 rounded-md text-white uppercase tracking-wider shrink-0"
+                      style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.35)' }}
                     >
                       BTIS Serviced
                     </span>
                   )}
                   {c.promo && (
                     <span
-                      className="text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0"
-                      style={{ background: 'rgba(166,20,195,0.10)', color: '#A614C3', border: '1px solid rgba(166,20,195,0.25)' }}
+                      className="text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shrink-0"
+                      style={{
+                        background: 'white',
+                        color: '#A614C3',
+                        border: '1.5px solid #A614C3',
+                        boxShadow: '0 2px 8px rgba(166,20,195,0.15)',
+                      }}
                     >
                       Promo
                     </span>

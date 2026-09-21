@@ -61,12 +61,50 @@ function App() {
   const hasLosses = (formData.history?.claimCount || 0) > 0
   const steps = BASE_STEPS.filter(s => !s.cond || hasLosses)
 
+  const sectionRefs = useRef({})
+  const isScrollingToRef = useRef(false)
+
+  // Application-phase step keys — these all render in ONE scrolling
+  // page. Clicking the sidebar scrolls to that section instead of
+  // switching views.
+  const APP_KEYS = ['business', 'history', 'losses', 'coverages', 'questions']
+
   const goToStep = useCallback((stepId) => {
+    const step = BASE_STEPS.find(s => s.id === stepId)
+    const inAppPhase = step && APP_KEYS.includes(step.key)
     setActiveStep(stepId)
     setShowingIndication(false)
     setTimeout(() => {
-      if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+      if (!scrollContainerRef.current) return
+      isScrollingToRef.current = true
+      if (inAppPhase) {
+        const el = sectionRefs.current[stepId]
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        else scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+      setTimeout(() => { isScrollingToRef.current = false }, 800)
     }, 50)
+  }, [])
+
+  // Scroll observer — while user is in the Application-phase scroll,
+  // update activeStep to whichever section is nearest the top.
+  const handleMainScroll = useCallback(() => {
+    if (isScrollingToRef.current) return
+    const container = scrollContainerRef.current
+    if (!container) return
+    const containerRect = container.getBoundingClientRect()
+    const threshold = containerRect.height * 0.35
+    let current = 1
+    BASE_STEPS.filter(s => APP_KEYS.includes(s.key)).forEach(step => {
+      const el = sectionRefs.current[step.id]
+      if (el) {
+        const top = el.getBoundingClientRect().top - containerRect.top
+        if (top <= threshold) current = step.id
+      }
+    })
+    setActiveStep(prev => prev !== current && current >= 1 && current <= 5 ? current : prev)
   }, [])
 
   const goToIndication = () => {
@@ -144,6 +182,8 @@ function App() {
       ? 'loading'
       : (steps.find(s => s.id === activeStep)?.key || 'business')
 
+  const inAppPhase = APP_KEYS.includes(currentKey)
+
   const titles = {
     business:    'Business information',
     history:     'Coverage history',
@@ -156,6 +196,28 @@ function App() {
     carrierflow: 'Carrier questions',
     quote:       'Your quote',
   }
+
+  // App-phase sections — rendered stacked in one scroll page. Loss
+  // detail is conditionally included when the user reported claims > 0.
+  const appSections = [
+    { id: 1, key: 'business',  title: titles.business,  el: <BusinessInfo formData={formData} updateFormData={updateFormData} showErrors={attemptedQuote} /> },
+    { id: 2, key: 'history',   title: titles.history,   el: <CoverageHistory formData={formData} updateFormData={updateFormData} /> },
+    ...(hasLosses ? [{ id: 3, key: 'losses', title: titles.losses, el: <LossDetail formData={formData} updateFormData={updateFormData} /> }] : []),
+    { id: 4, key: 'coverages', title: titles.coverages, el: <StateCoverages formData={formData} updateFormData={updateFormData} /> },
+    { id: 5, key: 'questions', title: titles.questions, el: (
+      <UnderwritingQuestions
+        formData={formData}
+        updateFormData={updateFormData}
+        showErrors={attemptedQuote}
+        onValidateAll={() => {
+          if (formData.underwriting?.decline_any !== undefined) return true
+          setAttemptedQuote(true)
+          return false
+        }}
+        onGetIndication={() => goToStep(6)}
+      />
+    ) },
+  ]
 
   return (
     <div className="flex flex-col h-screen font-montserrat overflow-hidden"
@@ -211,83 +273,66 @@ function App() {
 
         <main
           ref={scrollContainerRef}
+          onScroll={inAppPhase ? handleMainScroll : undefined}
           className="flex-1 overflow-y-auto custom-scroll relative"
           style={{ background: darkMode ? '#131629' : 'white' }}
         >
           <div className="mx-auto px-4 md:px-10 py-6 md:py-8 max-w-5xl 2xl:max-w-6xl xl:max-w-none">
-            <section className="rounded-2xl bop-page" style={{ background: 'transparent', border: 'none' }}>
-              <SectionHeader title={titles[currentKey] || ''} isDark={darkMode} />
-              <div className="px-4 md:px-10 pt-4 md:pt-5 pb-8 md:pb-10">
-                {rating && (
-                  <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
-                )}
-                {!rating && showingIndication && (
-                  <Indication formData={formData} onPickCarrier={handlePickCarrier} />
-                )}
-                {!rating && !showingIndication && currentKey === 'business' && (
-                  <BusinessInfo formData={formData} updateFormData={updateFormData} showErrors={attemptedQuote} />
-                )}
-                {!rating && !showingIndication && currentKey === 'history' && (
-                  <CoverageHistory formData={formData} updateFormData={updateFormData} />
-                )}
-                {!rating && !showingIndication && currentKey === 'losses' && (
-                  <LossDetail formData={formData} updateFormData={updateFormData} />
-                )}
-                {!rating && !showingIndication && currentKey === 'coverages' && (
-                  <StateCoverages formData={formData} updateFormData={updateFormData} />
-                )}
-                {!rating && !showingIndication && currentKey === 'questions' && (
-                  <UnderwritingQuestions
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    showErrors={attemptedQuote}
-                    onValidateAll={() => {
-                      if (formData.underwriting?.decline_any) return true
-                      setAttemptedQuote(true)
-                      return false
-                    }}
-                    onGetIndication={() => setActiveStep(6)}
-                    onBack={() => goToStep(activeStep - 1)}
-                  />
-                )}
-                {!rating && !showingIndication && currentKey === 'carriers' && (
-                  <CarrierSelection
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onGetIndication={handleGetIndication}
-                    onBack={() => goToStep(activeStep - 1)}
-                  />
-                )}
-                {!rating && !showingIndication && currentKey === 'carrierflow' && (
-                  <CarrierFlow
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onContinueToQuote={handleContinueToQuote}
-                    onGoToStep={goToStep}
-                    onBack={goToIndication}
-                  />
-                )}
-                {!rating && !showingIndication && currentKey === 'quote' && (
-                  <Quote
-                    formData={formData}
-                    updateFormData={updateFormData}
-                    onBound={handleBound}
-                    onBack={() => setActiveStep(7)}
-                  />
-                )}
-              </div>
+            {/* App-phase = all 5 sections stacked in one scroll */}
+            {inAppPhase && appSections.map(section => (
+              <section
+                key={section.id}
+                ref={el => { sectionRefs.current[section.id] = el }}
+                id={`section-${section.id}`}
+                className="rounded-2xl bop-page mb-6"
+                style={{ background: 'transparent', border: 'none' }}
+              >
+                <SectionHeader title={section.title} isDark={darkMode} />
+                <div className="px-4 md:px-10 pt-4 md:pt-5 pb-8 md:pb-10">
+                  {section.el}
+                </div>
+              </section>
+            ))}
 
-              {/* Bottom nav — Back / Continue between steps */}
-              {!rating && !showingIndication && (
-                <StepNav
-                  currentKey={currentKey}
-                  steps={steps}
-                  activeStep={activeStep}
-                  onGoToStep={goToStep}
-                  hasLosses={hasLosses}
-                />
-              )}
-            </section>
+            {/* Non-app-phase = single full-page view */}
+            {!inAppPhase && (
+              <section className="rounded-2xl bop-page" style={{ background: 'transparent', border: 'none' }}>
+                <SectionHeader title={titles[currentKey] || ''} isDark={darkMode} />
+                <div className="px-4 md:px-10 pt-4 md:pt-5 pb-8 md:pb-10">
+                  {rating && (
+                    <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
+                  )}
+                  {!rating && showingIndication && (
+                    <Indication formData={formData} onPickCarrier={handlePickCarrier} />
+                  )}
+                  {!rating && !showingIndication && currentKey === 'carriers' && (
+                    <CarrierSelection
+                      formData={formData}
+                      updateFormData={updateFormData}
+                      onGetIndication={handleGetIndication}
+                      onBack={() => goToStep(5)}
+                    />
+                  )}
+                  {!rating && !showingIndication && currentKey === 'carrierflow' && (
+                    <CarrierFlow
+                      formData={formData}
+                      updateFormData={updateFormData}
+                      onContinueToQuote={handleContinueToQuote}
+                      onGoToStep={goToStep}
+                      onBack={goToIndication}
+                    />
+                  )}
+                  {!rating && !showingIndication && currentKey === 'quote' && (
+                    <Quote
+                      formData={formData}
+                      updateFormData={updateFormData}
+                      onBound={handleBound}
+                      onBack={() => setActiveStep(7)}
+                    />
+                  )}
+                </div>
+              </section>
+            )}
 
             <div className="pb-8" />
           </div>
@@ -314,47 +359,6 @@ function SectionHeader({ title, isDark }) {
         style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#D1D5DB'}` }}>
         <h2 className="text-base md:text-lg font-bold" style={{ color: isDark ? '#F9FAFB' : undefined }}>{title}</h2>
       </div>
-    </div>
-  )
-}
-
-// Back / Continue nav for pages that don't own their own primary CTA.
-// OWNS_CTA pages render their own Back+Continue row inline so both
-// buttons stay on the same visual line.
-function StepNav({ currentKey, steps, activeStep, onGoToStep }) {
-  const OWNS_CTA = new Set(['questions', 'carriers', 'carrierflow', 'quote'])
-  if (OWNS_CTA.has(currentKey)) return null
-
-  const idx = steps.findIndex(s => s.id === activeStep)
-  const prev = idx > 0 ? steps[idx - 1] : null
-  const next = idx >= 0 && idx < steps.length - 1 ? steps[idx + 1] : null
-
-  return (
-    <div className="px-4 md:px-10 pb-6 md:pb-8 flex items-center justify-between gap-3">
-      {prev ? (
-        <button
-          type="button"
-          onClick={() => onGoToStep(prev.id)}
-          className="px-5 py-2.5 rounded-lg text-sm font-semibold"
-          style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
-        >
-          ← Back
-        </button>
-      ) : <span />}
-
-      {next && (
-        <button
-          type="button"
-          onClick={() => onGoToStep(next.id)}
-          className="btn-gradient force-white-text px-8 py-2.5 rounded-lg text-sm font-bold"
-          style={{
-            background: 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)',
-            boxShadow: '0 4px 14px rgba(92,46,212,0.25)',
-          }}
-        >
-          Continue →
-        </button>
-      )}
     </div>
   )
 }
