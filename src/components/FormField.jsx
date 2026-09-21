@@ -76,7 +76,14 @@ function CalendarPopup({ value, onChange, onClose, anchorRef }) {
 
   // Fixed-position calc — mirrors Select's dropdown so the popup floats
   // above overflow:hidden ancestors (table containers, cards, modals).
-  const [popupStyle, setPopupStyle] = useState({})
+  // The initial `visibility: hidden` keeps the popup out of the flow while
+  // it also keeps it out of `anchorRef.current.getBoundingClientRect()` —
+  // otherwise the popup renders below the input for one frame, extends
+  // the anchor's bottom, and `recalc` places the fixed popup even lower.
+  const [popupStyle, setPopupStyle] = useState({
+    position: 'fixed', top: 0, left: 0, width: 264, zIndex: 9999,
+    visibility: 'hidden',
+  })
   useEffect(() => {
     const recalc = () => {
       if (!anchorRef.current) return
