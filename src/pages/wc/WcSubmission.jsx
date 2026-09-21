@@ -31,7 +31,7 @@ function Confetti() {
     left: Math.random() * 100,
     delay: Math.random() * 1.5,
     duration: 2 + Math.random() * 2,
-    color: ['#5C2ED4', '#A614C3', '#ACD697', '#75C9B7', '#FFD700', '#FF6B6B', '#4ECDC4'][i % 7],
+    color: ['#5C2ED4', '#A614C3', '#A78BFA', '#F0ABFC', '#7C3AED'][i % 5],
     size: 6 + Math.random() * 8,
     rotate: Math.random() * 360,
   }))
@@ -74,11 +74,8 @@ function SectionCard({ title, icon, isDark = false, children }) {
       }}
     >
       <div className="flex items-center gap-2 mb-3">
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'rgba(115,201,183,0.12)' }}
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="#73C9B7" strokeWidth={1.5} viewBox="0 0 24 24">
+        <div className="im-icon-tile w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="#5C2ED4" strokeWidth={1.5} viewBox="0 0 24 24">
             {icon}
           </svg>
         </div>

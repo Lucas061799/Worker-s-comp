@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { CARRIERS } from './CarrierSelection'
-
-const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
+import { CarrierLogo, PrimaryButton } from '../../components/wc/primitives'
 
 // Rough WC premium: 3% of payroll × ex-mod × per-carrier factor.
 function estimatePremium(formData, factor = 1) {
@@ -47,45 +46,35 @@ export default function Indication({ formData, onPickCarrier }) {
   const noQuote = results.filter(r => r.noquote)
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-3">
       <p className="text-sm text-gray-500 -mt-2">
         {quoted.length} market{quoted.length === 1 ? '' : 's'} returned a price.
         Pick a carrier to continue into its flow — you can come back and switch.
       </p>
 
-      {quoted.map((r, idx) => (
+      {quoted.map(r => (
         <div
           key={r.id}
           className="rounded-xl p-5 flex items-center gap-4 flex-wrap"
           style={{
             background: 'white',
             border: r.reco ? '1.5px solid #7C3AED' : '1.5px solid #E5E7EB',
-            boxShadow: r.reco ? '0 4px 20px rgba(92,46,212,0.12)' : 'none',
+            boxShadow: r.reco ? '0 4px 20px rgba(92,46,212,0.10)' : 'none',
           }}
         >
+          <CarrierLogo carrier={r} size={40} />
+
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <p className="text-base font-bold text-gray-900">{r.name}</p>
               {r.reco && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md text-white"
-                  style={{ background: BRAND_GRADIENT }}>BTIS Serviced</span>
-              )}
-              {r.bind && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md"
-                  style={{ background: '#F3F0FF', color: '#5C2ED4', border: '1px solid rgba(92,46,212,0.15)' }}>
-                  Instant bind
+                <span className="im-chip"
+                  style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }}>
+                  BTIS Serviced
                 </span>
               )}
-              {r.promo && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md"
-                  style={{ background: 'rgba(166,20,195,0.10)', color: '#A614C3', border: '1px solid rgba(166,20,195,0.25)' }}>
-                  +2% commission
-                </span>
-              )}
-              {idx === 0 && !r.reco && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md text-white"
-                  style={{ background: BRAND_GRADIENT }}>Best price</span>
-              )}
+              {r.bind && <span className="im-chip im-chip-good">Bind online today</span>}
+              {r.promo && <span className="im-chip im-chip-warn">+2% commission</span>}
             </div>
             <p className="text-xs text-gray-500">
               {r.reco ? 'Endorsements & billing handled by BTIS' : 'Carrier-serviced'} · {r.sla}
@@ -93,41 +82,24 @@ export default function Indication({ formData, onPickCarrier }) {
           </div>
 
           <div className="text-right shrink-0">
-            <p
-              className="text-2xl font-bold leading-none"
-              style={{
-                background: BRAND_GRADIENT,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
+            <p className="text-2xl font-bold leading-none text-gray-900">
               ${r.price.toLocaleString()}
-              <span className="text-xs font-medium text-gray-400 ml-1"
-                style={{ WebkitTextFillColor: '#9CA3AF' }}>
-                /yr
-              </span>
+              <span className="text-xs font-medium text-gray-400 ml-1">/yr</span>
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => onPickCarrier(r)}
-            className="btn-gradient force-white-text shrink-0 px-6 py-2.5 rounded-lg text-sm font-bold"
-            style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 12px rgba(92,46,212,0.25)' }}
-          >
-            Continue →
-          </button>
+          <PrimaryButton onClick={() => onPickCarrier(r)}>Continue</PrimaryButton>
         </div>
       ))}
 
       {noQuote.map(r => (
         <div
           key={r.id}
-          className="rounded-xl p-4 text-sm text-gray-500"
+          className="rounded-xl p-4 text-sm text-gray-500 flex items-center gap-3"
           style={{ border: '1px dashed #E5E7EB', background: 'white' }}
         >
-          <b className="text-gray-800">{r.name}</b> — no quote: {r.noquote}.
+          <CarrierLogo carrier={r} size={32} />
+          <span><b className="text-gray-800">{r.name}</b> — no quote: {r.noquote}.</span>
         </div>
       ))}
     </div>

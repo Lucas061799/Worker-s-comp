@@ -1,4 +1,5 @@
 import { Input, DateInput } from '../../components/FormField'
+import { RemoveButton, AddAnother } from '../../components/wc/primitives'
 
 function FieldGroup({ label, right, children }) {
   return (
@@ -92,14 +93,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
                     />
                   </td>
                   <td className="py-2 text-center">
-                    <button
-                      type="button"
-                      onClick={() => removeTerm(idx)}
-                      className="w-6 h-6 rounded-full inline-flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
-                      aria-label="Remove term"
-                    >
-                      ×
-                    </button>
+                    <RemoveButton onClick={() => removeTerm(idx)} label="Remove term" />
                   </td>
                 </tr>
               ))}
@@ -107,21 +101,11 @@ export default function CoverageHistory({ formData, updateFormData }) {
           </table>
         </div>
 
-        <button
-          type="button"
-          onClick={addTerm}
-          disabled={terms.length >= 4}
-          className="add-another-btn w-full mt-3 rounded-lg py-2.5 text-sm font-semibold transition"
-          style={{
-            border: '1.5px dashed rgba(92,46,212,0.35)',
-            color: '#5C2ED4',
-            background: 'transparent',
-            opacity: terms.length >= 4 ? 0.5 : 1,
-            cursor: terms.length >= 4 ? 'not-allowed' : 'pointer',
-          }}
-        >
-          + Add prior term {terms.length >= 4 && '(max 4)'}
-        </button>
+        {terms.length < 4 && (
+          <div className="mt-3">
+            <AddAnother onClick={addTerm}>Add prior term</AddAnother>
+          </div>
+        )}
       </FieldGroup>
 
       <FieldGroup label="Claims">

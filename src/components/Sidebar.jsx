@@ -61,7 +61,7 @@ export default function Sidebar({
       {/* Title */}
       <div className="px-5 pt-5 pb-3 relative z-10">
         <h2 className="text-base font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : undefined }}>{productName}</h2>
-        <p className="text-xs mt-0.5 font-mono" style={{ color: '#9CA3AF' }}>{submissionId}</p>
+        <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>{submissionId}</p>
         <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
       </div>
 
@@ -111,8 +111,9 @@ export default function Sidebar({
 
       {/* Chat with Norbie */}
       <div className="px-3 pb-2 relative z-10">
-        <div
-          className="flex items-center gap-3 rounded-xl px-4 py-3"
+        <button
+          type="button"
+          className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition hover:opacity-90"
           style={{
             background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)',
             border: isDark ? '1.5px solid transparent' : '1.5px solid #E5E7EB',
@@ -123,7 +124,7 @@ export default function Sidebar({
             <p className="text-sm font-normal" style={{ color: isDark ? '#F9FAFB' : '#374151' }}>Chat with Norbie</p>
             <p className="text-xs" style={{ color: '#9CA3AF' }}>AI Assistant</p>
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Dark mode toggle */}

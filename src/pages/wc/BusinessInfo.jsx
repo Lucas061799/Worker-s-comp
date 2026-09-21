@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Input, Select, FormGrid } from '../../components/FormField'
+import { Input, Select, Checkbox, FormGrid } from '../../components/FormField'
 import AddressAutocomplete from '../../components/AddressAutocomplete'
-
-const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
+import { FieldGroup, NotePanel, Tag, InfoLine } from '../../components/wc/primitives'
 
 const ENTITY_OPTIONS = [
   { value: 'corp',    label: 'Corporation' },
@@ -10,20 +9,6 @@ const ENTITY_OPTIONS = [
   { value: 'sole',    label: 'Sole proprietor' },
   { value: 'partner', label: 'Partnership' },
 ]
-
-function FieldGroup({ label, children }) {
-  return (
-    <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5">
-        {label}
-      </div>
-      <div className="rounded-xl p-5 sm:p-6"
-        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-        {children}
-      </div>
-    </div>
-  )
-}
 
 export default function BusinessInfo({ formData, updateFormData, showErrors = false }) {
   const data = formData.business || {}
@@ -86,23 +71,16 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
           />
 
           {data.address && data.city && (
-            <div
-              className="rounded-lg px-3 py-2 text-xs font-mono inline-block"
-              style={{ background: 'white', border: '1px solid #E5E7EB', color: '#6B7280' }}
-            >
-              Parsed ✓ · {data.address}, {data.city}, {data.state} {data.zip}
-            </div>
+            <NotePanel title="Address parsed">
+              {data.address}, {data.city}, {data.state} {data.zip}
+            </NotePanel>
           )}
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              checked={data.mailSame ?? true}
-              onChange={e => set('mailSame')(e.target.checked)}
-              style={{ accentColor: '#7C3AED', width: 15, height: 15 }}
-            />
-            Mailing address is the same
-          </label>
+          <Checkbox
+            label="Mailing address is the same"
+            checked={data.mailSame ?? true}
+            onChange={val => set('mailSame')(val)}
+          />
 
           <FormGrid>
             <Select
@@ -168,12 +146,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               )}
               {emodStatus === 'ready' && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    className="text-[11px] font-bold px-2.5 py-1 rounded-full text-white"
-                    style={{ background: BRAND_GRADIENT }}
-                  >
-                    E-MOD {emodValue} · pulled from WCIRB
-                  </span>
+                  <Tag tone="brand">E-Mod {emodValue} · WCIRB</Tag>
                   <span className="text-xs text-gray-500">You'll see it applied on State coverages.</span>
                   <button
                     type="button"
@@ -187,7 +160,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               {(emodStatus === 'manual' || emodStatus === 'down') && (
                 <div>
                   {emodStatus === 'down' && (
-                    <p className="text-[11px] font-semibold mb-2" style={{ color: '#B77410' }}>
+                    <p className="text-[11px] font-semibold mb-2 im-note-warn">
                       WCIRB unavailable — enter manually
                     </p>
                   )}

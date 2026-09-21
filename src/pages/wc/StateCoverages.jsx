@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Select } from '../../components/FormField'
+import { RemoveButton, AddAnother, YesNo, Banner, Tag, InfoLine } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -45,42 +46,6 @@ function FieldGroup({ label, right, children }) {
         style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         {children}
       </div>
-    </div>
-  )
-}
-
-// Outlined Yes/No pill pair — purple for Yes, magenta for No, matches
-// the ColoredYesNo pattern from UnderwritingQuestions.
-const YES_NO_STYLES = {
-  yes: { border: '#5C2ED4', text: '#5C2ED4', bg: 'rgba(92,46,212,0.08)',  dot: 'linear-gradient(88.09deg, #5C2ED4 0%, #7C3AED 100%)' },
-  no:  { border: '#A614C3', text: '#A614C3', bg: 'rgba(166,20,195,0.08)', dot: 'linear-gradient(88.09deg, #A614C3 0%, #D946EF 100%)' },
-}
-
-function Seg({ value, options, onChange }) {
-  return (
-    <div className="flex gap-2 shrink-0">
-      {options.map(opt => {
-        const s = YES_NO_STYLES[opt.value]
-        const active = value === opt.value
-        return (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg border-[1.5px] transition-all text-xs font-semibold"
-            style={active
-              ? { borderColor: s.border, color: s.text, background: s.bg }
-              : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }
-            }
-          >
-            <div className="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0"
-              style={{ borderColor: active ? s.border : '#D1D5DB' }}>
-              {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />}
-            </div>
-            {opt.label}
-          </button>
-        )
-      })}
     </div>
   )
 }
@@ -273,14 +238,7 @@ export default function StateCoverages({ formData, updateFormData }) {
                       style={{ background: 'white', border: '1px solid #E5E7EB' }}/>
                   </td>
                   <td className="py-2 text-center">
-                    <button
-                      type="button"
-                      onClick={() => removeClass(idx)}
-                      className="w-6 h-6 rounded-full inline-flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
-                      aria-label="Remove class"
-                    >
-                      ×
-                    </button>
+                    <RemoveButton onClick={() => removeClass(idx)} label="Remove class" />
                   </td>
                 </tr>
               ))}
@@ -288,23 +246,18 @@ export default function StateCoverages({ formData, updateFormData }) {
           </table>
         </div>
 
-        <button
-          type="button"
-          onClick={addClass}
-          className="add-another-btn w-full mt-3 rounded-lg py-2.5 text-sm font-semibold transition"
-          style={{ border: '1.5px dashed rgba(92,46,212,0.35)', color: '#5C2ED4', background: 'transparent' }}
-        >
-          + Add class code
-        </button>
+        <div className="mt-3">
+          <AddAnother onClick={addClass}>Add class code</AddAnother>
+        </div>
       </FieldGroup>
 
       <FieldGroup label="Coverages">
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-800">Blanket waiver of subrogation</span>
-          <Seg
+          <YesNo
             value={stateData.blanketWaiver ? 'yes' : 'no'}
-            options={[{ value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }]}
             onChange={v => patchState({ blanketWaiver: v === 'yes' })}
+            name="Blanket waiver of subrogation"
           />
         </div>
       </FieldGroup>

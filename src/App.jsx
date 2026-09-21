@@ -5,6 +5,7 @@ import btisLogo from './assets/btislogo.png'
 import btisLogoDark from './assets/btislogo-dark.png'
 import Sidebar from './components/Sidebar'
 import RightPanel from './components/RightPanel'
+import { StepHeader } from './components/wc/primitives'
 import PageZero from './pages/PageZero'
 import BusinessInfo from './pages/wc/BusinessInfo'
 import CoverageHistory from './pages/wc/CoverageHistory'
@@ -277,18 +278,17 @@ function App() {
           className="flex-1 overflow-y-auto custom-scroll relative"
           style={{ background: darkMode ? '#131629' : 'white' }}
         >
-          <div className="mx-auto px-4 md:px-10 py-6 md:py-8 max-w-5xl 2xl:max-w-6xl xl:max-w-none">
+          <div className="mx-auto px-4 md:px-10 py-6 md:py-8 max-w-5xl 2xl:max-w-6xl">
             {/* App-phase = all 5 sections stacked in one scroll */}
             {inAppPhase && appSections.map(section => (
               <section
                 key={section.id}
                 ref={el => { sectionRefs.current[section.id] = el }}
                 id={`section-${section.id}`}
-                className="rounded-2xl bop-page mb-6"
-                style={{ background: 'transparent', border: 'none' }}
+                className="bop-page mb-6"
               >
-                <SectionHeader title={section.title} isDark={darkMode} />
-                <div className="px-4 md:px-10 pt-4 md:pt-5 pb-8 md:pb-10">
+                <StepHeader title={section.title} />
+                <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {section.el}
                 </div>
               </section>
@@ -296,9 +296,9 @@ function App() {
 
             {/* Non-app-phase = single full-page view */}
             {!inAppPhase && (
-              <section className="rounded-2xl bop-page" style={{ background: 'transparent', border: 'none' }}>
-                <SectionHeader title={titles[currentKey] || ''} isDark={darkMode} />
-                <div className="px-4 md:px-10 pt-4 md:pt-5 pb-8 md:pb-10">
+              <section className="bop-page">
+                <StepHeader title={titles[currentKey] || ''} />
+                <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
                     <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
                   )}
@@ -347,17 +347,6 @@ function App() {
             indicationReady={indicationReady}
           />
         </div>
-      </div>
-    </div>
-  )
-}
-
-function SectionHeader({ title, isDark }) {
-  return (
-    <div className="px-4 md:px-10 pt-6 md:pt-8 pb-0">
-      <div className="flex items-center justify-between pb-3 md:pb-4"
-        style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#D1D5DB'}` }}>
-        <h2 className="text-base md:text-lg font-bold" style={{ color: isDark ? '#F9FAFB' : undefined }}>{title}</h2>
       </div>
     </div>
   )

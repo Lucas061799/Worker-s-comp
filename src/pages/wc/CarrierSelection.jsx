@@ -69,24 +69,32 @@ export const CARRIERS = [
 function InfoPop({ carrier, onClose }) {
   return (
     <div
-      className="absolute right-2 top-14 w-72 rounded-xl p-4 text-xs z-20"
-      style={{
-        background: '#1B0750',
-        color: '#DCE8F2',
-        boxShadow: '0 10px 30px rgba(15,10,40,0.35)',
-      }}
+      className="im-info-pop absolute right-2 top-14 w-72 rounded-2xl overflow-hidden text-xs z-20"
       onClick={e => e.stopPropagation()}
     >
-      <div className="flex items-start justify-between mb-2">
-        <h4 className="text-sm font-bold text-white">{carrier.name}</h4>
-        <button onClick={onClose} className="text-white/60 hover:text-white text-base leading-none">×</button>
+      <div className="im-info-pop-head flex items-start justify-between gap-3 px-4 py-3">
+        <div className="min-w-0">
+          <h4 className="text-sm font-bold text-gray-900 truncate">{carrier.name}</h4>
+          <p className="text-[11px] text-gray-500 mt-0.5">{carrier.sla}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="im-info-pop-close w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
+        >
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
-      <p className="font-mono mb-2" style={{ color: '#A78BFA' }}>{carrier.sla}</p>
-      <ul className="space-y-1.5 list-disc pl-4">
-        <li>{carrier.own}</li>
-        <li>{carrier.why}</li>
-        <li>Checked = BTIS approaches this market and it's blocked for direct submission on this risk.</li>
-      </ul>
+      <div className="px-4 py-3 text-[12.5px] text-gray-600 leading-relaxed">
+        <ul className="space-y-1.5 list-disc pl-4">
+          <li>{carrier.own}</li>
+          <li>{carrier.why}</li>
+          <li>Checked = BTIS approaches this market and it's blocked for direct submission on this risk.</li>
+        </ul>
+      </div>
     </div>
   )
 }
@@ -202,12 +210,7 @@ function PromoModal({ onKeep, onUncheck }) {
         style={{ background: 'white', boxShadow: '0 32px 80px rgba(0,0,0,0.22)' }}
         onClick={e => e.stopPropagation()}
       >
-        <span
-          className="inline-block text-[10px] font-bold px-2 py-1 rounded-md mb-3"
-          style={{ background: '#FCF4E4', color: '#B77410', border: '1px solid #EED9A8' }}
-        >
-          Q3 PROMOTION ACTIVE
-        </span>
+        <span className="im-chip im-chip-warn mb-3 inline-flex">Q3 PROMOTION ACTIVE</span>
         <h2 className="text-lg font-bold text-gray-900 mb-2">Unchecking AmTrust?</h2>
         <p className="text-sm text-gray-600 leading-relaxed mb-6">
           Policies bound with AmTrust through BTIS currently earn <b>+2% boosted commission</b>.
@@ -356,17 +359,10 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setOpenInfo(prev => prev === c.id ? null : c.id) }}
-                    className="w-7 h-7 rounded-full text-xs font-serif italic flex items-center justify-center transition shrink-0"
-                    style={{
-                      background: openInfo === c.id ? 'rgba(92,46,212,0.10)' : 'transparent',
-                      color: '#9CA3AF',
-                      border: `1px solid ${openInfo === c.id ? 'rgba(92,46,212,0.35)' : '#E5E7EB'}`,
-                    }}
                     aria-label={`About ${c.name}`}
-                    onMouseEnter={ev => { ev.currentTarget.style.color = '#5C2ED4'; ev.currentTarget.style.borderColor = 'rgba(92,46,212,0.35)' }}
-                    onMouseLeave={ev => { if (openInfo !== c.id) { ev.currentTarget.style.color = '#9CA3AF'; ev.currentTarget.style.borderColor = '#E5E7EB' } }}
+                    className="im-info-dot w-5 h-5 rounded-full flex items-center justify-center shrink-0"
                   >
-                    i
+                    <span className="text-[10px] font-bold leading-none">i</span>
                   </button>
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"

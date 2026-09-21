@@ -1,4 +1,5 @@
 import { DateInput, Select } from '../../components/FormField'
+import { RemoveButton, AddAnother } from '../../components/wc/primitives'
 
 const LOSS_TYPES = ['Medical only', 'Lost time', 'Fatality']
 const LOSS_STATUS = ['Closed', 'Open']
@@ -75,14 +76,7 @@ export default function LossDetail({ formData, updateFormData }) {
                     />
                   </td>
                   <td className="py-2 text-center">
-                    <button
-                      type="button"
-                      onClick={() => removeLoss(idx)}
-                      className="w-6 h-6 rounded-full inline-flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
-                      aria-label="Remove claim"
-                    >
-                      ×
-                    </button>
+                    <RemoveButton onClick={() => removeLoss(idx)} label="Remove claim" />
                   </td>
                 </tr>
               ))}
@@ -90,14 +84,9 @@ export default function LossDetail({ formData, updateFormData }) {
           </table>
         </div>
 
-        <button
-          type="button"
-          onClick={addLoss}
-          className="add-another-btn w-full mt-3 rounded-lg py-2.5 text-sm font-semibold transition"
-          style={{ border: '1.5px dashed rgba(92,46,212,0.35)', color: '#5C2ED4', background: 'transparent' }}
-        >
-          + Add claim
-        </button>
+        <div className="mt-3">
+          <AddAnother onClick={addLoss}>Add claim</AddAnother>
+        </div>
       </FieldGroup>
     </div>
   )

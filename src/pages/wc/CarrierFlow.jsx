@@ -43,45 +43,7 @@ function ConfirmChip({ label, value, source, onChange }) {
   )
 }
 
-// Outlined Yes/No pill pair — purple for Yes, magenta for No, each with a
-// filled radio dot inside. Matches the ColoredYesNo pattern from
-// UnderwritingQuestions so every Y/N control in the app is consistent.
-const YES_NO_STYLES = {
-  yes: { border: '#5C2ED4', text: '#5C2ED4', bg: 'rgba(92,46,212,0.08)',  dot: 'linear-gradient(88.09deg, #5C2ED4 0%, #7C3AED 100%)' },
-  no:  { border: '#A614C3', text: '#A614C3', bg: 'rgba(166,20,195,0.08)', dot: 'linear-gradient(88.09deg, #A614C3 0%, #D946EF 100%)' },
-}
-
-function Seg({ value, onChange }) {
-  return (
-    <div className="flex gap-2 shrink-0">
-      {[
-        { label: 'No',  val: 'no'  },
-        { label: 'Yes', val: 'yes' },
-      ].map(opt => {
-        const s = YES_NO_STYLES[opt.val]
-        const active = value === opt.val
-        return (
-          <button
-            key={opt.val}
-            type="button"
-            onClick={() => onChange(opt.val)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg border-[1.5px] transition-all text-xs font-semibold"
-            style={active
-              ? { borderColor: s.border, color: s.text, background: s.bg }
-              : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }
-            }
-          >
-            <div className="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0"
-              style={{ borderColor: active ? s.border : '#D1D5DB' }}>
-              {active && <div className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />}
-            </div>
-            {opt.label}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
+import { YesNo as Seg } from '../../components/wc/primitives'
 
 export default function CarrierFlow({ formData, updateFormData, onContinueToQuote, onGoToStep, onBack }) {
   const carrier = formData.bind?.selectedCarrier || 'CNA'
