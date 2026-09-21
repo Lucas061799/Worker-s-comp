@@ -287,7 +287,9 @@ function App() {
                 id={`section-${section.id}`}
                 className="bop-page mb-6"
               >
-                <StepHeader title={section.title} />
+                <div className="px-4 md:px-6">
+                  <StepHeader title={section.title} />
+                </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {section.el}
                 </div>
@@ -297,7 +299,9 @@ function App() {
             {/* Non-app-phase = single full-page view */}
             {!inAppPhase && (
               <section className="bop-page">
-                <StepHeader title={titles[currentKey] || ''} />
+                <div className="px-4 md:px-6">
+                  <StepHeader title={titles[currentKey] || ''} />
+                </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
                     <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
