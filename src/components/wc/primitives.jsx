@@ -250,31 +250,41 @@ export function Toggle({ checked, onChange, ariaLabel }) {
   )
 }
 
-/* Yes / No pair. Chosen side is the brand gradient. */
-export function YesNo({ value, onChange, name }) {
-  const opts = [{ v: 'yes', l: 'Yes' }, { v: 'no', l: 'No' }]
+/* Yes / No pair — the house control from GL-BOP / CBIC:
+   a rounded-lg button with a radio dot on the left and the label
+   on the right, a purple ring and a light tinted fill when on. */
+export function YesNo({ value, onChange, name, className = '' }) {
+  const pill = (v, labelText) => {
+    const on = value === v
+    return (
+      <button
+        key={v}
+        type="button"
+        role="radio"
+        aria-checked={on}
+        onClick={() => onChange && onChange(v)}
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium ${
+          on
+            ? 'border-[#5C2ED4] text-[#5C2ED4]'
+            : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+        }`}
+        style={on ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)' } : undefined}
+      >
+        <span
+          className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+            on ? 'border-[#A614C3]' : 'border-gray-300'
+          }`}
+        >
+          {on && <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND_GRADIENT }} />}
+        </span>
+        {labelText}
+      </button>
+    )
+  }
   return (
-    <div className="flex gap-2 shrink-0" role="radiogroup" aria-label={name}>
-      {opts.map(o => {
-        const selected = value === o.v
-        return (
-          <button
-            key={o.v}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            onClick={() => onChange(o.v)}
-            className={`px-6 py-1.5 rounded-full text-[13px] font-semibold transition-all ${
-              selected ? 'force-white-text' : 'border-[1.5px]'
-            }`}
-            style={selected
-              ? { background: BRAND_GRADIENT, color: 'white' }
-              : { background: 'white', borderColor: '#E5E7EB', color: '#6B7280' }}
-          >
-            {o.l}
-          </button>
-        )
-      })}
+    <div className={`flex gap-4 ${className}`} role="radiogroup" aria-label={name}>
+      {pill('yes', 'Yes')}
+      {pill('no', 'No')}
     </div>
   )
 }
@@ -309,11 +319,12 @@ export function PillGroup({ options, value, onChange, label, className = '' }) {
   )
 }
 
-/* Question card — grey fill and grey stroke; stroke turns red on error. */
+/* Question card — GL-BOP / CBIC shape: soft grey fill, grey line, p-4.
+   The error border swaps to red-200 while the question is unanswered. */
 export function QuestionCard({ error = false, className = '', children }) {
   return (
     <div
-      className={`rounded-xl p-4 sm:p-5 transition ${error ? 'im-q-error' : ''} ${className}`}
+      className={`rounded-xl p-4 ${className}`}
       style={{ background: '#F9FAFB', border: `1px solid ${error ? '#FCA5A5' : '#E5E7EB'}` }}
     >
       {children}
@@ -321,18 +332,19 @@ export function QuestionCard({ error = false, className = '', children }) {
   )
 }
 
-/* One question: sentence, answer under it, follow-up below a rule.
-   Stacked — matches Inland's canonical QuestionRow layout. */
+/* One question: label, YesNo pair, and any follow-up branch.
+   Label typography follows CBIC's ToggleQuestion — 13px semibold
+   gray-600, wide tracking — not the softer text-sm gray-800. */
 export function QuestionRow({ label, help, value, onChange, error = false, children }) {
   const hasFollowUp = Children.toArray(children).some(Boolean)
 
   return (
     <QuestionCard error={error}>
-      <p className={`text-sm leading-relaxed mb-1 ${error ? 'text-red-500' : 'text-gray-800'}`}>{label}</p>
-      {help && <p className="text-[12px] text-gray-400 mb-2.5 leading-relaxed max-w-2xl">{help}</p>}
-      <div className={help ? '' : 'mt-3'}>
-        <YesNo value={value} onChange={onChange} name={label} />
-      </div>
+      <p className={`block text-[13px] font-semibold mb-2.5 tracking-wide ${error ? 'text-red-500' : 'text-gray-600'}`}>
+        {label}
+      </p>
+      {help && <p className="text-[12px] text-gray-400 -mt-1.5 mb-2.5 leading-relaxed max-w-2xl">{help}</p>}
+      <YesNo value={value} onChange={onChange} name={label} />
       {hasFollowUp && <div className="mt-4 pt-4 im-rule">{children}</div>}
     </QuestionCard>
   )
