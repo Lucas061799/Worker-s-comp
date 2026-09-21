@@ -82,6 +82,24 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
             onChange={val => set('mailSame')(val)}
           />
 
+          {data.mailSame === false && (
+            <AddressAutocomplete
+              label="Mailing address"
+              required
+              value={data.mailAddress || ''}
+              onChange={set('mailAddress')}
+              onSelect={({ address, city, state, zip }) =>
+                updateFormData('business', {
+                  mailAddress: address,
+                  mailCity: city,
+                  mailState: state,
+                  mailZip: zip,
+                })
+              }
+              error={err('mailAddress') ? 'This field is required' : ''}
+            />
+          )}
+
           <FormGrid>
             <Select
               label="Entity type"

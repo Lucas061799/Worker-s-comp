@@ -117,7 +117,10 @@ export default function UnderwritingQuestions({
       )}
 
       {quickFilled && allAnswered && (
-        <div className="flex items-center justify-between mb-1 gap-3">
+        <div
+          className="rounded-xl px-4 py-3 flex items-center justify-between gap-3"
+          style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}
+        >
           <p className="text-xs font-medium" style={{ color: '#5C2ED4' }}>
             Standard answers applied — expand each card below to review or adjust.
           </p>

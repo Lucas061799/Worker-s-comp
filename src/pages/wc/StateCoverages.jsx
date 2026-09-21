@@ -59,6 +59,18 @@ export default function StateCoverages({ formData, updateFormData }) {
 
   const [activeState, setActiveState] = useState(pz.state || 'CA')
   const [addedStates, setAddedStates] = useState([])
+  const [addOpen, setAddOpen] = useState(false)
+  const [addValue, setAddValue] = useState('')
+
+  const commitAddState = () => {
+    const next = addValue.trim().toUpperCase().slice(0, 2)
+    if (next && next.length === 2 && !addedStates.includes(next) && next !== (pz.state || 'CA')) {
+      setAddedStates([...addedStates, next])
+      setActiveState(next)
+    }
+    setAddValue('')
+    setAddOpen(false)
+  }
 
   const entityType = business.entityType || 'corp'
   const rule = OFFICER_RULES[entityType] || OFFICER_RULES.corp
@@ -119,20 +131,53 @@ export default function StateCoverages({ formData, updateFormData }) {
             </button>
           )
         })}
-        <button
-          type="button"
-          onClick={() => {
-            const next = prompt('Add state (2-letter code):')?.toUpperCase().slice(0, 2)
-            if (next && !addedStates.includes(next) && next !== pz.state) {
-              setAddedStates([...addedStates, next])
-              setActiveState(next)
-            }
-          }}
-          className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed border-[#A614C3]/30 transition"
-          style={{ background: 'white', color: '#A614C3' }}
-        >
-          + Add state
-        </button>
+        {addOpen ? (
+          <div className="inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 border border-dashed border-[#A614C3]/40"
+            style={{ background: 'white' }}>
+            <input
+              type="text"
+              autoFocus
+              value={addValue}
+              onChange={e => setAddValue(e.target.value.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase())}
+              onKeyDown={e => {
+                if (e.key === 'Enter') commitAddState()
+                if (e.key === 'Escape') { setAddValue(''); setAddOpen(false) }
+              }}
+              placeholder="XX"
+              maxLength={2}
+              className="w-9 text-[13px] font-semibold uppercase outline-none bg-transparent"
+              style={{ color: '#A614C3' }}
+            />
+            <button
+              type="button"
+              onClick={commitAddState}
+              disabled={addValue.length !== 2}
+              className="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white transition disabled:opacity-40"
+              style={{ background: BRAND_GRADIENT }}
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              onClick={() => { setAddValue(''); setAddOpen(false) }}
+              className="w-6 h-6 rounded-full flex items-center justify-center text-gray-400"
+              aria-label="Cancel"
+            >
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed border-[#A614C3]/30 transition hover:border-[#A614C3]/60"
+            style={{ background: 'white', color: '#A614C3' }}
+          >
+            + Add state
+          </button>
+        )}
       </div>
 
       <FieldGroup label="Officers & Owners">
