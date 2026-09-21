@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Tag } from '../../components/wc/primitives'
 import logoCna          from '../../assets/carrier-cna.png'
 import logoCoterie      from '../../assets/carrier-coterie.png'
 import logoHiscox       from '../../assets/carrier-hiscox.png'
@@ -282,35 +281,61 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
           return (
             <div
               key={c.id}
-              role="checkbox"
-              aria-checked={isChecked}
-              tabIndex={0}
-              className="relative rounded-xl transition-all cursor-pointer"
+              className="relative rounded-xl transition-all cursor-pointer group"
               style={{
-                background: isChecked ? '#F9FAFB' : 'white',
-                border: '1px solid #E5E7EB',
-                opacity: isChecked ? 1 : 0.6,
+                background: 'white',
+                border: `1.5px solid ${isChecked ? '#7C3AED' : '#E5E7EB'}`,
+                boxShadow: isChecked ? '0 4px 14px rgba(92,46,212,0.10)' : 'none',
               }}
               onClick={() => toggle(c.id)}
-              onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(c.id) } }}
+              onMouseEnter={e => {
+                if (!isChecked) {
+                  e.currentTarget.style.borderColor = 'rgba(124,58,237,0.35)'
+                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(92,46,212,0.06)'
+                }
+              }}
+              onMouseLeave={e => {
+                if (!isChecked) {
+                  e.currentTarget.style.borderColor = '#E5E7EB'
+                  e.currentTarget.style.boxShadow = 'none'
+                }
+              }}
             >
-              <div className="flex items-center gap-3 px-4 py-3">
-                {/* Left checkbox — mirrors the Checkbox primitive shape. */}
+              {/* Corner ribbon badges — straddle the top border of the
+                  card so they read as "attached" tags instead of
+                  floating inside. */}
+              {(c.reco || c.promo) && (
                 <div
-                  className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-                    isChecked ? 'border-[#A614C3]' : 'border-gray-300'
-                  }`}
-                  style={isChecked ? { background: BRAND_GRADIENT } : {}}
+                  className="absolute right-3 flex items-center gap-1.5 z-10"
+                  style={{ top: '-9px' }}
                 >
-                  {isChecked && (
-                    <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10">
-                      <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  {c.reco && (
+                    <span
+                      className="text-[9px] font-bold px-2 py-1 rounded-md text-white uppercase tracking-wider shrink-0"
+                      style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.35)' }}
+                    >
+                      BTIS Serviced
+                    </span>
+                  )}
+                  {c.promo && (
+                    <span
+                      className="text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shrink-0"
+                      style={{
+                        background: 'white',
+                        color: '#A614C3',
+                        border: '1.5px solid #A614C3',
+                        boxShadow: '0 2px 8px rgba(166,20,195,0.15)',
+                      }}
+                    >
+                      Promo
+                    </span>
                   )}
                 </div>
+              )}
 
-                {/* Logo */}
-                <div className="w-9 h-9 flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-4 px-5 py-4">
+                {/* Logo — big, borderless, sits on the card */}
+                <div className="w-12 h-12 flex items-center justify-center shrink-0">
                   <img
                     src={c.logo}
                     alt={c.name}
@@ -319,27 +344,40 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   />
                 </div>
 
-                {/* Name + tagline + inline tags */}
+                {/* Name + tagline */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <p className="text-sm font-semibold text-gray-900 truncate">{c.name}</p>
-                    {c.reco && <Tag tone="brand">BTIS Serviced</Tag>}
-                    {c.promo && <Tag tone="brand">Promo</Tag>}
-                  </div>
+                  <p className="text-[15px] font-bold truncate mb-0.5" style={{ color: '#1F2937' }}>
+                    {c.name}
+                  </p>
                   <p className="text-[11px] text-gray-500 leading-snug truncate">
                     {c.tagline}
                   </p>
                 </div>
 
-                {/* Info dot */}
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setOpenInfo(prev => prev === c.id ? null : c.id) }}
-                  aria-label={`About ${c.name}`}
-                  className="im-info-dot w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                >
-                  <span className="text-[10px] font-bold leading-none">i</span>
-                </button>
+                {/* Info + check */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setOpenInfo(prev => prev === c.id ? null : c.id) }}
+                    aria-label={`About ${c.name}`}
+                    className="im-info-dot w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                  >
+                    <span className="text-[10px] font-bold leading-none">i</span>
+                  </button>
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
+                    style={isChecked
+                      ? { background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.3)' }
+                      : { background: 'white', border: '1.5px solid #D1D5DB' }
+                    }
+                  >
+                    {isChecked && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {openInfo === c.id && (
