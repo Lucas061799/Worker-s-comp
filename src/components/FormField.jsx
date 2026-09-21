@@ -545,9 +545,9 @@ export function RadioGroup({ label, required, options = [], value, onChange, cla
 // Checkbox
 export function Checkbox({ label, checked, onChange, className = '' }) {
   return (
-    <label className={`flex items-start gap-2.5 cursor-pointer group ${className}`}>
+    <label className={`flex items-center gap-2.5 cursor-pointer group ${className}`}>
       <div
-        className={`w-4 h-4 rounded border-2 flex items-center justify-center mt-0.5 shrink-0 transition-all ${
+        className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
           checked ? 'border-[#A614C3]' : 'border-gray-300 group-hover:border-[#5C2ED4]/40'
         }`}
         style={checked ? { background: 'linear-gradient(88.09deg, #5C2ED4 0%, #A614C3 100%)' } : {}}

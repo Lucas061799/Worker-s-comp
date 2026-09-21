@@ -136,26 +136,29 @@ export default function StateCoverages({ formData, updateFormData }) {
       </div>
 
       <FieldGroup label="Officers & Owners">
-        {/* Rule note — plain NotePanel-style card, with a small brand
-            Tag identifying the state / entity combination and an
-            optional E-Mod tag on the right. Matches Inland's chip +
-            note vocabulary rather than a bespoke tinted gradient. */}
-        <div className="rounded-xl px-4 py-3 mb-4"
-          style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-          <div className="flex items-start justify-between gap-3 flex-wrap">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                <Tag tone="brand">{activeState} · {rule.label}</Tag>
-                {emod && (
-                  <Tag tone="brand">
-                    E-Mod {emod} · {formData.underwriting?.experienceModSource || 'WCIRB'}
-                  </Tag>
-                )}
-              </div>
-              <p className="text-sm text-gray-800 leading-relaxed">{rule.text}</p>
-              <p className="text-xs text-gray-500 leading-relaxed mt-1">{rule.help}</p>
-            </div>
-          </div>
+        {/* Rule note — CBIC's canonical info panel: a light purple
+            tinted card with a purple info icon on the left, a bold
+            navy headline naming the rule and gray-600 body copy. The
+            optional E-Mod tag rides on the right of the same row. */}
+        <div className="rounded-xl p-4 mb-4 flex items-start gap-3"
+          style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}>
+          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="#5C2ED4" strokeWidth="1.8" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v5" strokeLinecap="round" />
+            <circle cx="12" cy="16.5" r="0.6" fill="#5C2ED4" />
+          </svg>
+          <p className="text-[12.5px] text-gray-600 leading-relaxed flex-1">
+            <span className="font-bold text-navy">{activeState} · {rule.label}.</span>{' '}
+            {rule.text} {rule.help}
+          </p>
+          {emod && (
+            <span
+              className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0"
+              style={{ background: 'rgba(92,46,212,0.08)', border: '1px solid rgba(92,46,212,0.18)', color: '#5C2ED4' }}
+            >
+              E-Mod {emod} · {formData.underwriting?.experienceModSource || 'WCIRB'}
+            </span>
+          )}
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">

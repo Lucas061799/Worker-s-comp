@@ -117,17 +117,17 @@ export default function UnderwritingQuestions({
       )}
 
       {quickFilled && allAnswered && (
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[12px]">
-            <BrandText className="font-semibold">Standard answers applied.</BrandText>
-            <span className="text-gray-500 ml-1">Expand each card below to review or adjust.</span>
+        <div className="flex items-center justify-between mb-1 gap-3">
+          <p className="text-xs font-medium" style={{ color: '#5C2ED4' }}>
+            Standard answers applied — expand each card below to review or adjust.
           </p>
           <button
             type="button"
             onClick={handleReset}
-            className="text-xs font-semibold underline text-gray-500"
+            className="text-[10px] underline shrink-0"
+            style={{ color: '#6B7280' }}
           >
-            Reset
+            Reset all
           </button>
         </div>
       )}
