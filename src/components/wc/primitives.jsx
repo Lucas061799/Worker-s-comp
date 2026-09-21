@@ -321,17 +321,16 @@ export function QuestionCard({ error = false, className = '', children }) {
   )
 }
 
-/* One question: sentence, answer, and any follow-up under a rule. */
+/* One question: sentence, answer under it, follow-up below a rule.
+   Stacked — matches Inland's canonical QuestionRow layout. */
 export function QuestionRow({ label, help, value, onChange, error = false, children }) {
   const hasFollowUp = Children.toArray(children).some(Boolean)
 
   return (
     <QuestionCard error={error}>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <p className={`text-sm leading-relaxed ${error ? 'text-red-500' : 'text-gray-800'}`}>{label}</p>
-          {help && <p className="text-[12px] text-gray-400 mt-1 leading-relaxed max-w-2xl">{help}</p>}
-        </div>
+      <p className={`text-sm leading-relaxed mb-1 ${error ? 'text-red-500' : 'text-gray-800'}`}>{label}</p>
+      {help && <p className="text-[12px] text-gray-400 mb-2.5 leading-relaxed max-w-2xl">{help}</p>}
+      <div className={help ? '' : 'mt-3'}>
         <YesNo value={value} onChange={onChange} name={label} />
       </div>
       {hasFollowUp && <div className="mt-4 pt-4 im-rule">{children}</div>}

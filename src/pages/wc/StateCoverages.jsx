@@ -96,22 +96,29 @@ export default function StateCoverages({ formData, updateFormData }) {
         Owners &amp; officers, classes, and payroll — per state, on one page.
       </p>
 
-      {/* State tabs */}
-      <div className="flex items-center gap-2 flex-wrap">
-        {[pz.state || 'CA', ...addedStates].map(s => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setActiveState(s)}
-            className="px-4 py-1.5 rounded-lg text-sm font-bold font-mono transition"
-            style={activeState === s
-              ? { background: '#1B0750', color: 'white', border: '1.5px solid #1B0750' }
-              : { background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }
-            }
-          >
-            {s}
-          </button>
-        ))}
+      {/* State tabs — one YesNo-style pill per state, gradient fill for
+          the active one, plain outline for the rest. Add-state is a
+          small dashed outline that echoes AddAnother. */}
+      <div className="flex items-center gap-2 flex-wrap" role="radiogroup" aria-label="Active state">
+        {[pz.state || 'CA', ...addedStates].map(s => {
+          const selected = activeState === s
+          return (
+            <button
+              key={s}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => setActiveState(s)}
+              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-all ${selected ? 'force-white-text' : 'border-[1.5px]'}`}
+              style={selected
+                ? { background: BRAND_GRADIENT, color: 'white' }
+                : { background: 'white', borderColor: '#E5E7EB', color: '#6B7280' }
+              }
+            >
+              {s}
+            </button>
+          )
+        })}
         <button
           type="button"
           onClick={() => {
@@ -121,53 +128,33 @@ export default function StateCoverages({ formData, updateFormData }) {
               setActiveState(next)
             }
           }}
-          className="px-4 py-1.5 rounded-lg text-sm font-bold transition"
-          style={{ background: 'white', color: '#5C2ED4', border: '1.5px dashed rgba(92,46,212,0.35)' }}
+          className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed border-[#A614C3]/30 transition"
+          style={{ background: 'white', color: '#A614C3' }}
         >
           + Add state
         </button>
       </div>
 
       <FieldGroup label="Officers & Owners">
-        {/* Rule banner — compact purple-tinted strip with an inline
-            gradient chip, the rule sentence, and an optional E-Mod
-            pill on the right. */}
-        <div
-          className="rounded-xl px-4 py-3 mb-4"
-          style={{
-            background: 'linear-gradient(135deg, rgba(92,46,212,0.05) 0%, rgba(166,20,195,0.04) 100%)',
-            border: '1px solid rgba(92,46,212,0.15)',
-          }}
-        >
+        {/* Rule note — plain NotePanel-style card, with a small brand
+            Tag identifying the state / entity combination and an
+            optional E-Mod tag on the right. Matches Inland's chip +
+            note vocabulary rather than a bespoke tinted gradient. */}
+        <div className="rounded-xl px-4 py-3 mb-4"
+          style={{ background: 'white', border: '1px solid #E5E7EB' }}>
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-800 leading-relaxed">
-                <span
-                  className="text-[10px] font-bold uppercase tracking-[0.08em] font-mono mr-2 align-middle"
-                  style={{
-                    background: BRAND_GRADIENT,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  {activeState} · {rule.label}
-                </span>
-                {rule.text}
-              </p>
-              <p className="text-xs text-gray-500 leading-relaxed mt-1.5">{rule.help}</p>
+              <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                <Tag tone="brand">{activeState} · {rule.label}</Tag>
+                {emod && (
+                  <Tag tone="brand">
+                    E-Mod {emod} · {formData.underwriting?.experienceModSource || 'WCIRB'}
+                  </Tag>
+                )}
+              </div>
+              <p className="text-sm text-gray-800 leading-relaxed">{rule.text}</p>
+              <p className="text-xs text-gray-500 leading-relaxed mt-1">{rule.help}</p>
             </div>
-            {emod && (
-              <span
-                className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full font-mono text-white shrink-0"
-                style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.25)' }}
-              >
-                E-Mod {emod}
-                <span className="opacity-70 font-normal">
-                  · {formData.underwriting?.experienceModSource || 'WCIRB'}
-                </span>
-              </span>
-            )}
           </div>
         </div>
 

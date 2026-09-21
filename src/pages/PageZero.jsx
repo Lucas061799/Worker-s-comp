@@ -35,10 +35,10 @@ export default function PageZero({ onStart }) {
   const [picked, setPicked] = useState(null)
   const [showSuggest, setShowSuggest] = useState(false)
 
-  const hits = useMemo(() => {
+  const suggestList = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return []
-    return CLASSES.filter(c => c.code.startsWith(q) || c.desc.toLowerCase().includes(q)).slice(0, 6)
+    if (!q) return CLASSES
+    return CLASSES.filter(c => c.code.startsWith(q) || c.desc.toLowerCase().includes(q))
   }, [query])
 
   const ready = !!(state && effectiveDate && picked)
@@ -122,51 +122,71 @@ export default function PageZero({ onStart }) {
                   onChange={setEffectiveDate}
                 />
 
-                {/* Class code typeahead */}
+                {/* Class code search — mirrors Inland's ClassSearch:
+                    magnifying glass on the left, chevron on the right,
+                    the full catalogue when the field is empty. */}
                 <div className="relative">
                   <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
                     Primary Class Code<span className="text-red-400 ml-0.5">*</span>
                   </label>
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={e => { setQuery(e.target.value); setShowSuggest(true); setPicked(null) }}
-                    onFocus={() => setShowSuggest(true)}
-                    onBlur={() => setTimeout(() => setShowSuggest(false), 150)}
-                    placeholder='e.g. 5183 or "plumbing"'
-                    className="w-full border rounded-lg px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 transition-all"
-                    style={{
-                      background: 'white',
-                      borderColor: picked ? '#7C3AED' : '#E5E7EB',
-                      boxShadow: picked ? '0 0 0 2px rgba(124,58,237,0.1)' : 'none',
-                    }}
-                  />
-                  {showSuggest && hits.length > 0 && (
-                    <div
-                      className="absolute left-0 right-0 mt-1 rounded-xl overflow-hidden z-20"
-                      style={{
-                        background: 'white',
-                        border: '1px solid #E5E7EB',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
-                      }}
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
+                      </svg>
+                    </span>
+                    <input
+                      type="text"
+                      value={picked ? `${picked.code} — ${picked.desc}` : query}
+                      onChange={e => { setQuery(e.target.value); setShowSuggest(true); setPicked(null) }}
+                      onFocus={() => setShowSuggest(true)}
+                      onBlur={() => setTimeout(() => setShowSuggest(false), 150)}
+                      placeholder='Start typing a trade, for example: plumbing'
+                      className={`w-full border rounded-lg pl-10 pr-10 py-2.5 text-sm placeholder-gray-300 focus:outline-none focus:ring-2 transition-all ${picked ? 'text-gray-900' : 'text-gray-800'} border-gray-200 bg-white focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300`}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      aria-label={showSuggest ? 'Hide classes' : 'Show all classes'}
+                      onClick={() => setShowSuggest(v => !v)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded"
                     >
-                      {hits.map(c => (
-                        <button
-                          key={c.code}
-                          type="button"
-                          onMouseDown={() => handlePick(c)}
-                          className="w-full flex items-baseline gap-3 px-3.5 py-2.5 text-left text-sm transition-all"
-                          style={{ background: 'transparent', color: '#374151' }}
-                          onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                        >
-                          <span className="font-mono font-bold" style={{ color: '#5C2ED4' }}>{c.code}</span>
-                          <span className="flex-1 truncate">{c.desc}</span>
-                          <span className="text-xs text-gray-400 shrink-0">{c.ind}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                      <svg className="w-4 h-4 transition-transform"
+                        style={{ transform: showSuggest ? 'rotate(180deg)' : 'rotate(0deg)', color: showSuggest ? '#7C3AED' : '#9CA3AF' }}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </button>
+                    {showSuggest && suggestList.length > 0 && (
+                      <div
+                        className="absolute left-0 right-0 top-full mt-1.5 rounded-xl overflow-hidden z-40 bop-select-dropdown"
+                        style={{ background: 'white', border: '1px solid #E5E7EB', boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
+                      >
+                        <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: '260px' }}>
+                          {suggestList.map(c => {
+                            const current = picked && c.code === picked.code
+                            return (
+                              <button
+                                key={c.code}
+                                type="button"
+                                onMouseDown={() => handlePick(c)}
+                                className="w-full text-left px-3.5 py-2.5 flex items-center justify-between gap-3 transition-all"
+                                style={{ background: current ? '#F5F3FF' : 'transparent' }}
+                                onMouseEnter={e => { e.currentTarget.style.background = current ? '#EDE9FE' : '#F9FAFB' }}
+                                onMouseLeave={e => { e.currentTarget.style.background = current ? '#F5F3FF' : 'transparent' }}
+                              >
+                                <span className={`text-sm truncate ${current ? 'text-gray-900' : 'text-gray-700'}`}>{c.desc}</span>
+                                <span className="flex items-center gap-2.5 shrink-0">
+                                  <span className="text-[11px] font-mono text-gray-400">{c.code}</span>
+                                  <span className="text-[11px] font-semibold text-gray-500">{c.ind}</span>
+                                </span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {picked && (
                     <p className="mt-1.5 text-xs text-gray-500">
                       Industry: <span className="font-semibold text-gray-700">{picked.ind}</span> — derived from class {picked.code}
