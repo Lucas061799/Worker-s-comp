@@ -61,6 +61,7 @@ export default function UnderwritingQuestions({
   const err = (key) => showErrors && (data[key] === undefined || data[key] === null || data[key] === '')
 
   const [quickFilled, setQuickFilled] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   const allAnswered = ALL_KEYS.every(k => data[k] !== undefined && data[k] !== null && data[k] !== '')
   const declineTriggered = data.decline_any === 'yes'
@@ -200,24 +201,184 @@ export default function UnderwritingQuestions({
         </div>
       </div>
 
-      {/* Continue */}
-      <div className="flex items-center justify-between gap-3 pt-2">
-        {onBack ? (
+      {/* Action row — Continue is left-aligned; clicking it opens the
+          Application Preview so the agent reviews the whole submission
+          before it goes to rating. Matches Commercial Auto's pattern. */}
+      <div className="pt-2 flex items-center justify-start gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            if (onValidateAll && !onValidateAll()) return
+            setShowPreview(true)
+          }}
+          disabled={!allAnswered || quoting || quotesReady}
+          className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90 disabled:cursor-not-allowed"
+          style={allAnswered && !quoting && !quotesReady
+            ? { background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
+            : { background: '#D1D5DB' }}
+        >
+          {quoting ? 'Getting Quotes…' : quotesReady ? 'Quotes Ready ✓' : 'Preview & Continue'}
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </button>
+        {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold"
             style={{ background: 'white', border: '1.5px solid #E5E7EB', color: '#6B7280' }}
           >
             Back
           </button>
-        ) : <span />}
-        <PrimaryButton
-          onClick={handleContinue}
-          disabled={!allAnswered || quoting || quotesReady}
-        >
-          {quoting ? 'Getting Quotes…' : quotesReady ? 'Quotes Ready ✓' : 'Continue'}
-        </PrimaryButton>
+        )}
+      </div>
+
+      {showPreview && (
+        <ApplicationPreviewModal
+          formData={formData}
+          onClose={() => setShowPreview(false)}
+          onSubmit={() => { setShowPreview(false); onGetIndication && onGetIndication() }}
+        />
+      )}
+    </div>
+  )
+}
+
+function PreviewRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs font-semibold text-gray-800 text-right">{value || '—'}</span>
+    </div>
+  )
+}
+
+function PreviewSection({ title, children }) {
+  return (
+    <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5">{title}</p>
+      {children}
+    </div>
+  )
+}
+
+function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
+  const pz  = formData.pageZero      || {}
+  const biz = formData.business      || {}
+  const hist= formData.history       || {}
+  const state = pz.state || 'CA'
+  const stateCov = (formData.coverage || {})[state] || {}
+  const uw  = formData.underwriting  || {}
+  const sel = formData.carrierSelection?.checked || {}
+  const selectedCount = Object.values(sel).filter(Boolean).length
+  const totalPayroll = (stateCov.classes || []).reduce((sum, c) => {
+    const n = parseInt(String(c.payroll || '').replace(/[^\d]/g, ''), 10)
+    return sum + (Number.isFinite(n) ? n : 0)
+  }, 0)
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(15,10,40,0.6)', backdropFilter: 'blur(8px)' }}
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        style={{ maxHeight: '92vh', background: '#F9FAFB' }}
+        onClick={ev => ev.stopPropagation()}
+      >
+        <div className="shrink-0" style={{ background: 'white', borderBottom: '1px solid #F3F4F6' }}>
+          <div className="flex items-start gap-4 px-5 pt-4 pb-4">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: 'linear-gradient(88.09deg,rgba(92,46,212,0.12) 0%,rgba(166,20,195,0.12) 100%)' }}>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <defs>
+                  <linearGradient id="wcPrevHdrG" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#5C2ED4"/>
+                    <stop offset="100%" stopColor="#A614C3"/>
+                  </linearGradient>
+                </defs>
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  stroke="url(#wcPrevHdrG)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h1 className="text-xl font-bold leading-tight text-gray-900">Application Overview</h1>
+              <p className="text-xs mt-0.5 text-gray-500">Review the submission before it goes to rating.</p>
+            </div>
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all"
+              style={{ border: '1px solid #E5E7EB', background: 'white' }}
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round">
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            <PreviewSection title="Business">
+              <PreviewRow label="Name" value={biz.name} />
+              <PreviewRow label="Entity" value={biz.entityType && ({corp:'Corporation',llc:'LLC',sole:'Sole proprietor',partner:'Partnership'})[biz.entityType]} />
+              <PreviewRow label="Primary state" value={pz.state} />
+              <PreviewRow label="Effective" value={pz.effectiveDate} />
+              <PreviewRow label="Years in business" value={biz.yearsInBusiness} />
+            </PreviewSection>
+
+            <PreviewSection title="Class & payroll">
+              <PreviewRow label="Primary class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
+              <PreviewRow label="Industry" value={pz.industry} />
+              <PreviewRow label="Classes on file" value={(stateCov.classes || []).length} />
+              <PreviewRow label="Annual payroll" value={totalPayroll ? `$${totalPayroll.toLocaleString()}` : '—'} />
+              <PreviewRow label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} />
+            </PreviewSection>
+
+            <PreviewSection title="Coverage history">
+              <PreviewRow label="Prior terms" value={(hist.priorTerms || []).length} />
+              <PreviewRow label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
+              <PreviewRow label="Experience mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || ''}`} />
+            </PreviewSection>
+
+            <PreviewSection title="Underwriting">
+              <PreviewRow label="Knockout conditions" value={uw.decline_any === 'yes' ? 'Yes (referral)' : 'No'} />
+              <PreviewRow label="Safety program" value={uw.safety_program === 'yes' ? 'Yes' : 'No'} />
+              <PreviewRow label="OSHA training" value={uw.osha_training === 'yes' ? 'Yes' : 'No'} />
+              <PreviewRow label="Subs > 25% of receipts" value={uw.sub_25_pct === 'yes' ? 'Yes' : 'No'} />
+            </PreviewSection>
+
+            <PreviewSection title="Carriers">
+              <PreviewRow label="Markets selected" value={selectedCount ? `${selectedCount} of 6` : 'All'} />
+            </PreviewSection>
+
+            <PreviewSection title="Contact">
+              <PreviewRow label="Phone" value={biz.phone} />
+              <PreviewRow label="Email" value={biz.email} />
+            </PreviewSection>
+          </div>
+        </div>
+
+        <div className="shrink-0 px-5 py-3.5 flex items-center justify-between gap-3"
+          style={{ borderTop: '1px solid #E5E7EB', background: 'white' }}>
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-lg text-sm font-semibold"
+            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+          >
+            Keep editing
+          </button>
+          <button
+            onClick={onSubmit}
+            className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90"
+            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
+          >
+            Get price indication →
+          </button>
+        </div>
       </div>
     </div>
   )
