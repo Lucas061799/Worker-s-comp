@@ -44,9 +44,6 @@ export default function Sidebar({
 }) {
   const completion = useMemo(() => getCompletion(formData), [formData])
 
-  const phase1 = steps.filter(s => s.phase === 1)
-  const phase2 = steps.filter(s => s.phase === 2)
-
   const productName  = "Workers' Compensation"
   const submissionId = 'WC-2026-048291'
 
@@ -65,48 +62,65 @@ export default function Sidebar({
         <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
       </div>
 
-      {/* Steps */}
-      <nav className="flex-1 py-1 px-3 overflow-y-auto sidebar-nav relative z-10 space-y-3">
-        <PhaseGroup
-          label="Application"
-          steps={phase1}
-          activeStep={activeStep}
-          completion={completion}
-          onStepClick={onStepClick}
-          isDark={isDark}
-          locked={false}
-        />
-
-        {/* Gate */}
-        <div className="px-1 py-2">
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em]"
-            style={{ color: indicationReady ? '#7C3AED' : '#9CA3AF' }}>
-            <div className="flex-1 h-px" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : '#E5E7EB' }} />
-            <button
-              type="button"
-              disabled={!indicationReady}
-              onClick={() => indicationReady && onGateClick && onGateClick()}
-              className="px-2 py-1 rounded-md transition"
-              style={{
-                cursor: indicationReady ? 'pointer' : 'default',
-                color: indicationReady ? '#7C3AED' : '#9CA3AF',
-              }}
-            >
-              Price indication
-            </button>
-            <div className="flex-1 h-px" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : '#E5E7EB' }} />
-          </div>
-        </div>
-
-        <PhaseGroup
-          label="Carrier flow"
-          steps={phase2}
-          activeStep={activeStep}
-          completion={completion}
-          onStepClick={onStepClick}
-          isDark={isDark}
-          locked={!indicationReady}
-        />
+      {/* Steps — flat list, matches con-gl. Phase-2 steps stay in the
+          list but lock until the price indication has been produced. */}
+      <nav className="flex-1 py-1 px-3 overflow-y-auto sidebar-nav relative z-10">
+        {steps.map(step => {
+          const isActive = step.id === activeStep
+          const isDone = !!completion[step.key] && !isActive
+          const locked = step.phase === 2 && !indicationReady
+          return (
+            <div key={step.id} className="relative mb-0.5">
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-full"
+                  style={{ background: 'linear-gradient(180deg, #5C2ED4 0%, #A614C3 100%)' }} />
+              )}
+              <button
+                type="button"
+                disabled={locked}
+                onClick={() => !locked && onStepClick(step.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${locked ? 'cursor-default opacity-60' : ''}`}
+                style={isActive
+                  ? isDark
+                    ? { background: 'linear-gradient(180deg, rgba(42,28,70,0.28) 0%, rgba(166,20,195,0.68) 100%)', border: '1.5px solid rgba(166,20,195,0.65)', boxShadow: '0 4px 24px rgba(166,20,195,0.25)' }
+                    : { background: '#ffffff', border: '1.5px solid #7C3AED', boxShadow: '0 2px 12px rgba(92,46,212,0.12)' }
+                  : { border: '1.5px solid transparent', background: 'transparent' }}
+              >
+                <span
+                  className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0"
+                  style={isActive
+                    ? isDark
+                      ? { background: 'rgba(255,255,255,0.2)', color: '#FFFFFF' }
+                      : { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }
+                    : isDone
+                      ? isDark
+                        ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.7) 0%, rgba(166,20,195,0.7) 100%)', color: '#ffffff' }
+                        : { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }
+                      : { background: isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6', color: isDark ? '#6B7280' : '#9CA3AF' }
+                  }
+                >
+                  {isDone ? '✓' : step.num}
+                </span>
+                <span
+                  className={`text-xs truncate ${isActive ? 'font-semibold' : isDone ? 'font-medium' : ''}`}
+                  style={isActive
+                    ? isDark
+                      ? { color: '#FFFFFF' }
+                      : {
+                          background: 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                        }
+                    : { color: isDark ? (isDone ? '#D1D5DB' : '#8B8FA8') : (isDone ? '#4B5563' : '#9CA3AF') }
+                  }
+                >
+                  {step.label}
+                </span>
+              </button>
+            </div>
+          )
+        })}
       </nav>
 
       {/* Chat with Norbie */}
@@ -173,77 +187,3 @@ export default function Sidebar({
   )
 }
 
-function PhaseGroup({ label, steps, activeStep, completion, onStepClick, isDark, locked }) {
-  return (
-    <div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-1.5 pl-2"
-        style={{ color: '#9CA3AF' }}>
-        {label}
-      </p>
-      <div style={{ opacity: locked ? 0.55 : 1 }}>
-        {steps.map(step => {
-          const isActive = step.id === activeStep
-          const isDone = !!completion[step.key]
-          return (
-            <div key={step.id} className="relative mb-0.5">
-              {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-full"
-                  style={{ background: 'linear-gradient(180deg, #5C2ED4 0%, #A614C3 100%)' }} />
-              )}
-              <button
-                onClick={() => !locked && onStepClick(step.id)}
-                disabled={locked}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150"
-                style={isActive ? isDark ? {
-                  background: 'linear-gradient(180deg, rgba(42,28,70,0.28) 0%, rgba(166,20,195,0.68) 100%)',
-                  border: '1.5px solid rgba(166,20,195,0.65)',
-                  boxShadow: '0 4px 24px rgba(166,20,195,0.25)',
-                } : {
-                  background: '#ffffff',
-                  border: '1.5px solid #7C3AED',
-                  boxShadow: '0 2px 12px rgba(92,46,212,0.12)',
-                } : {
-                  border: '1.5px solid transparent',
-                  background: 'transparent',
-                  cursor: locked ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <span
-                  className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0"
-                  style={isActive
-                    ? isDark
-                      ? { background: 'rgba(255,255,255,0.2)', color: '#FFFFFF' }
-                      : { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }
-                    : isDone
-                      ? isDark
-                        ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.7) 0%, rgba(166,20,195,0.7) 100%)', color: '#ffffff' }
-                        : { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }
-                      : { background: isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6', color: isDark ? '#6B7280' : '#9CA3AF' }
-                  }
-                >
-                  {isDone && !isActive ? '✓' : step.num}
-                </span>
-                <span
-                  className={`text-xs truncate ${isActive ? 'font-semibold' : isDone ? 'font-medium' : ''}`}
-                  style={isActive
-                    ? isDark
-                      ? { color: '#FFFFFF' }
-                      : {
-                          background: 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                        }
-                    : { color: isDark ? (isDone ? '#D1D5DB' : '#8B8FA8') : (isDone ? '#4B5563' : '#9CA3AF') }
-                  }
-                >
-                  {step.label}
-                </span>
-              </button>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
