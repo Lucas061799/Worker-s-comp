@@ -5,6 +5,7 @@ import btisLogo from './assets/btislogo.png'
 import btisLogoDark from './assets/btislogo-dark.png'
 import Sidebar from './components/Sidebar'
 import RightPanel from './components/RightPanel'
+import PrintSummary from './components/PrintSummary'
 import { StepHeader } from './components/wc/primitives'
 import PageZero from './pages/PageZero'
 import DemoBar from './components/DemoJump'
@@ -46,6 +47,7 @@ function App() {
   const [submitted, setSubmitted] = useState(false)
   const [bindSummary, setBindSummary] = useState(null)
 
+  const [showSummary, setShowSummary] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [attemptedQuote, setAttemptedQuote] = useState(false)
@@ -395,9 +397,16 @@ function App() {
             formData={formData}
             isDark={darkMode}
             indicationReady={indicationReady}
+            onDownloadSummary={() => setShowSummary(true)}
           />
         </div>
       </div>
+
+      <PrintSummary
+        formData={formData}
+        visible={showSummary}
+        onClose={() => setShowSummary(false)}
+      />
     </div>
   )
 }

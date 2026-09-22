@@ -52,7 +52,7 @@ function computeProgress(formData) {
   return { pct: Math.round((done / 7) * 100), flags }
 }
 
-export default function RightPanel({ formData = {}, isDark = false, indicationReady = false }) {
+export default function RightPanel({ formData = {}, isDark = false, indicationReady = false, onDownloadSummary }) {
   const pz = formData.pageZero || {}
   const state = pz.state || 'CA'
   const stateCov = formData.coverage?.[state] || {}
@@ -179,22 +179,23 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
           </div>
         )}
 
-        {/* Auto-save note */}
-        <div className="im-banner rounded-xl px-3.5 py-3 flex items-start gap-2.5">
-          <svg className="w-3.5 h-3.5 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none">
-            <defs>
-              <linearGradient id="rpSaveWc" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#5C2ED4"/>
-                <stop offset="100%" stopColor="#A614C3"/>
-              </linearGradient>
-            </defs>
-            <path d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              stroke="url(#rpSaveWc)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Form Review — Commercial Auto's affordance, verbatim. */}
+        <button
+          onClick={onDownloadSummary}
+          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition"
+          style={{
+            color: isDark ? '#D8B4FE' : '#A614C3',
+            border: isDark ? '1px solid rgba(216,180,254,0.35)' : '1px solid rgba(166,20,195,0.3)',
+            background: isDark ? 'rgba(167,139,250,0.08)' : 'white',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(167,139,250,0.15)' : 'rgba(166,20,195,0.06)'}
+          onMouseLeave={e => e.currentTarget.style.background = isDark ? 'rgba(167,139,250,0.08)' : 'white'}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <p className="text-[11px] leading-relaxed text-gray-600">
-            Every page saves on load — leave and pick up where you stopped.
-          </p>
-        </div>
+          Form Review
+        </button>
       </div>
     </aside>
   )
