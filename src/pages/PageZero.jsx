@@ -170,15 +170,15 @@ export default function PageZero({ onStart }) {
                                 key={c.code}
                                 type="button"
                                 onMouseDown={() => handlePick(c)}
-                                className="w-full text-left px-3.5 py-2.5 flex items-center justify-between gap-3 transition-all"
+                                className="w-full text-left px-3.5 py-3 flex items-center gap-2 transition-all"
                                 style={{ background: current ? '#F5F3FF' : 'transparent' }}
                                 onMouseEnter={e => { e.currentTarget.style.background = current ? '#EDE9FE' : '#F9FAFB' }}
                                 onMouseLeave={e => { e.currentTarget.style.background = current ? '#F5F3FF' : 'transparent' }}
                               >
-                                <span className={`text-sm truncate ${current ? 'text-gray-900' : 'text-gray-700'}`}>{c.desc}</span>
-                                <span className="flex items-center gap-2.5 shrink-0">
-                                  <span className="text-[11px] font-mono text-gray-400">{c.code}</span>
-                                  <span className="text-[11px] font-semibold text-gray-500">{c.ind}</span>
+                                <span className={`text-sm truncate ${current ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
+                                  <span className="font-mono">{c.code}</span>
+                                  <span className="text-gray-400 mx-1.5">—</span>
+                                  {c.desc}
                                 </span>
                               </button>
                             )
