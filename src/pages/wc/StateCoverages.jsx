@@ -108,9 +108,9 @@ export default function StateCoverages({ formData, updateFormData }) {
         Owners &amp; officers, classes, and payroll — per state, on one page.
       </p>
 
-      {/* State tabs — one YesNo-style pill per state, gradient fill for
-          the active one, plain outline for the rest. Add-state is a
-          small dashed outline that echoes AddAnother. */}
+      {/* State tabs — solid navy tile for the active state, gray outline
+          for the rest, dashed for the add-state affordance. Matches the
+          WC proposal (rounded-lg + monospace state code). */}
       <div className="flex items-center gap-2 flex-wrap" role="radiogroup" aria-label="Active state">
         {[pz.state || 'CA', ...addedStates].map(s => {
           const selected = activeState === s
@@ -121,10 +121,10 @@ export default function StateCoverages({ formData, updateFormData }) {
               role="radio"
               aria-checked={selected}
               onClick={() => setActiveState(s)}
-              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-all ${selected ? 'force-white-text' : 'border-[1.5px]'}`}
+              className="px-4 py-1.5 rounded-lg text-sm font-bold font-mono transition"
               style={selected
-                ? { background: BRAND_GRADIENT, color: 'white' }
-                : { background: 'white', borderColor: '#E5E7EB', color: '#6B7280' }
+                ? { background: '#1B0750', color: 'white', border: '1.5px solid #1B0750' }
+                : { background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }
               }
             >
               {s}
@@ -132,8 +132,8 @@ export default function StateCoverages({ formData, updateFormData }) {
           )
         })}
         {addOpen ? (
-          <div className="inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 border border-dashed border-[#A614C3]/40"
-            style={{ background: 'white' }}>
+          <div className="inline-flex items-center gap-1 rounded-lg pl-3 pr-1 py-0.5"
+            style={{ background: 'white', border: '1.5px dashed rgba(92,46,212,0.4)' }}>
             <input
               type="text"
               autoFocus
@@ -145,14 +145,14 @@ export default function StateCoverages({ formData, updateFormData }) {
               }}
               placeholder="XX"
               maxLength={2}
-              className="w-9 text-[13px] font-semibold uppercase outline-none bg-transparent"
-              style={{ color: '#A614C3' }}
+              className="w-9 text-sm font-bold font-mono uppercase outline-none bg-transparent"
+              style={{ color: '#5C2ED4' }}
             />
             <button
               type="button"
               onClick={commitAddState}
               disabled={addValue.length !== 2}
-              className="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white transition disabled:opacity-40"
+              className="px-2.5 py-1 rounded-md text-[11px] font-bold text-white transition disabled:opacity-40"
               style={{ background: BRAND_GRADIENT }}
             >
               Add
@@ -160,7 +160,7 @@ export default function StateCoverages({ formData, updateFormData }) {
             <button
               type="button"
               onClick={() => { setAddValue(''); setAddOpen(false) }}
-              className="w-6 h-6 rounded-full flex items-center justify-center text-gray-400"
+              className="w-6 h-6 rounded-md flex items-center justify-center text-gray-400"
               aria-label="Cancel"
             >
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -172,8 +172,8 @@ export default function StateCoverages({ formData, updateFormData }) {
           <button
             type="button"
             onClick={() => setAddOpen(true)}
-            className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed border-[#A614C3]/30 transition hover:border-[#A614C3]/60"
-            style={{ background: 'white', color: '#A614C3' }}
+            className="px-4 py-1.5 rounded-lg text-sm font-bold transition"
+            style={{ background: 'white', color: '#5C2ED4', border: '1.5px dashed rgba(92,46,212,0.35)' }}
           >
             + Add state
           </button>
