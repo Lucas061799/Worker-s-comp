@@ -179,22 +179,28 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
           </div>
         )}
 
-        {/* Form Review — Commercial Auto's affordance, verbatim. */}
+        <div className="my-5" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` }} />
+
+        {/* con-gl's rail CTA — gradient when there is enough on file to be
+            worth reading back, greyed out before that. */}
         <button
+          type="button"
           onClick={onDownloadSummary}
-          className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition"
-          style={{
-            color: isDark ? '#D8B4FE' : '#A614C3',
-            border: isDark ? '1px solid rgba(216,180,254,0.35)' : '1px solid rgba(166,20,195,0.3)',
-            background: isDark ? 'rgba(167,139,250,0.08)' : 'white',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = isDark ? 'rgba(167,139,250,0.15)' : 'rgba(166,20,195,0.06)'}
-          onMouseLeave={e => e.currentTarget.style.background = isDark ? 'rgba(167,139,250,0.08)' : 'white'}
+          disabled={!readyToQuote}
+          title={readyToQuote ? undefined : 'Pick a class code to build the summary'}
+          className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition disabled:cursor-not-allowed enabled:hover:opacity-90"
+          style={readyToQuote
+            ? { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.22)' }
+            : isDark
+              ? { background: 'rgba(255,255,255,0.04)', color: '#6B7280', border: '1px solid rgba(255,255,255,0.08)' }
+              : { background: '#FAFAFB', color: '#9CA3AF', border: '1px solid #E5E7EB' }}
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+            <rect x="9" y="3" width="6" height="4" rx="1" />
+            <line x1="9" y1="13" x2="15" y2="13" /><line x1="9" y1="17" x2="13" y2="17" />
           </svg>
-          Form Review
+          Download Application Summary
         </button>
       </div>
     </aside>
