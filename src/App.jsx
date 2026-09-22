@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar'
 import RightPanel from './components/RightPanel'
 import { StepHeader } from './components/wc/primitives'
 import PageZero from './pages/PageZero'
+import DemoBar from './components/DemoJump'
 import BusinessInfo from './pages/wc/BusinessInfo'
 import CoverageHistory from './pages/wc/CoverageHistory'
 import LossDetail from './pages/wc/LossDetail'
@@ -153,14 +154,59 @@ function App() {
     setAttemptedQuote(false)
   }
 
+  // Prefill a plumbing-in-CA demo so a quick-jump lands on a filled form.
+  const seedDemoData = () => {
+    updateFormData('pageZero', {
+      productType: 'wc', state: 'CA', effectiveDate: '2026-04-01',
+      mainClass: '5183', classDescription: 'Plumbing NOC',
+      industry: 'Construction', isContractor: true,
+    })
+    setPageZeroDone(true)
+  }
+
+  const jumpToStep = (stepId) => {
+    if (!pageZeroDone) seedDemoData()
+    setActiveStep(stepId)
+    setShowingIndication(false)
+    setSubmitted(false)
+  }
+
+  const jumpToIndication = () => {
+    if (!pageZeroDone) seedDemoData()
+    setIndicationReady(true)
+    setShowingIndication(true)
+    setSubmitted(false)
+  }
+
+  const jumpToSubmission = () => {
+    if (!pageZeroDone) seedDemoData()
+    setBindSummary({ carrierId: 'cna', premium: 5174 })
+    setSubmitted(true)
+  }
+
+  const demoJumps = [
+    { key: 'landing',    label: 'Landing',           go: resetAll },
+    { key: 'form',       label: 'Application form',  go: () => jumpToStep(1) },
+    { key: 'indication', label: 'Price indication',  go: jumpToIndication },
+    { key: 'submission', label: 'Submission',        go: jumpToSubmission },
+  ]
+
+  const demoActive = submitted ? 'submission'
+    : !pageZeroDone ? 'landing'
+    : showingIndication ? 'indication'
+    : 'form'
+
   if (!pageZeroDone) {
     return (
-      <PageZero
-        onStart={(data) => {
-          updateFormData('pageZero', data)
-          setPageZeroDone(true)
-        }}
-      />
+      <>
+        <PageZero
+          onStart={(data) => {
+            updateFormData('pageZero', data)
+            setPageZeroDone(true)
+          }}
+        />
+        <DemoBar jumps={demoJumps} active={demoActive} />
+      </>
     )
   }
 

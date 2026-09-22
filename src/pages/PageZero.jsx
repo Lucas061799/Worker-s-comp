@@ -94,6 +94,9 @@ export default function PageZero({ onStart }) {
           <div className="relative z-10 min-h-full flex flex-col justify-center items-center py-10 px-6 md:px-[8%] lg:px-[10%]">
             <div className="w-full max-w-xl">
               <div className="mb-6">
+                <p className="text-xs md:text-sm font-bold tracking-widest uppercase text-gradient mb-2 md:mb-3">
+                  Workers' Compensation Insurance
+                </p>
                 <h1
                   className="text-3xl md:text-4xl font-bold text-navy leading-tight mb-4"
                   style={{ fontWeight: 800 }}
