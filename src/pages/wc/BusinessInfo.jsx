@@ -44,10 +44,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">
-        Start typing the address — we'll fill in the rest.
-      </p>
-
       <FieldGroup label="Company Information">
         <div className="space-y-5">
           <Input

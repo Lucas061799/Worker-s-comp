@@ -104,10 +104,6 @@ export default function StateCoverages({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">
-        Owners &amp; officers, classes, and payroll — per state, on one page.
-      </p>
-
       {/* State tabs — one YesNo-style pill per state, gradient fill for
           the active one, plain outline for the rest. Add-state is a
           small dashed outline that echoes AddAnother. */}

@@ -39,10 +39,6 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">
-        Add up to four prior terms. One row per term — same details, far fewer boxes.
-      </p>
-
       <FieldGroup label="Prior Terms">
         <div className="space-y-3">
           {terms.map((row, idx) => (

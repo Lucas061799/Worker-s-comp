@@ -83,10 +83,6 @@ export default function UnderwritingQuestions({
 
   return (
     <div className="w-full space-y-5">
-      <p className="text-sm text-gray-500 -mt-2">
-        Answer three short sections — knockout conditions, safety practices, and employees & subs.
-      </p>
-
       {/* Norbie quick-fill — brand banner, not a bespoke gradient */}
       {!quickFilled && !allAnswered && (
         <Banner icon={false}>

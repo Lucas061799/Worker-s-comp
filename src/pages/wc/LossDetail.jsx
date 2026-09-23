@@ -34,8 +34,6 @@ export default function LossDetail({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">One row per claim.</p>
-
       <FieldGroup label={`Claims (${losses.length})`}>
         <div className="space-y-3">
           {losses.map((row, idx) => (
