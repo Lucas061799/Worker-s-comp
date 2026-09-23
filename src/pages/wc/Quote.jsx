@@ -1,11 +1,24 @@
 import { useState } from 'react'
-import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText } from '../../components/wc/primitives'
+import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag } from '../../components/wc/primitives'
+import { CARRIERS } from './CarrierSelection'
+import norbielinkLogo from '../../assets/norbielink-logo.png'
+import btisLogo from '../../assets/btislogo.png'
 
-/* Client presentation — a white card on brand-tinted backdrop, with the
-   im-sub-card look Inland uses for its bound summary. Navy surfaces read
-   as "warning" in this design system; white with a brand-gradient accent
-   band is the right shape for a proud, shareable price. */
-function ClientPresentModal({ price, carrier, effectiveDate, businessName, onClose }) {
+function PresentRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-2" style={{ borderBottom: '1px solid #F3F4F6' }}>
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs font-semibold text-gray-800 text-right truncate">{value || '—'}</span>
+    </div>
+  )
+}
+
+/* The screen an agent turns toward the client, so it reads as a proposal
+   rather than a bare number: brand lockup at the top, the carrier's mark
+   beside the price, and the terms underneath. */
+function ClientPresentModal({ price, carrier, effectiveDate, businessName, mainClass, classDescription, onClose }) {
+  const carrierMeta = CARRIERS.find(c => c.name === carrier)
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -13,41 +26,49 @@ function ClientPresentModal({ price, carrier, effectiveDate, businessName, onClo
       onClick={onClose}
     >
       <div
-        className="im-sub-card max-w-xl w-full rounded-2xl overflow-hidden"
-        style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
+        className="max-w-lg w-full rounded-2xl overflow-hidden"
+        style={{ background: 'white', boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Gradient accent strip */}
-        <div className="h-1" style={{ background: BRAND_GRADIENT }} />
+        {/* Brand lockup — this card gets shown to the insured. */}
+        <div className="flex items-center justify-between px-7 py-4" style={{ borderBottom: '1px solid #F3F4F6' }}>
+          <img src={norbielinkLogo} alt="NorbieLink" className="h-7" />
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-gray-400 tracking-wide font-semibold">POWERED BY</span>
+            <img src={btisLogo} alt="btis" className="h-6" />
+          </div>
+        </div>
 
-        <div className="p-10 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-3">
-            Workers' Compensation Quote
-          </p>
-          <p className="text-5xl md:text-6xl font-bold text-navy mb-1">
-            <BrandText>${price.toLocaleString()}</BrandText>
-          </p>
-          <p className="text-sm text-gray-500 mb-8">
-            per year · ${Math.round(price / 12).toLocaleString()}/mo with premium finance
-          </p>
-          <div className="grid grid-cols-3 gap-4 pt-6 im-sub-rule text-xs">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-1">Carrier</p>
-              <p className="text-gray-900 font-semibold">{carrier}</p>
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-1">Effective</p>
-              <p className="text-gray-900 font-semibold">{effectiveDate}</p>
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-1">Prepared for</p>
-              <p className="text-gray-900 font-semibold truncate">{businessName || '—'}</p>
+        <div className="px-7 py-7">
+          <div className="flex items-center gap-2 mb-5">
+            <Tag tone="brand">Workers' Compensation</Tag>
+            <span className="text-xs text-gray-400">Prepared for {businessName || 'your client'}</span>
+          </div>
+
+          {/* Price beside the carrier's mark — the two facts that matter. */}
+          <div className="flex items-center gap-5 mb-6">
+            {carrierMeta && <CarrierLogo carrier={carrierMeta} size={56} />}
+            <div className="min-w-0">
+              <p className="text-4xl md:text-5xl font-bold leading-none mb-1.5">
+                <BrandText>${price.toLocaleString()}</BrandText>
+              </p>
+              <p className="text-sm text-gray-500">
+                per year · ${Math.round(price / 12).toLocaleString()}/mo with premium finance
+              </p>
             </div>
           </div>
+
+          <div className="rounded-xl px-4 py-2 mb-6" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+            <PresentRow label="Carrier" value={carrier} />
+            <PresentRow label="Effective date" value={effectiveDate} />
+            <PresentRow label="Class" value={mainClass && `${mainClass} — ${classDescription}`} />
+            <PresentRow label="Named insured" value={businessName} />
+          </div>
+
           <button
             type="button"
             onClick={onClose}
-            className="mt-8 px-5 py-2 rounded-lg text-sm font-semibold"
+            className="w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-semibold"
             style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
           >
             Close presentation
@@ -175,6 +196,8 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
           carrier={carrier}
           effectiveDate={pz.effectiveDate || '08/01/2026'}
           businessName={biz.name}
+          mainClass={pz.mainClass}
+          classDescription={pz.classDescription}
           onClose={() => setPresenting(false)}
         />
       )}
