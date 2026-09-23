@@ -6,6 +6,7 @@ import btisLogoDark from '../../assets/btislogo-dark.png'
 import norbieface from '../../assets/norbieface.png'
 import sidebarBg from '../../assets/sidebar-bg.png'
 import sellMoreBg from '../../assets/sell-more-bg.png'
+import { DemoJump } from '../../components/DemoJump'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -109,7 +110,7 @@ const ICONS = {
   card:      <><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></>,
 }
 
-export default function WcSubmission({ formData, summary, onBack, isDark = false, onToggleDark }) {
+export default function WcSubmission({ formData, summary, onBack, isDark = false, onToggleDark, demoJumps, demoActive }) {
   const [showConfetti, setShowConfetti] = useState(true)
 
   useEffect(() => {
@@ -234,6 +235,12 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
               )
             })}
           </nav>
+
+          {demoJumps && (
+            <div className="px-3 pb-2 relative z-20">
+              <DemoJump jumps={demoJumps} active={demoActive} />
+            </div>
+          )}
 
           {/* Norbie */}
           <div className="px-3 pb-2 relative z-10">

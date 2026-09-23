@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import sidebarBg from '../assets/sidebar-bg.png'
 import norbieface from '../assets/norbieface.png'
+import { DemoJump } from './DemoJump'
 
 const DARK_JUNGLE_OPACITY = 0.6
 const DARK_BORDER_RIGHT   = '1px solid rgba(255,255,255,0.12)'
@@ -41,6 +42,8 @@ export default function Sidebar({
   onToggleDark,
   indicationReady = false,
   onGateClick,
+  demoJumps,
+  demoActive,
 }) {
   const completion = useMemo(() => getCompletion(formData), [formData])
 
@@ -122,6 +125,12 @@ export default function Sidebar({
           )
         })}
       </nav>
+
+      {demoJumps && (
+        <div className="px-3 pb-2 relative z-20">
+          <DemoJump jumps={demoJumps} active={demoActive} />
+        </div>
+      )}
 
       {/* Chat with Norbie */}
       <div className="px-3 pb-2 relative z-10">

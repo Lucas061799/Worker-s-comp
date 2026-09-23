@@ -220,6 +220,8 @@ function App() {
         onBack={resetAll}
         isDark={darkMode}
         onToggleDark={() => setDarkMode(d => !d)}
+        demoJumps={demoJumps}
+        demoActive={demoActive}
       />
     )
   }
@@ -317,6 +319,8 @@ function App() {
             onToggleDark={() => setDarkMode(d => !d)}
             indicationReady={indicationReady}
             onGateClick={goToIndication}
+            demoJumps={demoJumps}
+            demoActive={demoActive}
           />
         </div>
 
