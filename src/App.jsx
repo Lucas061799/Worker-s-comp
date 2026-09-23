@@ -14,7 +14,7 @@ import CoverageHistory from './pages/wc/CoverageHistory'
 import LossDetail from './pages/wc/LossDetail'
 import StateCoverages from './pages/wc/StateCoverages'
 import UnderwritingQuestions from './pages/wc/UnderwritingQuestions'
-import CarrierSelection from './pages/wc/CarrierSelection'
+import CarrierSelection, { CARRIERS } from './pages/wc/CarrierSelection'
 import Loading from './pages/wc/Loading'
 import Indication from './pages/wc/Indication'
 import CarrierFlow from './pages/wc/CarrierFlow'
@@ -156,33 +156,87 @@ function App() {
     setAttemptedQuote(false)
   }
 
-  // Prefill a plumbing-in-CA demo so a quick-jump lands on a filled form.
+  /* A whole CA plumbing contractor, so a quick-jump lands on a page with
+     something to look at. Indication filters carriers by
+     carrierSelection.checked and prices off scheduled payroll, so a
+     partial seed reads as "0 markets returned a price". */
   const seedDemoData = () => {
     updateFormData('pageZero', {
       productType: 'wc', state: 'CA', effectiveDate: '2026-04-01',
       mainClass: '5183', classDescription: 'Plumbing NOC',
       industry: 'Construction', isContractor: true,
     })
+    updateFormData('business', {
+      name: 'Sierra Ridge Plumbing Inc.',
+      address: '1420 Prospect Rd', city: 'Saratoga', state: 'CA', zip: '95070',
+      mailSame: true,
+      entityType: 'corp',
+      fein: '94-3827155',
+      license: '#1085512',
+      yearsInBusiness: '8',
+      phone: '(408) 555-1234',
+      email: 'ops@sierraridgeplumbing.com',
+    })
+    updateFormData('history', {
+      priorTerms: [
+        { carrier: 'State Fund', effective: '2025-04-01', expiration: '2026-04-01', premium: '$5,980' },
+      ],
+      claimCount: 1,
+      losses: [
+        { date: '2025-08-14', type: 'Medical only', amount: '$3,200', status: 'Closed' },
+      ],
+    })
+    updateFormData('coverage', {
+      CA: {
+        officerElection: 'auto',
+        classes: [
+          { code: '5183', description: 'Plumbing NOC', employees: '6', payroll: '$480,000' },
+          { code: '8810', description: 'Clerical office employees', employees: '2', payroll: '$96,000' },
+        ],
+        blanketWaiver: false,
+      },
+    })
+    updateFormData('underwriting', {
+      experienceMod: '0.87', experienceModSource: 'WCIRB',
+      decline_any: 'no',
+      safety_program: 'yes',
+      toolbox_talks: 'yes',
+      osha_training: 'yes',
+      sub_certificates: 'yes',
+      sub_25_pct: 'no',
+    })
+    updateFormData('carrierSelection', {
+      checked: Object.fromEntries(CARRIERS.map(c => [c.id, true])),
+    })
     setPageZeroDone(true)
   }
 
+  /* Jumping is a demo shortcut, so it always reseeds — otherwise a jump
+     made after a partial run lands on a half-empty page. */
   const jumpToStep = (stepId) => {
-    if (!pageZeroDone) seedDemoData()
+    seedDemoData()
     setActiveStep(stepId)
     setShowingIndication(false)
     setSubmitted(false)
   }
 
   const jumpToIndication = () => {
-    if (!pageZeroDone) seedDemoData()
+    seedDemoData()
     setIndicationReady(true)
     setShowingIndication(true)
     setSubmitted(false)
   }
 
   const jumpToSubmission = () => {
-    if (!pageZeroDone) seedDemoData()
-    setBindSummary({ carrierId: 'cna', premium: 5174 })
+    seedDemoData()
+    updateFormData('bind', {
+      selectedCarrier: 'CNA',
+      premium: 5174,
+      carrierQuestions: true,
+      bound: true,
+    })
+    setBindSummary({ carrier: 'CNA', premium: 5174 })
+    setIndicationReady(true)
     setSubmitted(true)
   }
 
