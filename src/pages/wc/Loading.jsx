@@ -24,30 +24,32 @@ export default function Loading({ onDone, onSkip }) {
   }, [onDone])
 
   return (
-    <div className="w-full max-w-xl mx-auto text-center py-14 md:py-20">
-      <div className="mb-5 flex justify-center">
-        <Tag tone="brand">Rating in progress</Tag>
-      </div>
-      <h2 className="text-2xl md:text-3xl font-bold text-navy mb-3">Building your comparison</h2>
-      <p className="text-sm md:text-base text-gray-500 leading-relaxed mb-10 max-w-md mx-auto">
-        Multi-carrier rating usually takes 30–60 seconds. We save as we go — you won't lose anything.
-      </p>
+    <div className="w-full max-w-lg mx-auto py-10">
+      <div className="rounded-2xl p-6 md:p-7" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <Tag tone="brand">Rating in progress</Tag>
+          <span className="text-xs font-bold" style={{ color: '#5C2ED4' }}>{progress}%</span>
+        </div>
 
-      <div className="max-w-md mx-auto">
-        <div className="h-1.5 rounded-full overflow-hidden mb-8" style={{ background: '#F3F4F6' }}>
+        <h2 className="text-lg font-bold text-navy mb-1">Building your comparison</h2>
+        <p className="text-[12.5px] text-gray-500 leading-relaxed mb-5">
+          Multi-carrier rating usually takes 30–60 seconds. We save as we go — you won't lose anything.
+        </p>
+
+        <div className="h-1.5 rounded-full overflow-hidden mb-6" style={{ background: '#F3F4F6' }}>
           <div className="h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%`, background: BRAND_GRADIENT }} />
         </div>
 
         {/* Steps — the rail's numbered-step shape. */}
-        <div className="text-left space-y-4 mb-10">
+        <div className="space-y-3 mb-6">
           {STEPS.map((label, i) => {
             const done = current > i
             const active = current === i
             return (
-              <div key={label} className="flex items-center gap-3.5">
+              <div key={label} className="flex items-center gap-3">
                 <span
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[13px] font-bold shrink-0"
+                  className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0"
                   style={done || active
                     ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }
                     : { background: '#F3F4F6', color: '#9CA3AF' }}
@@ -55,7 +57,7 @@ export default function Loading({ onDone, onSkip }) {
                   {done ? '✓' : i + 1}
                 </span>
                 <span
-                  className={`text-sm ${active ? 'font-semibold' : done ? 'font-medium' : ''}`}
+                  className={`text-[13px] ${active ? 'font-semibold' : done ? 'font-medium' : ''}`}
                   style={{ color: done ? '#4B5563' : active ? '#111827' : '#9CA3AF' }}
                 >
                   {label}
@@ -66,7 +68,7 @@ export default function Loading({ onDone, onSkip }) {
         </div>
 
         {/* While you wait — the canonical info panel, not a gradient slab. */}
-        <div className="rounded-xl p-4 mb-8 flex items-start gap-3 text-left"
+        <div className="rounded-xl p-4 flex items-start gap-3"
           style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}>
           <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="#5C2ED4" strokeWidth="1.8" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="9" />
@@ -78,7 +80,9 @@ export default function Loading({ onDone, onSkip }) {
             Applies to policies bound with AmTrust through BTIS this quarter.
           </p>
         </div>
+      </div>
 
+      <div className="mt-4">
         <button
           type="button"
           onClick={onSkip}

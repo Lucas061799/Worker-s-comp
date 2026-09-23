@@ -2,6 +2,18 @@ import { useState } from 'react'
 import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag } from '../../components/wc/primitives'
 import { CARRIERS } from './CarrierSelection'
 
+function SummaryRow({ label, value, last }) {
+  return (
+    <div
+      className="flex items-center justify-between gap-4 py-2.5"
+      style={last ? undefined : { borderBottom: '1px solid #F3F4F6' }}
+    >
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs font-semibold text-gray-800 text-right">{value}</span>
+    </div>
+  )
+}
+
 /* The screen an agent turns toward the client. One number, the two facts
    that qualify it, and a way out — anything more is the agent's view, not
    the client's. */
@@ -88,40 +100,31 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
         Nothing here refers to underwriting — if a risk will refer, you'll always see that <i>before</i> you submit.
       </Banner>
 
-      {/* Quote hero — the price over the terms it was rated on, stacked
-          rather than split across an empty gutter. */}
-      <div className="rounded-2xl p-6 md:p-8" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-        <div className="flex items-center gap-4 mb-5 flex-wrap">
-          {carrierMeta && <CarrierLogo carrier={carrierMeta} size={48} />}
-          <div className="min-w-0">
-            <p className="text-4xl md:text-5xl font-bold leading-none">
-              <BrandText>${price.toLocaleString()}</BrandText>
-              <span className="text-base text-gray-500 font-normal ml-2">/yr</span>
-            </p>
-            <p className="text-sm text-gray-500 mt-1.5">
-              {carrier} · effective {pz.effectiveDate || '08/01/2026'}
-            </p>
+      {/* Quote summary — Inland's bind card: the carrier and price on one
+          line, then the terms as label/value rows. */}
+      <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
+        <div className="flex items-center justify-between gap-4 pb-5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+          <div className="flex items-center gap-3 min-w-0">
+            {carrierMeta && <CarrierLogo carrier={carrierMeta} size={44} />}
+            <div className="min-w-0">
+              <p className="text-[15px] font-bold text-gray-900 leading-tight">{carrier}</p>
+              <p className="text-[11.5px] text-gray-400">{carrierMeta?.sub}</p>
+            </div>
           </div>
-          {carrierMeta?.reco && <Tag tone="brand">BTIS Serviced</Tag>}
+          <div className="text-right shrink-0">
+            <p className="text-3xl font-bold leading-none">
+              <BrandText>${price.toLocaleString()}</BrandText>
+            </p>
+            <p className="text-[12px] text-gray-400 mt-1">per year</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-5" style={{ borderTop: '1px solid #E5E7EB' }}>
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1">Insured</p>
-            <p className="text-sm text-gray-900">{biz.name || 'Sierra Ridge Plumbing Inc.'}</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1">Class</p>
-            <p className="text-sm text-gray-900">{pz.mainClass || '5183'} · {state}</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1">Payroll</p>
-            <p className="text-sm text-gray-900">${payroll.toLocaleString()}</p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1">E-Mod</p>
-            <p className="text-sm text-gray-900">{emod}</p>
-          </div>
+        <div className="pt-1">
+          <SummaryRow label="Named insured" value={biz.name || 'Sierra Ridge Plumbing Inc.'} />
+          <SummaryRow label="Class" value={`${pz.mainClass || '5183'} · ${state}`} />
+          <SummaryRow label="Annual payroll" value={`$${payroll.toLocaleString()}`} />
+          <SummaryRow label="Experience mod" value={emod} />
+          <SummaryRow label="Effective date" value={pz.effectiveDate || '08/01/2026'} last />
         </div>
       </div>
 

@@ -143,19 +143,15 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
             </div>
           </div>
 
-          {/* Who we'll approach — a read-back, not a picker, so it gets a
-              plain two-column roster instead of six bordered rows. The
-              Promo / BTIS Serviced tags stay on the selection page. */}
-          <div
-            className="rounded-xl px-4 py-3 mb-6 grid grid-cols-2 gap-x-4 gap-y-3"
-            style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}
-          >
-            {carriers.map(c => (
-              <div key={c.id} className="flex items-center gap-2.5 min-w-0">
-                <CarrierLogo carrier={c} size={24} />
-                <span className="text-xs font-semibold text-gray-700 truncate">{c.name}</span>
-              </div>
-            ))}
+          {/* Who we'll approach — six names read fine as a sentence; a
+              panel of logo tiles was more chrome than the fact needs. */}
+          <div className="rounded-xl px-4 py-3 mb-6" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-1.5">
+              Markets
+            </p>
+            <p className="text-[12.5px] text-gray-700 leading-relaxed">
+              {carriers.map(c => c.name).join(', ')}
+            </p>
           </div>
 
           {/* Actions */}
