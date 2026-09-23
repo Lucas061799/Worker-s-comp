@@ -1,4 +1,4 @@
-import { DateInput, Select } from '../../components/FormField'
+import { Input, DateInput, Select } from '../../components/FormField'
 import { RemoveButton, AddAnother } from '../../components/wc/primitives'
 
 const LOSS_TYPES = ['Medical only', 'Lost time', 'Fatality']
@@ -37,54 +37,40 @@ export default function LossDetail({ formData, updateFormData }) {
       <p className="text-sm text-gray-500 -mt-2">One row per claim.</p>
 
       <FieldGroup label={`Claims (${losses.length})`}>
-        <div className="overflow-x-auto -mx-2 sm:mx-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2 pl-2 w-12">#</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Date of loss</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Type</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Amount paid</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Status</th>
-                <th className="w-10"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {losses.map((row, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                  <td className="py-2 pr-2 pl-2 font-mono text-gray-500 text-xs">{idx + 1}</td>
-                  <td className="py-2 pr-2 min-w-[150px]">
-                    <DateInput value={row.date} onChange={val => updateLoss(idx, { date: val })} />
-                  </td>
-                  <td className="py-2 pr-2 min-w-[140px]">
-                    <Select
-                      options={LOSS_TYPES}
-                      value={row.type}
-                      onChange={val => updateLoss(idx, { type: val })}
-                    />
-                  </td>
-                  <td className="py-2 pr-2">
-                    <input type="text" value={row.amount} onChange={e => updateLoss(idx, { amount: e.target.value })} placeholder="$"
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm outline-none font-mono"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}/>
-                  </td>
-                  <td className="py-2 pr-2 min-w-[120px]">
-                    <Select
-                      options={LOSS_STATUS}
-                      value={row.status}
-                      onChange={val => updateLoss(idx, { status: val })}
-                    />
-                  </td>
-                  <td className="py-2 text-center">
-                    <RemoveButton onClick={() => removeLoss(idx)} label="Remove claim" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {losses.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-[150px_1fr_130px_130px_40px] gap-3 items-end">
+              <DateInput
+                label={idx === 0 ? 'Date of loss' : undefined}
+                value={row.date}
+                onChange={val => updateLoss(idx, { date: val })}
+              />
+              <Select
+                label={idx === 0 ? 'Type' : undefined}
+                options={LOSS_TYPES}
+                value={row.type}
+                onChange={val => updateLoss(idx, { type: val })}
+              />
+              <Input
+                label={idx === 0 ? 'Amount paid' : undefined}
+                value={row.amount}
+                onChange={val => updateLoss(idx, { amount: val })}
+                placeholder="$"
+              />
+              <Select
+                label={idx === 0 ? 'Status' : undefined}
+                options={LOSS_STATUS}
+                value={row.status}
+                onChange={val => updateLoss(idx, { status: val })}
+              />
+              <div className="flex items-center justify-center h-[42px]">
+                <RemoveButton onClick={() => removeLoss(idx)} label="Remove claim" />
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-3">
+        <div className="mt-5">
           <AddAnother onClick={addLoss}>Add claim</AddAnother>
         </div>
       </FieldGroup>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Select } from '../../components/FormField'
+import { Input, Select } from '../../components/FormField'
 import { RemoveButton, AddAnother, YesNo, Banner, Tag, InfoLine } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
@@ -238,50 +238,44 @@ export default function StateCoverages({ formData, updateFormData }) {
       </FieldGroup>
 
       <FieldGroup label={`Classes & Payroll — ${activeState}`}>
-        <div className="overflow-x-auto -mx-2 sm:mx-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2 pl-2 w-24">Class</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Description</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2 w-28">Employees</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2 w-36">Annual payroll</th>
-                <th className="w-10"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {stateData.classes.map((row, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                  <td className="py-2 pr-2 pl-2">
-                    <input type="text" value={row.code} onChange={e => updateClass(idx, { code: e.target.value })}
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm font-mono outline-none"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}/>
-                  </td>
-                  <td className="py-2 pr-2">
-                    <input type="text" value={row.description} onChange={e => updateClass(idx, { description: e.target.value })}
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm outline-none"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}/>
-                  </td>
-                  <td className="py-2 pr-2">
-                    <input type="number" min="0" value={row.employees} onChange={e => updateClass(idx, { employees: e.target.value })}
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm outline-none"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}/>
-                  </td>
-                  <td className="py-2 pr-2">
-                    <input type="text" value={row.payroll} onChange={e => updateClass(idx, { payroll: e.target.value })} placeholder="$"
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm font-mono outline-none"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}/>
-                  </td>
-                  <td className="py-2 text-center">
-                    <RemoveButton onClick={() => removeClass(idx)} label="Remove class" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* GL's classification shape: a labelled grid rather than a table,
+            with the labels carried by the first row only. */}
+        <div className="space-y-3">
+          {stateData.classes.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-[110px_1fr_110px_150px_40px] gap-3 items-end">
+              <Input
+                label={idx === 0 ? 'Class' : undefined}
+                value={row.code}
+                onChange={val => updateClass(idx, { code: val })}
+                placeholder="5183"
+              />
+              <Input
+                label={idx === 0 ? 'Description' : undefined}
+                value={row.description}
+                onChange={val => updateClass(idx, { description: val })}
+                placeholder="Plumbing NOC"
+              />
+              <Input
+                label={idx === 0 ? 'Employees' : undefined}
+                type="number"
+                value={row.employees}
+                onChange={val => updateClass(idx, { employees: val })}
+                placeholder="0"
+              />
+              <Input
+                label={idx === 0 ? 'Annual payroll' : undefined}
+                value={row.payroll}
+                onChange={val => updateClass(idx, { payroll: val })}
+                placeholder="$"
+              />
+              <div className="flex items-center justify-center h-[42px]">
+                <RemoveButton onClick={() => removeClass(idx)} label="Remove class" />
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="mt-3">
+        <div className="mt-5">
           <AddAnother onClick={addClass}>Add class code</AddAnother>
         </div>
       </FieldGroup>

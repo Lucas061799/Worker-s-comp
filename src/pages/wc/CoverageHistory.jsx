@@ -44,65 +44,40 @@ export default function CoverageHistory({ formData, updateFormData }) {
       </p>
 
       <FieldGroup label="Prior Terms">
-        <div className="overflow-x-auto -mx-2 sm:mx-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2 pl-2 w-12">#</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Carrier</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Effective</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Expiration</th>
-                <th className="text-left text-[11px] font-semibold uppercase tracking-wide text-gray-400 pb-2 pr-2">Premium</th>
-                <th className="w-10"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {terms.map((row, idx) => (
-                <tr key={idx} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                  <td className="py-2 pr-2 pl-2 font-mono text-gray-500 text-xs">{idx + 1}</td>
-                  <td className="py-2 pr-2">
-                    <input
-                      type="text"
-                      value={row.carrier}
-                      onChange={e => updateTerm(idx, { carrier: e.target.value })}
-                      placeholder="Carrier"
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm outline-none"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}
-                    />
-                  </td>
-                  <td className="py-2 pr-2 min-w-[150px]">
-                    <DateInput
-                      value={row.effective}
-                      onChange={val => updateTerm(idx, { effective: val })}
-                    />
-                  </td>
-                  <td className="py-2 pr-2 min-w-[150px]">
-                    <DateInput
-                      value={row.expiration}
-                      onChange={val => updateTerm(idx, { expiration: val })}
-                    />
-                  </td>
-                  <td className="py-2 pr-2">
-                    <input
-                      type="text"
-                      value={row.premium}
-                      onChange={e => updateTerm(idx, { premium: e.target.value })}
-                      placeholder="$"
-                      className="w-full px-2.5 py-1.5 rounded-md text-sm outline-none font-mono"
-                      style={{ background: 'white', border: '1px solid #E5E7EB' }}
-                    />
-                  </td>
-                  <td className="py-2 text-center">
-                    <RemoveButton onClick={() => removeTerm(idx)} label="Remove term" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {terms.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-[1fr_150px_150px_130px_40px] gap-3 items-end">
+              <Input
+                label={idx === 0 ? 'Carrier' : undefined}
+                value={row.carrier}
+                onChange={val => updateTerm(idx, { carrier: val })}
+                placeholder="Carrier"
+              />
+              <DateInput
+                label={idx === 0 ? 'Effective' : undefined}
+                value={row.effective}
+                onChange={val => updateTerm(idx, { effective: val })}
+              />
+              <DateInput
+                label={idx === 0 ? 'Expiration' : undefined}
+                value={row.expiration}
+                onChange={val => updateTerm(idx, { expiration: val })}
+              />
+              <Input
+                label={idx === 0 ? 'Premium' : undefined}
+                value={row.premium}
+                onChange={val => updateTerm(idx, { premium: val })}
+                placeholder="$"
+              />
+              <div className="flex items-center justify-center h-[42px]">
+                <RemoveButton onClick={() => removeTerm(idx)} label="Remove term" />
+              </div>
+            </div>
+          ))}
         </div>
 
         {terms.length < 4 && (
-          <div className="mt-3">
+          <div className="mt-5">
             <AddAnother onClick={addTerm}>Add prior term</AddAnother>
           </div>
         )}
