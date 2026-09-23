@@ -71,8 +71,13 @@ function SectionCard({ title, icon, isDark = false, children }) {
       }}
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className="im-icon-tile w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="#5C2ED4" strokeWidth={1.5} viewBox="0 0 24 24">
+        {/* The teal chip GL uses on these summary panels — the one place
+            the products step outside the purple. */}
+        <div
+          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+          style={{ background: 'rgba(115,201,183,0.12)' }}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="#73C9B7" strokeWidth={1.5} viewBox="0 0 24 24">
             {icon}
           </svg>
         </div>
