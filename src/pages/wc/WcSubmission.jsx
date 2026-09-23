@@ -109,7 +109,6 @@ const ICONS = {
 
 export default function WcSubmission({ formData, summary, onBack, isDark = false, onToggleDark }) {
   const [showConfetti, setShowConfetti] = useState(true)
-  const [summaryOpen, setSummaryOpen] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(() => setShowConfetti(false), 4500)
@@ -426,55 +425,12 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                 </div>
               )}
 
-              {/* Expandable full submission */}
-              <button
-                onClick={() => setSummaryOpen(o => !o)}
-                className="w-full flex items-center justify-between px-6 py-3.5 border-t transition-all"
-                style={{
-                  borderColor: isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6',
-                  background: summaryOpen
-                    ? isDark ? 'rgba(92,46,212,0.18)' : 'linear-gradient(88.09deg, rgba(92,46,212,0.06) 0%, rgba(166,20,195,0.06) 100%)'
-                    : isDark ? 'rgba(92,46,212,0.08)' : 'linear-gradient(88.09deg, rgba(92,46,212,0.03) 0%, rgba(166,20,195,0.03) 100%)',
-                }}
+              {/* Full submission */}
+              <div
+                id="bop-submission-print-area"
+                className="px-6 pb-6 pt-4 grid md:grid-cols-2 gap-3"
+                style={{ borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #F3F4F6' }}
               >
-                <span className="flex items-center gap-2">
-                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24">
-                    <defs>
-                      <linearGradient id="wcSubExpandG" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor={isDark ? '#A78BFA' : '#5C2ED4'}/>
-                        <stop offset="100%" stopColor={isDark ? '#E879F9' : '#A614C3'}/>
-                      </linearGradient>
-                    </defs>
-                    <path stroke="url(#wcSubExpandG)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                      d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                  </svg>
-                  <span
-                    className="text-xs font-semibold"
-                    style={{
-                      background: BRAND_GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    Print &amp; View Full Submission
-                  </span>
-                </span>
-                <svg
-                  className="w-4 h-4 shrink-0 transition-transform"
-                  fill="none" viewBox="0 0 24 24"
-                  style={{ transform: summaryOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                >
-                  <path stroke="url(#wcSubExpandG)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
-                </svg>
-              </button>
-
-              {summaryOpen && (
-                <div
-                  id="bop-submission-print-area"
-                  className="px-6 pb-6 pt-4 grid md:grid-cols-2 gap-3"
-                  style={{ borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #F3F4F6' }}
-                >
                   <SectionCard title="Business" isDark={isDark} icon={ICONS.briefcase}>
                     <Field label="Legal name"      value={business.name} isDark={isDark} />
                     <Field label="Entity type"     value={business.entityType} isDark={isDark} />
@@ -504,8 +460,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Premium"   value={money(premium)} isDark={isDark} />
                     <Field label="Status"    value="Bound" isDark={isDark} />
                   </SectionCard>
-                </div>
-              )}
+              </div>
             </div>
 
             {/* Cross-sell */}
