@@ -4,6 +4,8 @@ import { RemoveButton, AddAnother, YesNo, Banner, Tag, InfoLine } from '../../co
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
+const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC']
+
 const OFFICER_RULES = {
   corp: {
     label: 'Corporation',
@@ -60,15 +62,15 @@ export default function StateCoverages({ formData, updateFormData }) {
   const [activeState, setActiveState] = useState(pz.state || 'CA')
   const [addedStates, setAddedStates] = useState([])
   const [addOpen, setAddOpen] = useState(false)
-  const [addValue, setAddValue] = useState('')
 
-  const commitAddState = () => {
-    const next = addValue.trim().toUpperCase().slice(0, 2)
-    if (next && next.length === 2 && !addedStates.includes(next) && next !== (pz.state || 'CA')) {
+  const homeState = pz.state || 'CA'
+  const availableStates = US_STATES.filter(s => s !== homeState && !addedStates.includes(s))
+
+  const commitAddState = (next) => {
+    if (next) {
       setAddedStates([...addedStates, next])
       setActiveState(next)
     }
-    setAddValue('')
     setAddOpen(false)
   }
 
@@ -128,41 +130,13 @@ export default function StateCoverages({ formData, updateFormData }) {
           )
         })}
         {addOpen ? (
-          <div className="inline-flex items-center gap-1 rounded-full pl-3 pr-1 py-1 border border-dashed border-[#A614C3]/40"
-            style={{ background: 'white' }}>
-            <input
-              type="text"
-              autoFocus
-              value={addValue}
-              onChange={e => setAddValue(e.target.value.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase())}
-              onKeyDown={e => {
-                if (e.key === 'Enter') commitAddState()
-                if (e.key === 'Escape') { setAddValue(''); setAddOpen(false) }
-              }}
-              placeholder="XX"
-              maxLength={2}
-              className="w-9 text-[13px] font-semibold uppercase outline-none bg-transparent"
-              style={{ color: '#A614C3' }}
+          <div className="w-[150px]">
+            <Select
+              options={availableStates}
+              value=""
+              onChange={commitAddState}
+              placeholder="Pick a state…"
             />
-            <button
-              type="button"
-              onClick={commitAddState}
-              disabled={addValue.length !== 2}
-              className="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white transition disabled:opacity-40"
-              style={{ background: BRAND_GRADIENT }}
-            >
-              Add
-            </button>
-            <button
-              type="button"
-              onClick={() => { setAddValue(''); setAddOpen(false) }}
-              className="w-6 h-6 rounded-full flex items-center justify-center text-gray-400"
-              aria-label="Cancel"
-            >
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
           </div>
         ) : (
           <button
