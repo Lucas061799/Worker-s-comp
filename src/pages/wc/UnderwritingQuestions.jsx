@@ -204,7 +204,19 @@ export default function UnderwritingQuestions({
       {/* Action row — Continue is left-aligned; clicking it opens the
           Application Preview so the agent reviews the whole submission
           before it goes to rating. Matches Commercial Auto's pattern. */}
-      <div className="pt-2 flex items-center justify-start gap-3">
+      {/* With a Back button the pair sits one at each edge; without one the
+          primary anchors left rather than drifting to the right margin. */}
+      <div className={`pt-2 flex items-center gap-3 ${onBack ? 'justify-between' : 'justify-start'}`}>
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+            style={{ background: 'white', border: '1.5px solid #E5E7EB', color: '#6B7280' }}
+          >
+            Back
+          </button>
+        )}
         <button
           type="button"
           onClick={() => {
@@ -222,16 +234,6 @@ export default function UnderwritingQuestions({
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </button>
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-            style={{ background: 'white', border: '1.5px solid #E5E7EB', color: '#6B7280' }}
-          >
-            Back
-          </button>
-        )}
       </div>
 
       {showPreview && (
@@ -254,10 +256,29 @@ function PreviewRow({ label, value }) {
   )
 }
 
-function PreviewSection({ title, children }) {
+const PREVIEW_ICONS = {
+  building: 'M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1',
+  doc:      'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  clock:    'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+  tools:    'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+  shield:   'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+  user:     'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+}
+
+/* Same panel head the submission receipt and print summary use: teal
+   icon chip, bold navy title. */
+function PreviewSection({ title, icon = 'shield', children }) {
   return (
     <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5">{title}</p>
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+          style={{ background: 'rgba(115,201,183,0.12)' }}>
+          <svg className="w-3.5 h-3.5" fill="none" stroke="#73C9B7" strokeWidth="1.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d={PREVIEW_ICONS[icon] || PREVIEW_ICONS.shield} />
+          </svg>
+        </div>
+        <h3 className="text-xs font-bold text-navy">{title}</h3>
+      </div>
       {children}
     </div>
   )

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Select } from '../../components/FormField'
+import { YesNo as Seg, Tag } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -15,35 +16,29 @@ function FieldGroup({ label, children }) {
   )
 }
 
-function ConfirmChip({ label, value, source, onChange }) {
+/* One answer carried over from the application: the sentence, a brand
+   Tag naming where it came from, and a plain text button to go fix it.
+   A hairline row rather than a second bordered card inside the group. */
+function ConfirmRow({ label, value, source, onChange }) {
   return (
-    <div
-      className="grid items-center gap-3 px-4 py-2.5 rounded-lg mb-2"
-      style={{
-        background: 'white',
-        border: '1px solid rgba(92,46,212,0.15)',
-        gridTemplateColumns: 'minmax(0,1fr) 220px auto',
-      }}
-    >
+    <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
       <span className="text-sm text-gray-800 truncate">
         {label} — <b className="text-gray-900">{value}</b>
       </span>
-      <span className="text-[10px] text-gray-400 font-mono uppercase tracking-wide">
-        from {source}
+      <span className="flex items-center gap-3 shrink-0">
+        <Tag tone="brand">from {source}</Tag>
+        <button
+          type="button"
+          onClick={onChange}
+          className="text-xs font-semibold transition hover:opacity-80"
+          style={{ color: '#5C2ED4' }}
+        >
+          Change
+        </button>
       </span>
-      <button
-        type="button"
-        onClick={onChange}
-        className="text-xs font-semibold underline shrink-0 transition hover:opacity-80"
-        style={{ color: '#5C2ED4' }}
-      >
-        Change
-      </button>
     </div>
   )
 }
-
-import { YesNo as Seg } from '../../components/wc/primitives'
 
 export default function CarrierFlow({ formData, updateFormData, onContinueToQuote, onGoToStep, onBack }) {
   const carrier = formData.bind?.selectedCarrier || 'CNA'
@@ -56,51 +51,42 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-xs font-bold uppercase tracking-[0.15em] font-mono"
-        style={{
-          background: BRAND_GRADIENT,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}
-      >
-        Carrier flow · {carrier}
-      </p>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Tag tone="brand">Carrier flow · {carrier}</Tag>
+      </div>
       <p className="text-sm text-gray-500 -mt-4">
         We answered what we could from your application — confirm or change, then finish the two that remain.
       </p>
 
-      {/* Auto-resolve banner */}
-      <div
-        className="rounded-lg p-4 flex items-start gap-3"
-        style={{ background: '#F3F0FF', border: '1px solid rgba(92,46,212,0.15)' }}
-      >
-        <span
-          className="w-5 h-5 rounded-full text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5"
-          style={{ background: BRAND_GRADIENT }}
-        >
-          ✓
-        </span>
-        <p className="text-sm text-gray-700 leading-relaxed">
-          <b className="text-gray-900">Descriptor selected automatically.</b>{' '}
-          Class <span className="font-mono">{pz.mainClass || '5183'} · {pz.classDescription || 'Plumbing NOC'}</span> is the only descriptor for this class — we skipped that page.
-          When a class has multiple descriptors (e.g., mowing vs. tree pruning), you'll choose here instead.
+      {/* Auto-resolve note — the canonical info panel. */}
+      <div className="rounded-xl p-4 flex items-start gap-3"
+        style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}>
+        <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="#5C2ED4" strokeWidth="1.8" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 8v5" strokeLinecap="round" />
+          <circle cx="12" cy="16.5" r="0.6" fill="#5C2ED4" />
+        </svg>
+        <p className="text-[12.5px] text-gray-600 leading-relaxed">
+          <span className="font-bold text-navy">Descriptor selected automatically.</span>{' '}
+          Class {pz.mainClass || '5183'} — {pz.classDescription || 'Plumbing NOC'} is the only
+          descriptor for this class, so we skipped that page. When a class has multiple descriptors
+          (mowing vs. tree pruning, say), you'll choose here instead.
         </p>
       </div>
 
       <FieldGroup label="Answered from your application">
         <div>
-          <ConfirmChip
+          <ConfirmRow
             label="Years in business" value={biz.yearsInBusiness || '8'}
             source="Business info"
             onChange={() => onGoToStep && onGoToStep(1)}
           />
-          <ConfirmChip
+          <ConfirmRow
             label="Subcontractor work > 25%" value={uw.sub_25_pct === 'yes' ? 'Yes' : 'No'}
             source="Underwriting questions"
             onChange={() => onGoToStep && onGoToStep(5)}
           />
-          <ConfirmChip
+          <ConfirmRow
             label="Written safety program" value={uw.safety_program === 'no' ? 'No' : 'Yes'}
             source="Underwriting questions"
             onChange={() => onGoToStep && onGoToStep(5)}
@@ -135,17 +121,17 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
         </div>
       </FieldGroup>
 
-      <div className="flex items-center justify-between gap-3 pt-2">
-        {onBack ? (
+      <div className={`pt-2 flex items-center gap-3 ${onBack ? 'justify-between' : 'justify-start'}`}>
+        {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="px-5 py-2.5 rounded-lg text-sm font-semibold"
-            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+            style={{ background: 'white', border: '1.5px solid #E5E7EB', color: '#6B7280' }}
           >
-            ← Back
+            Back
           </button>
-        ) : <span />}
+        )}
         <button
           type="button"
           disabled={!canContinue}
@@ -153,14 +139,15 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
             updateFormData('bind', { carrierQuestions: answers, packageId: 'wc-basic', addonsConfirmed: true })
             onContinueToQuote && onContinueToQuote()
           }}
-          className="btn-gradient force-white-text px-8 py-3 rounded-xl text-sm font-bold"
-          style={{
-            background: canContinue ? BRAND_GRADIENT : '#D1D5DB',
-            boxShadow: canContinue ? '0 4px 20px rgba(92,46,212,0.3)' : 'none',
-            cursor: canContinue ? 'pointer' : 'not-allowed',
-          }}
+          className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90 disabled:cursor-not-allowed"
+          style={canContinue
+            ? { background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
+            : { background: '#D1D5DB' }}
         >
-          Continue to quote →
+          Continue to quote
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
         </button>
       </div>
     </div>

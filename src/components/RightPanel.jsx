@@ -165,20 +165,6 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
           ))}
         </div>
 
-        {indicationReady && (
-          <div
-            className="rounded-xl p-3 mb-4"
-            style={{ background: BRAND_GRADIENT, color: 'white', boxShadow: '0 6px 20px rgba(92,46,212,0.25)' }}
-          >
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-80 mb-1">
-              Price indication ready
-            </p>
-            <p className="text-xs opacity-90 leading-relaxed">
-              Open the Price indication tab in the left rail to pick a carrier.
-            </p>
-          </div>
-        )}
-
         <div className="my-5" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` }} />
 
         {/* con-gl's rail CTA — gradient when there is enough on file to be
