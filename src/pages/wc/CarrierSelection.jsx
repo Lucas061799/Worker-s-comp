@@ -100,14 +100,6 @@ function InfoPop({ carrier, onClose }) {
   )
 }
 
-/* "A, B and C" — the names belong in the sentence, so they need an
-   Oxford-less join rather than a comma list. */
-function listNames(carriers) {
-  const names = carriers.map(c => c.name)
-  if (names.length <= 1) return names[0] || 'no markets'
-  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
-}
-
 function ApproachModal({ carriers, onCancel, onConfirm }) {
   return (
     <div
@@ -122,21 +114,24 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
         style={{ background: 'white', boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold text-navy leading-tight mb-4">
+        <h2 className="text-lg font-bold text-navy leading-tight mb-5 text-center">
           Approach {carriers.length} {carriers.length === 1 ? 'market' : 'markets'}?
         </h2>
 
-        {/* The marks say who faster than the names do, and CarrierLogo's
-            white tile normalises their very different aspect ratios. */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        {/* Mark over name, three up and centred. With the names here the
+            sentence below does not need to list them again. */}
+        <div className="grid grid-cols-3 gap-x-3 gap-y-4 mb-6">
           {carriers.map(c => (
-            <CarrierLogo key={c.id} carrier={c} size={40} />
+            <div key={c.id} className="flex flex-col items-center gap-1.5 min-w-0">
+              <CarrierLogo carrier={c} size={44} />
+              <span className="text-[11px] text-gray-600 text-center leading-snug">{c.name}</span>
+            </div>
           ))}
         </div>
 
-        <p className="text-sm text-gray-600 leading-relaxed mb-7">
-          BTIS becomes your broker with {listNames(carriers)} — and you won't be able
-          to approach them directly for this risk.
+        <p className="text-sm text-gray-600 leading-relaxed mb-7 text-center">
+          BTIS becomes your broker with each — and you won't be able to approach
+          them directly for this risk.
         </p>
 
         <div className="flex items-center justify-between gap-3">
