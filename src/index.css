@@ -85,6 +85,29 @@ input, select, textarea, button {
   background: #252948 !important;
   border-color: rgba(255,255,255,0.08) !important;
 }
+/* #FAFAFB — the "quieter than white" surface (a carrier that didn't
+   quote, an empty placeholder row). It has to land *below* the white→dark
+   step, or the muted row ends up brighter than the live ones. */
+[data-dark="true"] .bop-page div[style*="background: #FAFAFB"],
+[data-dark="true"] .bop-page div[style*="background:#FAFAFB"],
+[data-dark="true"] .bop-page div[style*="background: rgb(250, 250, 251)"],
+[data-dark="true"] .bop-page div[style*="background:rgb(250, 250, 251)"] {
+  background: #1F2340 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+/* Inline border-top/bottom hairlines — the border-color rules below only
+   catch the shorthand `border-color`, not `border-top: 1px solid …`. */
+[data-dark="true"] .bop-page [style*="border-top: 1px solid rgb(243, 244, 246)"],
+[data-dark="true"] .bop-page [style*="border-top: 1px solid rgb(229, 231, 235)"] {
+  border-top-color: rgba(255,255,255,0.08) !important;
+}
+/* Neutral-grey chips (e.g. "Not a fit") — gray-500 text on a navy card
+   is unreadable; lift both the wash and the label. */
+[data-dark="true"] .bop-page span[style*="rgba(156, 163, 175, 0.18)"] {
+  background: rgba(255,255,255,0.10) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #C4C8D4 !important;
+}
 /* Buttons with white bg (Select trigger, Yes/No toggles, etc.) */
 [data-dark="true"] .bop-page button[style*="background: white"],
 [data-dark="true"] .bop-page button[style*="background:white"],
@@ -121,6 +144,11 @@ input, select, textarea, button {
   border-bottom-color: rgba(255,255,255,0.08) !important;
 }
 [data-dark="true"] .bop-page .border {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+/* divide-y draws its rules on the *children*, so none of the rules above
+   reach it — the row separators stayed near-white on navy. */
+[data-dark="true"] .bop-page [class*="divide-"] > :not([hidden]) ~ :not([hidden]) {
   border-color: rgba(255,255,255,0.08) !important;
 }
 
