@@ -146,6 +146,18 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page .border {
   border-color: rgba(255,255,255,0.08) !important;
 }
+/* The native number stepper is drawn by the OS and ignores our tokens —
+   a pair of bright arrows on a dark field. Hide it everywhere. */
+.bop-page input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.bop-page input[type="number"]::-webkit-outer-spin-button,
+.bop-page input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* divide-y draws its rules on the *children*, so none of the rules above
    reach it — the row separators stayed near-white on navy. */
 [data-dark="true"] .bop-page [class*="divide-"] > :not([hidden]) ~ :not([hidden]) {

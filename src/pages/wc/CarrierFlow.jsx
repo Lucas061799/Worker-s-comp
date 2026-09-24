@@ -62,9 +62,12 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
           page to correct one. Edits write back to the source section. */}
       <FieldGroup label="Answered from your application">
         <GroupRow label="Years in business">
-          <div style={{ width: 96 }}>
+          {/* Matches the Yes/No pair below it, so every control in the
+              group starts and ends on the same two edges. */}
+          <div style={{ width: 150 }}>
+            {/* Plain text, exactly as Business info types the same field —
+                type="number" brings the native stepper with it. */}
             <Input
-              type="number"
               value={biz.yearsInBusiness || ''}
               onChange={v => updateFormData('business', { yearsInBusiness: v })}
             />
