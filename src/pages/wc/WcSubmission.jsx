@@ -323,7 +323,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                 </div>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-xl font-bold mb-1" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
-                    Workers' Compensation Application Summary
+                    {carrier ? 'Policy bound!' : 'Application submitted!'}
                   </h1>
                   <p className="text-xs text-gray-400 leading-relaxed">
                     {carrier
