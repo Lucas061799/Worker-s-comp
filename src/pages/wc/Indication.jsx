@@ -239,15 +239,16 @@ export default function Indication({ formData, onPickCarrier }) {
         ))}
       </div>
 
-      <div className="mt-8 flex items-center justify-between gap-3">
-        <InfoLine className="flex-1">
-          Indications on the payroll and mod on file — the carrier's own questions come next.
-        </InfoLine>
-        {selectedCarrier && (
+      <InfoLine className="mt-6">
+        Indications on the payroll and mod on file — the carrier's own questions come next.
+      </InfoLine>
+
+      {selectedCarrier && (
+        <div className="mt-6">
           <button
             type="button"
             onClick={() => onPickCarrier(selectedCarrier)}
-            className="shrink-0 flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90"
+            className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90"
             style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
           >
             Continue with {selectedCarrier.name}
@@ -255,8 +256,8 @@ export default function Indication({ formData, onPickCarrier }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
