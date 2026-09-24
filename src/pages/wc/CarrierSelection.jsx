@@ -8,6 +8,9 @@ import logoUsli         from '../../assets/carrier-usli.png'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
+/* The tint behind the sidebar's step markers. */
+const TILE_TINT = 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)'
+
 export const CARRIERS = [
   {
     id: 'amtrust',    name: 'AmTrust',
@@ -281,7 +284,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                 </div>
               )}
 
-              <div className="flex items-start gap-4 px-5 py-4">
+              <div className="flex items-center gap-4 px-5 py-4">
                 {/* Logo — big, borderless, sits on the card */}
                 <div className="w-12 h-12 flex items-center justify-center shrink-0">
                   <img
@@ -302,29 +305,27 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   </p>
                 </div>
 
-                {/* Info + check */}
+                {/* Info + check — the sidebar's step-marker tile: a
+                    rounded-md square, tinted when on, grey when off. */}
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setOpenInfo(prev => prev === c.id ? null : c.id) }}
                     aria-label={`About ${c.name}`}
-                    className="im-info-dot w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                    className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 transition"
+                    style={{ background: TILE_TINT, color: '#5C2ED4' }}
                   >
-                    <span className="text-[10px] font-bold leading-none">i</span>
+                    i
                   </button>
                   <div
-                    /* group-hover tints the empty circle, so an unchecked
-                       card still signals it is a control. */
-                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition ${
-                      isChecked ? '' : 'group-hover:border-[#7C3AED]'
-                    }`}
+                    className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition"
                     style={isChecked
-                      ? { background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.3)' }
-                      : { background: 'white', border: '1.5px solid #D1D5DB' }
+                      ? { background: TILE_TINT, color: '#5C2ED4' }
+                      : { background: '#F3F4F6', color: '#9CA3AF' }
                     }
                   >
                     {isChecked && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     )}
