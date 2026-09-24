@@ -127,11 +127,14 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
             <div
               key={q.id}
               className="rounded-xl px-3 py-3 flex items-center gap-3"
-              style={{ background: 'white', border: '1.5px solid #E5E7EB' }}
+              style={{
+                background: isDark ? 'rgba(255,255,255,0.04)' : 'white',
+                border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E5E7EB'}`,
+              }}
             >
               <CarrierLogo carrier={q} size={36} />
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-semibold truncate text-gray-700">{q.name}</p>
+                <p className="text-[12px] font-semibold truncate" style={{ color: isDark ? '#F9FAFB' : '#374151' }}>{q.name}</p>
                 {q.reco && (
                   <p className="text-[9px] font-semibold mt-0.5">
                     <BrandText>BTIS Serviced</BrandText>
@@ -140,7 +143,7 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
               </div>
               {showPrices ? (
                 <div className="text-right shrink-0">
-                  <div className="text-sm font-bold leading-tight text-gray-900">
+                  <div className="text-sm font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
                     {money(q.premium)}
                   </div>
                   <div className="text-[9px] text-gray-400">per year</div>
@@ -154,7 +157,10 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
             <div
               key={i}
               className="rounded-xl px-3 py-3 flex items-center gap-3"
-              style={{ background: '#FAFAFB', border: '1px solid #F3F4F6' }}
+              style={{
+                background: isDark ? 'rgba(255,255,255,0.03)' : '#FAFAFB',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}`,
+              }}
             >
               <div className="im-skel w-9 h-9 rounded-xl shrink-0" />
               <div className="flex-1 flex items-center justify-between gap-2">

@@ -128,7 +128,7 @@ export default function Sidebar({
 
       {demoJumps && (
         <div className="px-3 pb-2 relative z-20">
-          <DemoJump jumps={demoJumps} active={demoActive} />
+          <DemoJump jumps={demoJumps} active={demoActive} isDark={isDark} />
         </div>
       )}
 

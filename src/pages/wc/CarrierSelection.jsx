@@ -282,8 +282,9 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
               )}
 
               <div className="flex items-center gap-4 px-5 py-4">
-                {/* Logo — big, borderless, sits on the card */}
-                <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                {/* Same white tile the right rail uses, so the dark-mode
+                    logos keep the background they were drawn against. */}
+                <div className="im-carrier-tile w-12 h-12 p-1 rounded-xl flex items-center justify-center shrink-0">
                   <img
                     src={c.logo}
                     alt={c.name}
