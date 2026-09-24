@@ -122,9 +122,17 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
         style={{ background: 'white', boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold text-navy leading-tight mb-3">
+        <h2 className="text-lg font-bold text-navy leading-tight mb-4">
           Approach {carriers.length} {carriers.length === 1 ? 'market' : 'markets'}?
         </h2>
+
+        {/* The marks say who faster than the names do, and CarrierLogo's
+            white tile normalises their very different aspect ratios. */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {carriers.map(c => (
+            <CarrierLogo key={c.id} carrier={c} size={40} />
+          ))}
+        </div>
 
         <p className="text-sm text-gray-600 leading-relaxed mb-7">
           BTIS becomes your broker with {listNames(carriers)} — and you won't be able
