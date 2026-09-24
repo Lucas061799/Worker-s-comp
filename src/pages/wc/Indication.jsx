@@ -25,29 +25,16 @@ const FACTORS = {
 }
 
 
-/* Option 4's layout — a hairline between quotes, type doing the
-   ranking, and the row itself as the control — drawn in our tokens
-   rather than Inland Marine's navy/yellow/teal. */
-function Radio({ checked }) {
-  return (
-    <span
-      className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition"
-      style={{ borderColor: checked ? '#A614C3' : '#D1D5DB' }}
-    >
-      {checked && (
-        <span className="w-2 h-2 rounded-full" style={{ background: BRAND_GRADIENT }} />
-      )}
-    </span>
-  )
-}
-
-/* Short phrases joined with a middot, so the line stays scannable. */
+/* Inland Marine's option 3: one ringed card per carrier, the ring
+   carrying the selection, with a Select pill and a bullets bar. Drawn
+   in our tokens rather than its mint/navy ones. */
 function bulletsFor(carrier) {
   return [
     carrier.reco ? 'BTIS-serviced' : 'Carrier-serviced',
     'Admitted',
-    carrier.bind ? 'Bind online' : null,
-  ].filter(Boolean).join(' · ')
+    carrier.bind ? 'Bind online today' : null,
+    turnaroundFor(carrier),
+  ].filter(Boolean)
 }
 
 function turnaroundFor(carrier) {
@@ -55,47 +42,74 @@ function turnaroundFor(carrier) {
   return m ? `${m[1]} day endorsements` : carrier.sla
 }
 
-function CarrierRow({ carrier, selected, onSelect }) {
+function CarrierCard({ carrier, selected, onSelect }) {
   const quoted = !carrier.noquote
 
   return (
-    <div style={{ borderTop: '1px solid #E5E7EB' }}>
-      <button
-        type="button"
-        onClick={quoted ? onSelect : undefined}
-        aria-pressed={selected}
-        disabled={!quoted}
-        className={`flex w-full items-start gap-4 py-5 text-left transition ${quoted ? '' : 'cursor-default'}`}
-      >
-        {quoted ? <Radio checked={selected} /> : <span className="mt-1 h-5 w-5 shrink-0" />}
+    <div
+      className="overflow-hidden rounded-2xl transition"
+      style={{
+        background: quoted ? 'white' : '#F9FAFB',
+        boxShadow: selected
+          ? '0 0 0 2px #5C2ED4, 0 6px 24px rgba(92,46,212,0.18)'
+          : '0 0 0 1px #E5E7EB',
+      }}
+    >
+      <div className="flex items-start justify-between gap-4 px-6 pt-5">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className={`text-lg font-semibold ${quoted ? 'text-navy' : 'text-gray-400'}`}>
+            {carrier.name}
+          </span>
+          {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
+          {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
+        </div>
+      </div>
 
-        <div className="flex min-w-0 flex-1 items-start justify-between gap-6">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`text-base ${selected ? 'font-bold' : 'font-semibold'} ${quoted ? 'text-navy' : 'text-gray-400'}`}>
-                {carrier.name}
-              </span>
-              {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
-              {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
-            </div>
-            <p className="mt-1 text-xs text-gray-500">
-              {quoted ? bulletsFor(carrier) : `No appetite — ${carrier.noquote.toLowerCase()}.`}
-            </p>
-          </div>
+      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 px-6 pb-5 pt-3">
+        <p className="text-xs text-gray-500 max-w-sm">
+          {quoted ? carrier.sub : `No appetite — ${carrier.noquote.toLowerCase()}.`}
+        </p>
 
-          {quoted && (
-            <div className="shrink-0 text-right leading-none">
+        {quoted && (
+          <div className="ml-auto flex items-end gap-6">
+            <div className="text-right leading-none">
               <div>
-                <span className="text-2xl font-bold text-navy">
+                <span className="text-3xl font-bold text-navy">
                   ${carrier.price.toLocaleString()}
                 </span>
-                <span className="ml-1 text-xs text-gray-400">/yr</span>
+                <span className="ml-1 text-sm text-gray-400">/yr</span>
               </div>
-              <p className="mt-1.5 text-xs text-gray-500">{turnaroundFor(carrier)}</p>
+              <p className="mt-1.5 text-xs text-gray-500">Annual premium</p>
             </div>
-          )}
+
+            <button
+              type="button"
+              onClick={onSelect}
+              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold transition"
+              style={selected
+                ? { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
+                : { background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+            >
+              {selected && (
+                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+              {selected ? 'Selected' : 'Select'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {quoted && (
+        <div className="px-6 py-4" style={{ borderTop: '1px solid #F3F4F6' }}>
+          <ul className="flex flex-wrap gap-x-6 gap-y-1.5 text-xs text-gray-600">
+            {bulletsFor(carrier).map((b, i) => (
+              <li key={b} className={i === 0 ? 'font-semibold text-navy' : ''}>· {b}</li>
+            ))}
+          </ul>
         </div>
-      </button>
+      )}
     </div>
   )
 }
@@ -128,9 +142,9 @@ export default function Indication({ formData, onPickCarrier }) {
         {quoted.length} market{quoted.length === 1 ? '' : 's'} returned a price. Sorted by annual premium.
       </p>
 
-      <div className="mt-6" style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <div className="mt-5 space-y-4">
         {results.map(r => (
-          <CarrierRow
+          <CarrierCard
             key={r.id}
             carrier={r}
             selected={selected === r.id}
