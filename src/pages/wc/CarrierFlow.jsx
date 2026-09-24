@@ -68,6 +68,7 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
             {/* Plain text, exactly as Business info types the same field —
                 type="number" brings the native stepper with it. */}
             <Input
+              align="right"
               value={biz.yearsInBusiness || ''}
               onChange={v => updateFormData('business', { yearsInBusiness: v })}
             />

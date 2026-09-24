@@ -10,7 +10,7 @@ function formatPhone(raw) {
 }
 
 // Reusable input
-export function Input({ label, required, placeholder, type = 'text', value, onChange, className = '', error = false }) {
+export function Input({ label, required, placeholder, type = 'text', value, onChange, className = '', error = false, align = 'left' }) {
   const handleChange = (e) => {
     if (!onChange) return
     if (type === 'tel') {
@@ -34,6 +34,8 @@ export function Input({ label, required, placeholder, type = 'text', value, onCh
         onChange={handleChange}
         placeholder={placeholder}
         className={`w-full border rounded-lg px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 transition-all ${
+          align === 'right' ? 'text-right' : ''
+        } ${
           error
             ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400'
             : 'border-gray-200 bg-white focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
