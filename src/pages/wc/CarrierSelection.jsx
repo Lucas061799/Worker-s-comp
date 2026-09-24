@@ -100,6 +100,14 @@ function InfoPop({ carrier, onClose }) {
   )
 }
 
+/* "A, B and C" — the names belong in the sentence, so they need an
+   Oxford-less join rather than a comma list. */
+function listNames(carriers) {
+  const names = carriers.map(c => c.name)
+  if (names.length <= 1) return names[0] || 'no markets'
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+}
+
 function ApproachModal({ carriers, onCancel, onConfirm }) {
   return (
     <div
@@ -107,60 +115,23 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
       style={{ background: 'rgba(15,10,40,0.55)', backdropFilter: 'blur(4px)' }}
       onClick={onCancel}
     >
+      {/* A confirm, not a screen: heading, the consequence in prose, two
+          buttons. No icon, no panels, no chips. */}
       <div
-        className="max-w-lg w-full rounded-2xl overflow-hidden"
+        className="max-w-md w-full rounded-2xl px-7 py-7"
         style={{ background: 'white', boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Same shape as the Application Overview modal: round icon tile,
-            a ruled header, the body, then a ruled footer. */}
-        <div className="flex items-start gap-4 px-5 pt-4 pb-4" style={{ borderBottom: '1px solid #F3F4F6' }}>
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)' }}
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <defs>
-                <linearGradient id="approachHdrG" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#5C2ED4"/>
-                  <stop offset="100%" stopColor="#A614C3"/>
-                </linearGradient>
-              </defs>
-              <path
-                d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
-                stroke="url(#approachHdrG)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-navy leading-tight">
-              Approach {carriers.length} {carriers.length === 1 ? 'market' : 'markets'}?
-            </h2>
-            <p className="text-xs mt-0.5 text-gray-500 leading-relaxed">
-              BTIS is registered as your broker with each one you submit to.
-            </p>
-          </div>
-        </div>
+        <h2 className="text-lg font-bold text-navy leading-tight mb-3">
+          Approach {carriers.length} {carriers.length === 1 ? 'market' : 'markets'}?
+        </h2>
 
-        <div className="px-5 py-5">
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {carriers.map(c => <Tag key={c.id} tone="brand">{c.name}</Tag>)}
-          </div>
-          <div className="rounded-xl p-4 flex items-start gap-3"
-            style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}>
-            <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="#5C2ED4" strokeWidth="1.8" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 8v5" strokeLinecap="round" />
-              <circle cx="12" cy="16.5" r="0.6" fill="#5C2ED4" />
-            </svg>
-            <p className="text-[12.5px] text-gray-600 leading-relaxed">
-              <span className="font-bold text-navy">This closes them to a direct submission.</span>{' '}
-              You won't be able to approach these markets yourself for this risk.
-            </p>
-          </div>
-        </div>
+        <p className="text-sm text-gray-600 leading-relaxed mb-7">
+          BTIS becomes your broker with {listNames(carriers)} — and you won't be able
+          to approach them directly for this risk.
+        </p>
 
-        <div className="px-5 py-3.5 flex items-center justify-between gap-3" style={{ borderTop: '1px solid #F3F4F6' }}>
+        <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={onCancel}
@@ -172,13 +143,10 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
           <button
             type="button"
             onClick={onConfirm}
-            className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90"
+            className="h-10 px-6 inline-flex items-center justify-center rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
             style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
           >
-            Yes — approach carriers
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+            Yes — approach
           </button>
         </div>
       </div>
