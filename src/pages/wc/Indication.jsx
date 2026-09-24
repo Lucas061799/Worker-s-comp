@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
-import { BRAND_GRADIENT, InfoLine } from '../../components/wc/primitives'
+import { BRAND_GRADIENT, InfoLine, Tag } from '../../components/wc/primitives'
 
 // Rough WC premium: 3% of payroll × ex-mod × per-carrier factor.
 function estimatePremium(formData, factor = 1) {
@@ -25,37 +25,23 @@ const FACTORS = {
 }
 
 
-/* Inland Marine's option 4: no card, no shadow, no pills — a hairline
-   between quotes and type doing the ranking. The row is the control, so
-   selecting one is not a separate button. */
+/* Option 4's layout — a hairline between quotes, type doing the
+   ranking, and the row itself as the control — drawn in our tokens
+   rather than Inland Marine's navy/yellow/teal. */
 function Radio({ checked }) {
   return (
     <span
-      className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition"
-      style={{
-        borderColor: checked ? '#73C9B7' : '#C9CDD4',
-        borderWidth: checked ? 5 : 1.5,
-        borderStyle: 'solid',
-      }}
-    />
-  )
-}
-
-/* Option 4's flag: a yellow pill, navy text, uppercase. */
-function CoverageBadge({ label }) {
-  return (
-    <span
-      className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
-      style={{ backgroundColor: 'rgb(249, 228, 123)', color: '#1B0750' }}
+      className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition"
+      style={{ borderColor: checked ? '#A614C3' : '#D1D5DB' }}
     >
-      {label}
+      {checked && (
+        <span className="w-2 h-2 rounded-full" style={{ background: BRAND_GRADIENT }} />
+      )}
     </span>
   )
 }
 
-/* Option 4's bullets are short phrases — "Admitted", "Agency Bill" —
-   joined with a middot, and the right-hand line is one short fact. A
-   long sentence on both sides is what made this read wrong. */
+/* Short phrases joined with a middot, so the line stays scannable. */
 function bulletsFor(carrier) {
   return [
     carrier.reco ? 'BTIS-serviced' : 'Carrier-serviced',
@@ -73,44 +59,39 @@ function CarrierRow({ carrier, selected, onSelect }) {
   const quoted = !carrier.noquote
 
   return (
-    <div style={{ borderTop: '1px solid #EAEAEA' }}>
+    <div style={{ borderTop: '1px solid #E5E7EB' }}>
       <button
         type="button"
         onClick={quoted ? onSelect : undefined}
         aria-pressed={selected}
         disabled={!quoted}
-        className={`flex w-full items-start gap-4 py-6 text-left transition ${quoted ? '' : 'cursor-default'}`}
+        className={`flex w-full items-start gap-4 py-5 text-left transition ${quoted ? '' : 'cursor-default'}`}
       >
         {quoted ? <Radio checked={selected} /> : <span className="mt-1 h-5 w-5 shrink-0" />}
 
         <div className="flex min-w-0 flex-1 items-start justify-between gap-6">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span
-                className={`text-[20px] ${selected ? 'font-semibold' : 'font-medium'}`}
-                style={{ color: quoted ? '#1B0750' : '#9CA3AF' }}
-              >
+              <span className={`text-base ${selected ? 'font-bold' : 'font-semibold'} ${quoted ? 'text-navy' : 'text-gray-400'}`}>
                 {carrier.name}
               </span>
-              {carrier.promo && <CoverageBadge label="+2% commission" />}
-              {carrier.reco && <CoverageBadge label="BTIS Serviced" />}
+              {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
+              {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
             </div>
-            <div className="mt-1 text-[13px]" style={{ color: '#6C757D' }}>
+            <p className="mt-1 text-xs text-gray-500">
               {quoted ? bulletsFor(carrier) : `No appetite — ${carrier.noquote.toLowerCase()}.`}
-            </div>
+            </p>
           </div>
 
           {quoted && (
             <div className="shrink-0 text-right leading-none">
               <div>
-                <span className="text-[26px] font-semibold" style={{ color: '#1B0750' }}>
+                <span className="text-2xl font-bold text-navy">
                   ${carrier.price.toLocaleString()}
                 </span>
-                <span className="ml-1 text-[14px]" style={{ color: '#6C757D' }}>/yr</span>
+                <span className="ml-1 text-xs text-gray-400">/yr</span>
               </div>
-              <div className="mt-1.5 text-[13px]" style={{ color: '#6C757D' }}>
-                {turnaroundFor(carrier)}
-              </div>
+              <p className="mt-1.5 text-xs text-gray-500">{turnaroundFor(carrier)}</p>
             </div>
           )}
         </div>
@@ -147,7 +128,7 @@ export default function Indication({ formData, onPickCarrier }) {
         {quoted.length} market{quoted.length === 1 ? '' : 's'} returned a price. Sorted by annual premium.
       </p>
 
-      <div className="mt-6" style={{ borderBottom: '1px solid #EAEAEA' }}>
+      <div className="mt-6" style={{ borderBottom: '1px solid #E5E7EB' }}>
         {results.map(r => (
           <CarrierRow
             key={r.id}
