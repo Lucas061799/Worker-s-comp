@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Select } from '../../components/FormField'
-import { YesNo as Seg, Tag } from '../../components/wc/primitives'
+import { YesNo as Seg } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -30,16 +30,18 @@ function GroupRow({ label, children }) {
   )
 }
 
-/* One answer carried over from the application: a brand Tag naming
+/* One answer carried over from the application: a quiet note naming
    where it came from, and a plain text button to go fix it. */
 function ConfirmRow({ label, value, source, onChange }) {
   return (
     <GroupRow label={<>{label} — <b className="text-gray-900">{value}</b></>}>
-      <Tag tone="brand">from {source}</Tag>
+      <span className="text-xs text-gray-400">from {source}</span>
+      {/* Fixed width so the links stack in a column however long the
+          source name is. */}
       <button
         type="button"
         onClick={onChange}
-        className="text-xs font-semibold transition hover:opacity-80"
+        className="w-14 text-right text-xs font-semibold transition hover:opacity-80"
         style={{ color: '#5C2ED4' }}
       >
         Change
