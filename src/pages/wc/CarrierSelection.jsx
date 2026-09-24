@@ -240,20 +240,13 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
               style={{
                 background: 'white',
                 border: `1.5px solid ${isChecked ? '#7C3AED' : '#E5E7EB'}`,
-                opacity: isChecked ? 1 : 0.65,
               }}
               onClick={() => toggle(c.id)}
               onMouseEnter={e => {
-                if (!isChecked) {
-                  e.currentTarget.style.borderColor = 'rgba(124,58,237,0.35)'
-                  e.currentTarget.style.opacity = 1
-                }
+                if (!isChecked) e.currentTarget.style.borderColor = 'rgba(124,58,237,0.55)'
               }}
               onMouseLeave={e => {
-                if (!isChecked) {
-                  e.currentTarget.style.borderColor = '#E5E7EB'
-                  e.currentTarget.style.opacity = 0.65
-                }
+                if (!isChecked) e.currentTarget.style.borderColor = '#E5E7EB'
               }}
             >
               {/* Corner ribbon badges — straddle the top border of the
@@ -320,7 +313,11 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                     <span className="text-[10px] font-bold leading-none">i</span>
                   </button>
                   <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
+                    /* group-hover tints the empty circle, so an unchecked
+                       card still signals it is a control. */
+                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition ${
+                      isChecked ? '' : 'group-hover:border-[#7C3AED]'
+                    }`}
                     style={isChecked
                       ? { background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.3)' }
                       : { background: 'white', border: '1.5px solid #D1D5DB' }
