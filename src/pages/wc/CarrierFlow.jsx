@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Select } from '../../components/FormField'
+import { Input, Select } from '../../components/FormField'
 import { YesNo as Seg } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
@@ -30,31 +30,7 @@ function GroupRow({ label, children }) {
   )
 }
 
-/* One answer carried over from the application: a quiet note naming
-   where it came from, and a plain text button to go fix it. */
-function ConfirmRow({ label, value, source, onChange }) {
-  return (
-    <GroupRow label={<>{label} — <b className="text-gray-900">{value}</b></>}>
-      <span className="text-xs text-gray-400">from {source}</span>
-      {/* Fixed width so the links stack in a column however long the
-          source name is. */}
-      <button
-        type="button"
-        onClick={onChange}
-        className="w-[76px] inline-flex items-center justify-end gap-1.5 text-xs font-semibold transition hover:opacity-80"
-        style={{ color: '#5C2ED4' }}
-      >
-        <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v4.125A2.625 2.625 0 0116.875 21H5.625A2.625 2.625 0 013 18.375V7.125A2.625 2.625 0 015.625 4.5H9.75" />
-        </svg>
-        Change
-      </button>
-    </GroupRow>
-  )
-}
-
-export default function CarrierFlow({ formData, updateFormData, onContinueToQuote, onGoToStep, onBack }) {
+export default function CarrierFlow({ formData, updateFormData, onContinueToQuote, onBack }) {
   const carrier = formData.bind?.selectedCarrier || 'CNA'
   const pz = formData.pageZero || {}
   const biz = formData.business || {}
@@ -81,22 +57,31 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
         </p>
       </div>
 
+      {/* Carried over from the application, but live — reading the answer
+          and fixing it are the same gesture, so nobody has to leave the
+          page to correct one. Edits write back to the source section. */}
       <FieldGroup label="Answered from your application">
-        <ConfirmRow
-          label="Years in business" value={biz.yearsInBusiness || '8'}
-          source="Business info"
-          onChange={() => onGoToStep && onGoToStep(1)}
-        />
-        <ConfirmRow
-          label="Subcontractor work > 25%" value={uw.sub_25_pct === 'yes' ? 'Yes' : 'No'}
-          source="Underwriting questions"
-          onChange={() => onGoToStep && onGoToStep(5)}
-        />
-        <ConfirmRow
-          label="Written safety program" value={uw.safety_program === 'no' ? 'No' : 'Yes'}
-          source="Underwriting questions"
-          onChange={() => onGoToStep && onGoToStep(5)}
-        />
+        <GroupRow label="Years in business">
+          <div style={{ width: 96 }}>
+            <Input
+              type="number"
+              value={biz.yearsInBusiness || ''}
+              onChange={v => updateFormData('business', { yearsInBusiness: v })}
+            />
+          </div>
+        </GroupRow>
+        <GroupRow label="Subcontracted work > 25% of receipts">
+          <Seg
+            value={uw.sub_25_pct || 'no'}
+            onChange={v => updateFormData('underwriting', { sub_25_pct: v })}
+          />
+        </GroupRow>
+        <GroupRow label="Written safety program in place">
+          <Seg
+            value={uw.safety_program || 'yes'}
+            onChange={v => updateFormData('underwriting', { safety_program: v })}
+          />
+        </GroupRow>
       </FieldGroup>
 
       <FieldGroup label={`2 questions ${carrier} still needs`}>
