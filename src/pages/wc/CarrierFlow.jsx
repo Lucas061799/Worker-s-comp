@@ -4,11 +4,14 @@ import { YesNo as Seg, Tag } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
+/* The card supplies the side padding; the rows supply the vertical
+   rhythm, and divide-y draws rules only between them — so the last row
+   never leaves a hairline floating above the card's edge. */
 function FieldGroup({ label, children }) {
   return (
     <div>
       <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5">{label}</div>
-      <div className="rounded-xl p-5 sm:p-6"
+      <div className="rounded-xl px-5 sm:px-6 py-1 divide-y divide-[#F3F4F6]"
         style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         {children}
       </div>
@@ -16,27 +19,32 @@ function FieldGroup({ label, children }) {
   )
 }
 
-/* One answer carried over from the application: the sentence, a brand
-   Tag naming where it came from, and a plain text button to go fix it.
-   A hairline row rather than a second bordered card inside the group. */
+/* One row of the group: the sentence on the left, its controls on the
+   right, on a fixed 56px line so pill answers and selects sit level. */
+function GroupRow({ label, children }) {
+  return (
+    <div className="flex items-center justify-between gap-4 min-h-[56px] py-1.5">
+      <span className="text-sm text-gray-800 min-w-0">{label}</span>
+      <span className="flex items-center gap-3 shrink-0">{children}</span>
+    </div>
+  )
+}
+
+/* One answer carried over from the application: a brand Tag naming
+   where it came from, and a plain text button to go fix it. */
 function ConfirmRow({ label, value, source, onChange }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
-      <span className="text-sm text-gray-800 truncate">
-        {label} — <b className="text-gray-900">{value}</b>
-      </span>
-      <span className="flex items-center gap-3 shrink-0">
-        <Tag tone="brand">from {source}</Tag>
-        <button
-          type="button"
-          onClick={onChange}
-          className="text-xs font-semibold transition hover:opacity-80"
-          style={{ color: '#5C2ED4' }}
-        >
-          Change
-        </button>
-      </span>
-    </div>
+    <GroupRow label={<>{label} — <b className="text-gray-900">{value}</b></>}>
+      <Tag tone="brand">from {source}</Tag>
+      <button
+        type="button"
+        onClick={onChange}
+        className="text-xs font-semibold transition hover:opacity-80"
+        style={{ color: '#5C2ED4' }}
+      >
+        Change
+      </button>
+    </GroupRow>
   )
 }
 
@@ -68,50 +76,43 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
       </div>
 
       <FieldGroup label="Answered from your application">
-        <div>
-          <ConfirmRow
-            label="Years in business" value={biz.yearsInBusiness || '8'}
-            source="Business info"
-            onChange={() => onGoToStep && onGoToStep(1)}
-          />
-          <ConfirmRow
-            label="Subcontractor work > 25%" value={uw.sub_25_pct === 'yes' ? 'Yes' : 'No'}
-            source="Underwriting questions"
-            onChange={() => onGoToStep && onGoToStep(5)}
-          />
-          <ConfirmRow
-            label="Written safety program" value={uw.safety_program === 'no' ? 'No' : 'Yes'}
-            source="Underwriting questions"
-            onChange={() => onGoToStep && onGoToStep(5)}
-          />
-        </div>
+        <ConfirmRow
+          label="Years in business" value={biz.yearsInBusiness || '8'}
+          source="Business info"
+          onChange={() => onGoToStep && onGoToStep(1)}
+        />
+        <ConfirmRow
+          label="Subcontractor work > 25%" value={uw.sub_25_pct === 'yes' ? 'Yes' : 'No'}
+          source="Underwriting questions"
+          onChange={() => onGoToStep && onGoToStep(5)}
+        />
+        <ConfirmRow
+          label="Written safety program" value={uw.safety_program === 'no' ? 'No' : 'Yes'}
+          source="Underwriting questions"
+          onChange={() => onGoToStep && onGoToStep(5)}
+        />
       </FieldGroup>
 
       <FieldGroup label={`2 questions ${carrier} still needs`}>
-        <div>
-          <div className="flex items-center justify-between gap-4 py-3"
-            style={{ borderBottom: '1px solid #F3F4F6' }}>
-            <span className="text-sm text-gray-800">Any work on new residential construction &gt; 3 units?</span>
-            <Seg
-              value={answers.newResidential}
-              onChange={v => setAnswers(a => ({ ...a, newResidential: v }))}
+        <GroupRow label="Any work on new residential construction > 3 units?">
+          <Seg
+            value={answers.newResidential}
+            onChange={v => setAnswers(a => ({ ...a, newResidential: v }))}
+          />
+        </GroupRow>
+        <GroupRow label="Percentage of commercial vs. residential work">
+          <div style={{ width: 200 }}>
+            <Select
+              options={[
+                { value: 'commercial',   label: 'Mostly commercial' },
+                { value: 'mixed',        label: 'Mixed 50 / 50' },
+                { value: 'residential',  label: 'Mostly residential' },
+              ]}
+              value={answers.mix}
+              onChange={val => setAnswers(a => ({ ...a, mix: val }))}
             />
           </div>
-          <div className="flex items-center justify-between gap-4 py-3">
-            <span className="text-sm text-gray-800">Percentage of commercial vs. residential work</span>
-            <div style={{ minWidth: 200 }}>
-              <Select
-                options={[
-                  { value: 'commercial',   label: 'Mostly commercial' },
-                  { value: 'mixed',        label: 'Mixed 50 / 50' },
-                  { value: 'residential',  label: 'Mostly residential' },
-                ]}
-                value={answers.mix}
-                onChange={val => setAnswers(a => ({ ...a, mix: val }))}
-              />
-            </div>
-          </div>
-        </div>
+        </GroupRow>
       </FieldGroup>
 
       <div className={`pt-2 flex items-center gap-3 ${onBack ? 'justify-between' : 'justify-start'}`}>
