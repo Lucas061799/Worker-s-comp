@@ -8,9 +8,6 @@ import logoUsli         from '../../assets/carrier-usli.png'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
-/* The tint behind the sidebar's step markers. */
-const TILE_TINT = 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)'
-
 export const CARRIERS = [
   {
     id: 'amtrust',    name: 'AmTrust',
@@ -312,8 +309,8 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setOpenInfo(prev => prev === c.id ? null : c.id) }}
                     aria-label={`About ${c.name}`}
-                    className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 transition"
-                    style={{ background: TILE_TINT, color: '#5C2ED4' }}
+                    data-open={openInfo === c.id}
+                    className="im-info-dot w-4 h-4 text-[10px] rounded-full flex items-center justify-center font-bold shrink-0"
                   >
                     i
                   </button>

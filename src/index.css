@@ -643,18 +643,25 @@ button.force-white-text,
   color: #FCA5A5 !important;
 }
 
+/* GL's info dot: a soft brand wash with a mid-purple glyph, not a
+   solid gradient fill — it sits beside fields without shouting. */
 .im-info-dot {
-  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
-  color: #FFFFFF;
-  transition: box-shadow 120ms ease, transform 120ms ease;
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.14) 0%, rgba(166,20,195,0.14) 100%);
+  color: #7C3AED;
+  transition: background 120ms ease, transform 120ms ease;
 }
-.im-info-dot:hover, .im-info-dot:focus-visible {
-  box-shadow: 0 2px 10px rgba(92,46,212,0.35);
-  transform: translateY(-1px);
+.im-info-dot:hover, .im-info-dot:focus-visible, .im-info-dot[data-open="true"] {
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.24) 0%, rgba(166,20,195,0.24) 100%);
+  transform: scale(1.1);
 }
+/* On navy a 14% wash with a mid purple glyph all but disappears. */
 [data-dark="true"] .im-info-dot {
-  background: linear-gradient(88.09deg, #A78BFA 0.11%, #E879F9 63.8%) !important;
-  color: #1B0750 !important;
+  background: rgba(167,139,250,0.28) !important;
+  color: #E9D5FF !important;
+}
+[data-dark="true"] .im-info-dot:hover,
+[data-dark="true"] .im-info-dot[data-open="true"] {
+  background: rgba(167,139,250,0.42) !important;
 }
 
 .im-info-pop {
