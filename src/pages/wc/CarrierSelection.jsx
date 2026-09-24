@@ -317,16 +317,17 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   >
                     i
                   </button>
+                  {/* The Checkbox primitive's own look, so this toggle
+                      matches every other checkbox in the app. */}
                   <div
-                    className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition"
-                    style={isChecked
-                      ? { background: TILE_TINT, color: '#5C2ED4' }
-                      : { background: '#F3F4F6', color: '#9CA3AF' }
-                    }
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition ${
+                      isChecked ? 'border-[#A614C3]' : 'border-gray-300 group-hover:border-[#5C2ED4]/40'
+                    }`}
+                    style={isChecked ? { background: BRAND_GRADIENT } : { background: 'white' }}
                   >
                     {isChecked && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 10 10">
+                        <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </div>
