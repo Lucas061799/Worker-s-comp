@@ -24,7 +24,7 @@ export default function Loading({ onDone, onSkip }) {
   }, [onDone])
 
   return (
-    <div className="w-full max-w-lg mx-auto py-10">
+    <div className="w-full">
       <div className="rounded-2xl p-6 md:p-7" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
         <div className="flex items-center justify-between gap-3 mb-4">
           <Tag tone="brand">Rating in progress</Tag>
