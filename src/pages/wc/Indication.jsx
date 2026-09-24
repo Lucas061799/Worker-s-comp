@@ -128,7 +128,9 @@ function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
               type="button"
               onClick={(e) => { e.stopPropagation(); onSelect() }}
               className="px-4 py-2 rounded-lg text-xs font-bold transition shrink-0"
-              style={selected || best
+              /* Only the chosen row fills. Promoting Best Value here too
+                 made the cheapest row look picked before it was. */
+              style={selected
                 ? { background: BRAND_GRADIENT, color: '#fff' }
                 : { background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
             >
