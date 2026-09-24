@@ -670,6 +670,21 @@ button.force-white-text,
   background: linear-gradient(88.09deg, rgba(92,46,212,0.06) 0%, rgba(166,20,195,0.06) 100%);
   border: 1px solid rgba(92,46,212,0.14);
 }
+/* The canonical info panel. A 5% purple wash and an 18% purple hairline
+   read fine on white and vanish on navy, so the dark values step up to
+   the same lavender .im-banner uses. `color` drives the icon, which is
+   drawn with currentColor. */
+.im-info-panel {
+  background: rgba(92,46,212,0.05);
+  border: 1px solid rgba(92,46,212,0.18);
+  color: #5C2ED4;
+}
+[data-dark="true"] .im-info-panel {
+  background: rgba(167,139,250,0.12) !important;
+  border-color: rgba(167,139,250,0.32) !important;
+  color: #C4B5FD !important;
+}
+
 [data-dark="true"] .im-banner {
   background: linear-gradient(88.09deg, rgba(124,58,237,0.18) 0%, rgba(166,20,195,0.12) 100%) !important;
   border-color: rgba(167,139,250,0.32) !important;

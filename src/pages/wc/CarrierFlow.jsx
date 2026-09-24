@@ -42,12 +42,11 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
   return (
     <div className="w-full space-y-6">
       {/* Auto-resolve note — the canonical info panel. */}
-      <div className="rounded-xl p-4 flex items-start gap-3"
-        style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}>
-        <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="#5C2ED4" strokeWidth="1.8" viewBox="0 0 24 24">
+      <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
+        <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="9" />
           <path d="M12 8v5" strokeLinecap="round" />
-          <circle cx="12" cy="16.5" r="0.6" fill="#5C2ED4" />
+          <circle cx="12" cy="16.5" r="0.6" fill="currentColor" />
         </svg>
         <p className="text-[12.5px] text-gray-600 leading-relaxed">
           <span className="font-bold text-navy">Descriptor selected automatically.</span>{' '}
