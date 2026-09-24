@@ -25,89 +25,169 @@ const FACTORS = {
 }
 
 
-/* Inland Marine's option 3: one ringed card per carrier, the ring
-   carrying the selection, with a Select pill and a bullets bar. Drawn
-   in our tokens rather than its mint/navy ones. */
-function bulletsFor(carrier) {
-  return [
-    carrier.reco ? 'BTIS-serviced' : 'Carrier-serviced',
-    'Admitted',
-    carrier.bind ? 'Bind online today' : null,
-    turnaroundFor(carrier),
-  ].filter(Boolean)
-}
+const money = (n) => '$' + Math.round(n).toLocaleString()
 
 function turnaroundFor(carrier) {
   const m = (carrier.sla || '').match(/(\d+\D{1,2}\d+)\s*business days/i)
-  return m ? `${m[1]} day endorsements` : carrier.sla
+  return m ? `${m[1]} business days` : carrier.sla
 }
 
-function CarrierCard({ carrier, selected, onSelect }) {
+/* Broker fee and statutory loads, so the row can show what the agent
+   will actually be charged rather than the premium alone. */
+function feesFor(premium) {
+  const service = 95
+  const tax = Math.round(premium * 0.0235)
+  const stamping = Math.round(premium * 0.002)
+  return { service, tax, stamping, total: premium + service + tax + stamping }
+}
+
+function FeeRow({ label, value, bold }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-1">
+      <span className={`text-xs ${bold ? 'font-semibold text-gray-700' : 'text-gray-500'}`}>{label}</span>
+      <span className={`text-xs ${bold ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}`}>{value}</span>
+    </div>
+  )
+}
+
+/* GL-BOP's Compare row: a stacked list where each carrier expands to
+   show the fee breakdown, or why it did not quote. */
+function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
   const quoted = !carrier.noquote
+  const fees = quoted ? feesFor(carrier.price) : null
 
   return (
     <div
-      className="overflow-hidden rounded-2xl transition"
+      className="rounded-lg transition overflow-hidden"
       style={{
-        background: quoted ? 'white' : '#F9FAFB',
-        boxShadow: selected
-          ? '0 0 0 2px #5C2ED4, 0 6px 24px rgba(92,46,212,0.18)'
-          : '0 0 0 1px #E5E7EB',
+        background: quoted ? 'white' : '#FAFAFB',
+        border: `1.5px solid ${selected ? '#5C2ED4' : best ? '#7C3AED' : '#E5E7EB'}`,
+        boxShadow: selected || best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
       }}
     >
-      <div className="flex items-start justify-between gap-4 px-6 pt-5">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className={`text-lg font-semibold ${quoted ? 'text-navy' : 'text-gray-400'}`}>
-            {carrier.name}
-          </span>
-          {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
-          {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
+      <div className="px-4 py-3.5 cursor-pointer" onClick={onToggle}>
+        <div className="flex items-center justify-between gap-3 mb-2.5">
+          <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
+            <span
+              className="rounded-full shrink-0"
+              style={{ width: 8, height: 8, background: BRAND_GRADIENT, opacity: quoted ? 1 : 0.4 }}
+            />
+            <span className={`text-sm font-semibold truncate ${quoted ? 'text-gray-800' : 'text-gray-500'}`}>
+              {carrier.name}
+            </span>
+            {best && quoted && (
+              <span
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white whitespace-nowrap"
+                style={{ background: BRAND_GRADIENT }}
+              >
+                Best Value
+              </span>
+            )}
+            {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
+            {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
+            {!quoted && (
+              <span
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
+                style={{ background: 'rgba(156,163,175,0.18)', color: '#6B7280', border: '1px solid rgba(156,163,175,0.35)' }}
+              >
+                Not a fit
+              </span>
+            )}
+          </div>
+          <svg
+            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"
+            style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {quoted ? (
+            <div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-xl font-bold text-gray-800">{money(carrier.price)}</span>
+                <span className="text-xs text-gray-400">/yr</span>
+              </div>
+              <div className="text-[11px] text-gray-400">
+                {money(carrier.price / 12)}/mo · Total {money(fees.total)}
+              </div>
+            </div>
+          ) : (
+            <span className="text-xs text-gray-500 flex-1 min-w-0">
+              {carrier.name} isn't quoting this risk today.
+              <span className="font-semibold ml-1" style={{ color: '#5C2ED4' }}>
+                {expanded ? 'Hide details' : 'See why →'}
+              </span>
+            </span>
+          )}
+
+          {quoted && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onSelect() }}
+              className="px-4 py-2 rounded-lg text-xs font-bold transition shrink-0"
+              style={selected || best
+                ? { background: BRAND_GRADIENT, color: '#fff' }
+                : { background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+            >
+              {selected ? '✓ Selected' : 'Select'}
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 px-6 pb-5 pt-3">
-        <p className="text-xs text-gray-500 max-w-sm">
-          {quoted ? carrier.sub : `No appetite — ${carrier.noquote.toLowerCase()}.`}
-        </p>
-
-        {quoted && (
-          <div className="ml-auto flex items-end gap-6">
-            <div className="text-right leading-none">
-              <div>
-                <span className="text-3xl font-bold text-navy">
-                  ${carrier.price.toLocaleString()}
-                </span>
-                <span className="ml-1 text-sm text-gray-400">/yr</span>
+      {expanded && quoted && (
+        <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid #F3F4F6' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="rounded-xl p-4" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2.5">Fee breakdown</div>
+              <FeeRow label="Premium" value={money(carrier.price)} />
+              <FeeRow label="Service fee" value={money(fees.service)} />
+              <FeeRow label="Tax" value={money(fees.tax)} />
+              <FeeRow label="Stamping fee" value={money(fees.stamping)} />
+              <div className="mt-2 pt-2" style={{ borderTop: '1px solid #E5E7EB' }}>
+                <FeeRow label="Total annual cost" value={money(fees.total)} bold />
               </div>
-              <p className="mt-1.5 text-xs text-gray-500">Annual premium</p>
             </div>
 
-            <button
-              type="button"
-              onClick={onSelect}
-              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold transition"
-              style={selected
-                ? { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
-                : { background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
-            >
-              {selected && (
-                <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-              {selected ? 'Selected' : 'Select'}
-            </button>
+            <div className="rounded-xl p-4" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2.5">Servicing</div>
+              <FeeRow label="Handled by" value={carrier.reco ? 'BTIS' : 'Carrier'} />
+              <FeeRow label="Endorsements" value={turnaroundFor(carrier)} />
+              <FeeRow label="Billing" value={carrier.sub} />
+              <FeeRow label="Bind online" value={carrier.bind ? 'Yes' : 'No'} />
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {quoted && (
-        <div className="px-6 py-4" style={{ borderTop: '1px solid #F3F4F6' }}>
-          <ul className="flex flex-wrap gap-x-6 gap-y-1.5 text-xs text-gray-600">
-            {bulletsFor(carrier).map((b, i) => (
-              <li key={b} className={i === 0 ? 'font-semibold text-navy' : ''}>· {b}</li>
-            ))}
-          </ul>
+      {expanded && !quoted && (
+        <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid #E5E7EB' }}>
+          <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
+            <div className="flex items-start gap-3 mb-3">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                style={{ background: 'rgba(124,58,237,0.18)' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5C2ED4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-bold leading-snug text-gray-800">
+                  Why {carrier.name} didn't quote
+                </p>
+                <p className="text-[11px] leading-relaxed mt-0.5 text-gray-500">
+                  Knowing this carrier's appetite helps you place future clients faster.
+                </p>
+              </div>
+            </div>
+            <p className="text-[12px] text-gray-700">{carrier.noquote}.</p>
+          </div>
         </div>
       )}
     </div>
@@ -117,6 +197,7 @@ function CarrierCard({ carrier, selected, onSelect }) {
 export default function Indication({ formData, onPickCarrier }) {
   const checked = formData.carrierSelection?.checked || {}
   const [selected, setSelected] = useState(null)
+  const [expanded, setExpanded] = useState(null)
 
   const results = useMemo(() => {
     return CARRIERS
@@ -142,11 +223,14 @@ export default function Indication({ formData, onPickCarrier }) {
         {quoted.length} market{quoted.length === 1 ? '' : 's'} returned a price. Sorted by annual premium.
       </p>
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-5 space-y-2.5">
         {results.map(r => (
-          <CarrierCard
+          <CarrierRow
             key={r.id}
             carrier={r}
+            best={r.id === quoted[0]?.id}
+            expanded={expanded === r.id}
+            onToggle={() => setExpanded(prev => (prev === r.id ? null : r.id))}
             selected={selected === r.id}
             onSelect={() => setSelected(prev => (prev === r.id ? null : r.id))}
           />
