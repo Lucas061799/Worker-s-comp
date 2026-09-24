@@ -228,7 +228,9 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
         Uncheck any market you plan to approach directly.
       </p>
 
-      <div className="grid sm:grid-cols-2 gap-3">
+      {/* gap-y is larger than gap-x: the ribbons straddle the top border,
+          so each row needs room to clear the card above it. */}
+      <div className="grid sm:grid-cols-2 gap-x-3 gap-y-5">
         {CARRIERS.map(c => {
           const isChecked = !!checked[c.id]
           return (
@@ -238,19 +240,19 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
               style={{
                 background: 'white',
                 border: `1.5px solid ${isChecked ? '#7C3AED' : '#E5E7EB'}`,
-                boxShadow: isChecked ? '0 4px 14px rgba(92,46,212,0.10)' : 'none',
+                opacity: isChecked ? 1 : 0.65,
               }}
               onClick={() => toggle(c.id)}
               onMouseEnter={e => {
                 if (!isChecked) {
                   e.currentTarget.style.borderColor = 'rgba(124,58,237,0.35)'
-                  e.currentTarget.style.boxShadow = '0 2px 10px rgba(92,46,212,0.06)'
+                  e.currentTarget.style.opacity = 1
                 }
               }}
               onMouseLeave={e => {
                 if (!isChecked) {
                   e.currentTarget.style.borderColor = '#E5E7EB'
-                  e.currentTarget.style.boxShadow = 'none'
+                  e.currentTarget.style.opacity = 0.65
                 }
               }}
             >
@@ -286,7 +288,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                 </div>
               )}
 
-              <div className="flex items-center gap-4 px-5 py-4">
+              <div className="flex items-start gap-4 px-5 py-4">
                 {/* Logo — big, borderless, sits on the card */}
                 <div className="w-12 h-12 flex items-center justify-center shrink-0">
                   <img
@@ -302,7 +304,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   <p className="text-[15px] font-bold truncate mb-0.5" style={{ color: '#1F2937' }}>
                     {c.name}
                   </p>
-                  <p className="text-[11px] text-gray-500 leading-snug truncate">
+                  <p className="text-[11px] text-gray-500 leading-snug line-clamp-2">
                     {c.tagline}
                   </p>
                 </div>
