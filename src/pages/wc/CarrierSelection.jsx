@@ -108,78 +108,43 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
       onClick={onCancel}
     >
       <div
-        className="max-w-lg w-full rounded-2xl overflow-hidden"
+        className="max-w-md w-full rounded-2xl px-7 py-7"
         style={{ background: 'white', boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-7">
-          {/* Header — icon + title + subtitle */}
-          <div className="flex items-start gap-3 mb-5">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)' }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <defs>
-                  <linearGradient id="approachHdrG" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#5C2ED4"/>
-                    <stop offset="100%" stopColor="#A614C3"/>
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
-                  stroke="url(#approachHdrG)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold text-navy leading-tight mb-1">
-                Approach {carriers.length} {carriers.length === 1 ? 'market' : 'markets'}?
-              </h2>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                BTIS will submit this risk and be registered as your broker with each.
-                <b className="text-gray-700"> These markets then can't be approached directly for this risk.</b>
-              </p>
-            </div>
-          </div>
+        <h2 className="text-lg font-bold text-navy leading-tight mb-2">
+          Approach these markets?
+        </h2>
 
-          {/* Who we'll approach — a read-back, not a picker, so it gets a
-              plain two-column roster instead of six bordered rows. The
-              Promo / BTIS Serviced tags stay on the selection page. */}
-          <div
-            className="rounded-xl px-4 py-3 mb-6 grid grid-cols-2 gap-x-4 gap-y-3"
-            style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+        <p className="text-sm text-gray-600 leading-relaxed mb-4">
+          BTIS will submit this risk to the carriers below and be registered as your
+          broker with each.{' '}
+          <b className="text-navy">These markets then can't be approached directly for this risk.</b>
+        </p>
+
+        <ul className="list-disc pl-5 mb-7 space-y-1">
+          {carriers.map(c => (
+            <li key={c.id} className="text-sm text-gray-700">{c.name}</li>
+          ))}
+        </ul>
+
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold transition"
+            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
           >
-            {carriers.map(c => (
-              <div key={c.id} className="flex items-center gap-2.5 min-w-0">
-                <CarrierLogo carrier={c} size={24} />
-                <span className="text-xs font-semibold text-gray-700 truncate">{c.name}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold transition"
-              style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
-            >
-              Go back
-            </button>
-            <button
-              type="button"
-              onClick={onConfirm}
-              className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90"
-              style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
-            >
-              Yes — approach carriers
-              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </button>
-          </div>
+            Go back
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="h-10 px-6 inline-flex items-center justify-center rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
+            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
+          >
+            Yes — approach carriers
+          </button>
         </div>
       </div>
     </div>
