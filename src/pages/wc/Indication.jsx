@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
-import { BRAND_GRADIENT, InfoLine, Tag } from '../../components/wc/primitives'
+import { BRAND_GRADIENT, InfoLine } from '../../components/wc/primitives'
 
 // Rough WC premium: 3% of payroll × ex-mod × per-carrier factor.
 function estimatePremium(formData, factor = 1) {
@@ -41,13 +41,36 @@ function Radio({ checked }) {
   )
 }
 
+/* Option 4's flag: a yellow pill, navy text, uppercase. */
+function CoverageBadge({ label }) {
+  return (
+    <span
+      className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
+      style={{ backgroundColor: 'rgb(249, 228, 123)', color: '#1B0750' }}
+    >
+      {label}
+    </span>
+  )
+}
+
+/* Option 4's bullets are short phrases — "Admitted", "Agency Bill" —
+   joined with a middot, and the right-hand line is one short fact. A
+   long sentence on both sides is what made this read wrong. */
+function bulletsFor(carrier) {
+  return [
+    carrier.reco ? 'BTIS-serviced' : 'Carrier-serviced',
+    'Admitted',
+    carrier.bind ? 'Bind online' : null,
+  ].filter(Boolean).join(' · ')
+}
+
+function turnaroundFor(carrier) {
+  const m = (carrier.sla || '').match(/(\d+\D{1,2}\d+)\s*business days/i)
+  return m ? `${m[1]} day endorsements` : carrier.sla
+}
+
 function CarrierRow({ carrier, selected, onSelect }) {
   const quoted = !carrier.noquote
-  const meta = [
-    carrier.reco ? 'Endorsements & billing handled by BTIS' : 'Carrier-serviced',
-    carrier.sla,
-    carrier.bind ? 'Bind online today' : null,
-  ].filter(Boolean).join(' · ')
 
   return (
     <div style={{ borderTop: '1px solid #EAEAEA' }}>
@@ -69,11 +92,11 @@ function CarrierRow({ carrier, selected, onSelect }) {
               >
                 {carrier.name}
               </span>
-              {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
-              {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
+              {carrier.promo && <CoverageBadge label="+2% commission" />}
+              {carrier.reco && <CoverageBadge label="BTIS Serviced" />}
             </div>
             <div className="mt-1 text-[13px]" style={{ color: '#6C757D' }}>
-              {quoted ? meta : `No appetite — ${carrier.noquote.toLowerCase()}.`}
+              {quoted ? bulletsFor(carrier) : `No appetite — ${carrier.noquote.toLowerCase()}.`}
             </div>
           </div>
 
@@ -86,7 +109,7 @@ function CarrierRow({ carrier, selected, onSelect }) {
                 <span className="ml-1 text-[14px]" style={{ color: '#6C757D' }}>/yr</span>
               </div>
               <div className="mt-1.5 text-[13px]" style={{ color: '#6C757D' }}>
-                {carrier.sub}
+                {turnaroundFor(carrier)}
               </div>
             </div>
           )}
