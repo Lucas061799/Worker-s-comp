@@ -51,13 +51,6 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex items-center gap-2 flex-wrap">
-        <Tag tone="brand">Carrier flow · {carrier}</Tag>
-      </div>
-      <p className="text-sm text-gray-500 -mt-4">
-        We answered what we could from your application — confirm or change, then finish the two that remain.
-      </p>
-
       {/* Auto-resolve note — the canonical info panel. */}
       <div className="rounded-xl p-4 flex items-start gap-3"
         style={{ background: 'rgba(92,46,212,0.05)', border: '1px solid rgba(92,46,212,0.18)' }}>
