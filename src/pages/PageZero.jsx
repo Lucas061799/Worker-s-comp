@@ -3,7 +3,8 @@ import norbielinkLogo from '../assets/norbielink-logo.png'
 import btisLogo from '../assets/btislogo.png'
 import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
-import { Select, DateInput } from '../components/FormField'
+import { Input, Select, DateInput } from '../components/FormField'
+import { InfoDot } from '../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -29,12 +30,21 @@ const CLASSES = [
   { code: '0042', desc: 'Landscape gardening',              ind: 'Services',               contractor: true },
 ]
 
+/* Classes that come back as a likely referral rather than a clean yes. */
+const LIMITED_APPETITE = ['9079']
+
 export default function PageZero({ onStart }) {
   const [state, setState] = useState('')
   const [effectiveDate, setEffectiveDate] = useState('')
   const [query, setQuery] = useState('')
   const [picked, setPicked] = useState(null)
   const [showSuggest, setShowSuggest] = useState(false)
+  const [payroll, setPayroll] = useState('')
+  const [license, setLicense] = useState('')
+  // null → not run yet. Changing the class resets it, because appetite is
+  // answered for a specific class.
+  const [appetite, setAppetite] = useState(null)
+  const [checking, setChecking] = useState(false)
 
   const suggestList = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -42,12 +52,24 @@ export default function PageZero({ onStart }) {
     return CLASSES.filter(c => c.code.startsWith(q) || c.desc.toLowerCase().includes(q))
   }, [query])
 
-  const ready = !!(state && effectiveDate && picked)
+  const canCheck = !!(state && effectiveDate && picked && payroll)
+  // Nothing else is asked until we know the risk is worth the agent's time.
+  const ready = canCheck && !!appetite
 
   const handlePick = (cls) => {
     setPicked(cls)
     setQuery(`${cls.code} — ${cls.desc}`)
     setShowSuggest(false)
+    setAppetite(null)
+  }
+
+  const runAppetite = () => {
+    if (!canCheck || checking) return
+    setChecking(true)
+    setTimeout(() => {
+      setAppetite(LIMITED_APPETITE.includes(picked.code) ? 'limited' : 'good')
+      setChecking(false)
+    }, 900)
   }
 
   const handleStart = () => {
@@ -61,6 +83,9 @@ export default function PageZero({ onStart }) {
       industry: picked.ind,
       isContractor: picked.contractor,
       isTransportation: !!picked.transport,
+      estimatedPayroll: payroll,
+      contractorLicense: license,
+      appetite,
     })
   }
 
@@ -198,6 +223,84 @@ export default function PageZero({ onStart }) {
                     </p>
                   )}
                 </div>
+
+                <div>
+                  <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+                    Estimated Annual Payroll<span className="text-red-400">*</span>
+                    <InfoDot
+                      title="Estimated annual payroll"
+                      text="Enter the estimated payroll for all employees including officers if they will be included in coverage. This is an estimate only to confirm we have an available market; we'll ask for full payroll at the class code level later."
+                    />
+                  </label>
+                  <Input
+                    value={payroll}
+                    onChange={val => { setPayroll(val); setAppetite(null) }}
+                    placeholder="$"
+                  />
+                </div>
+
+                {/* Only contracting classes need a licence number, and the
+                    CSLB lookup off it pre-fills General info. */}
+                {picked?.contractor && (
+                  <div>
+                    <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+                      Contractor License Number
+                      <InfoDot
+                        title="Contractor license number"
+                        text="Certain carriers will require this in order to bind. We'll also prefill information based on this license."
+                      />
+                    </label>
+                    <Input
+                      value={license}
+                      onChange={setLicense}
+                      placeholder="#0000000"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Appetite gate — a class, a state and a payroll are enough
+                  to say whether a market exists. */}
+              <div className="mb-6">
+                <button
+                  type="button"
+                  onClick={runAppetite}
+                  disabled={!canCheck || checking}
+                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition ${canCheck && !checking ? 'hover:opacity-90' : 'cursor-not-allowed'}`}
+                  style={canCheck && !checking
+                    ? { background: 'white', border: '1.5px solid rgba(92,46,212,0.35)', color: '#5C2ED4' }
+                    : { background: '#FAFAFB', border: '1.5px solid #E5E7EB', color: '#9CA3AF' }}
+                  title={canCheck ? undefined : 'Add state, effective date, class code and payroll first'}
+                >
+                  {checking ? 'Checking…' : appetite ? 'Re-run Appetite' : 'Run Appetite'}
+                </button>
+
+                {appetite === 'good' && (
+                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
+                    <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <p className="text-[12.5px] text-gray-600 leading-relaxed">
+                      <span className="font-bold text-navy">Good news!</span>{' '}
+                      Based on class, state and payroll, we have at least 1 carrier available.
+                      Final approval is subject to full risk characteristics.
+                    </p>
+                  </div>
+                )}
+
+                {appetite === 'limited' && (
+                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
+                    <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    </svg>
+                    <p className="text-[12.5px] text-gray-600 leading-relaxed">
+                      <span className="font-bold text-navy">
+                        Limited appetite for {picked?.code} in {state} at this payroll — likely referral.
+                      </span>{' '}
+                      You can continue; the start is recorded either way.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <button
@@ -209,7 +312,7 @@ export default function PageZero({ onStart }) {
                   background: ready ? BRAND_GRADIENT : '#D1D5DB',
                   boxShadow: ready ? '0 4px 14px rgba(92,46,212,0.22)' : 'none',
                 }}
-                title={ready ? undefined : 'Fill in state, effective date and class code to continue'}
+                title={ready ? undefined : 'Run Appetite to continue'}
               >
                 Start Application
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
