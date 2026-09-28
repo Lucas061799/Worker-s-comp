@@ -21,7 +21,7 @@ function getCompletion(formData) {
   const stateCov = cov[state] || {}
 
   c['start']       = !!(pz.state && pz.mainClass)
-  c['business']    = !!(biz.name && biz.address && biz.city && biz.entityType && biz.fein && biz.yearsInBusiness && biz.phone && biz.email)
+  c['business']    = !!(biz.name && biz.address && biz.city && biz.entityType && biz.fein && biz.yearEstablished && biz.phone && biz.email)
   c['history']     = !!hist.coverageStatus && hist.claimsPast4 !== undefined
   c['losses']      = (hist.claimCount || 0) > 0 && !!hist.losses && hist.losses.length > 0
   c['coverages']   = !!(stateCov.classes && stateCov.classes.length > 0 && stateCov.classes.every(cl => cl.code && cl.payroll))

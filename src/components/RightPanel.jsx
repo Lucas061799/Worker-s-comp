@@ -40,7 +40,7 @@ function computeProgress(formData) {
   const hist = formData.history || {}
 
   const flags = {
-    business:  !!(biz.name && biz.address && biz.city && biz.entityType && biz.fein && biz.yearsInBusiness && biz.phone && biz.email),
+    business:  !!(biz.name && biz.address && biz.city && biz.entityType && biz.fein && biz.yearEstablished && biz.phone && biz.email),
     history:   !!hist.coverageStatus && hist.claimsPast4 !== undefined,
     coverages: !!(stateCov.classes && stateCov.classes.length && stateCov.classes.every(c => c.code && c.payroll)),
     questions: uw.safety_program !== undefined,

@@ -334,7 +334,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               <PreviewRow label="Entity" value={biz.entityType && ({corp:'Corporation',llc:'LLC',sole:'Sole proprietor',partner:'Partnership'})[biz.entityType]} />
               <PreviewRow label="Primary state" value={pz.state} />
               <PreviewRow label="Effective" value={pz.effectiveDate} />
-              <PreviewRow label="Years in business" value={biz.yearsInBusiness} />
+              <PreviewRow label="Year established" value={biz.yearEstablished} />
             </PreviewSection>
 
             <PreviewSection title="Class & payroll">

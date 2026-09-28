@@ -444,7 +444,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Legal name"      value={business.name} isDark={isDark} />
                     <Field label="Entity type"     value={business.entityType} isDark={isDark} />
                     <Field label="FEIN"            value={business.fein} isDark={isDark} />
-                    <Field label="Years in biz"    value={business.yearsInBusiness} isDark={isDark} />
+                    <Field label="Year established" value={business.yearEstablished} isDark={isDark} />
                     <Field label="Effective date"  value={pageZero.effectiveDate} isDark={isDark} />
                   </SectionCard>
 

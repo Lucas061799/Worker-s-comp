@@ -23,7 +23,8 @@ const CLASSES = [
   { code: '8810', desc: 'Clerical office employees',        ind: 'Professional services', contractor: false },
   { code: '8742', desc: 'Salespersons — outside',           ind: 'Professional services', contractor: false },
   { code: '8017', desc: 'Store — retail NOC',               ind: 'Retail',                contractor: false },
-  { code: '7228', desc: 'Trucking — local hauling',         ind: 'Transportation',        contractor: false },
+  { code: '7228', desc: 'Trucking — long haul',             ind: 'Transportation',        contractor: false, transport: true },
+  { code: '7229', desc: 'Trucking — local hauling',         ind: 'Transportation',        contractor: false, transport: true },
   { code: '9014', desc: 'Janitorial services — contractor', ind: 'Services',              contractor: true },
   { code: '0042', desc: 'Landscape gardening',              ind: 'Services',               contractor: true },
 ]
@@ -59,6 +60,7 @@ export default function PageZero({ onStart }) {
       classDescription: picked.desc,
       industry: picked.ind,
       isContractor: picked.contractor,
+      isTransportation: !!picked.transport,
     })
   }
 

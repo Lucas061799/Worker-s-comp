@@ -189,7 +189,10 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   <Row label="Structure" value={ENTITY_LABELS[biz.entityType]} />
                   <Row label="FEIN" value={biz.fein} />
                   <Row label="Contractor Licence" value={biz.license} />
-                  <Row label="Years in Business" value={biz.yearsInBusiness} />
+                  <Row label="Year Established" value={biz.yearEstablished} />
+                  <Row label="Industry Experience" value={biz.industryExperience && `${biz.industryExperience} yrs`} />
+                  <Row label="DBA" value={biz.hasDba ? biz.dbaName : ""} />
+                  <Row label="Website" value={biz.website} />
                 </Panel>
 
                 <Panel title="Contact" icon="user">

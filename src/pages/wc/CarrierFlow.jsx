@@ -60,7 +60,7 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
           and fixing it are the same gesture, so nobody has to leave the
           page to correct one. Edits write back to the source section. */}
       <FieldGroup label="Answered from your application">
-        <GroupRow label="Years in business">
+        <GroupRow label="Year business was established">
           {/* Matches the Yes/No pair below it, so every control in the
               group starts and ends on the same two edges. */}
           <div style={{ width: 150 }}>
@@ -68,8 +68,8 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
                 type="number" brings the native stepper with it. */}
             <Input
               align="right"
-              value={biz.yearsInBusiness || ''}
-              onChange={v => updateFormData('business', { yearsInBusiness: v })}
+              value={biz.yearEstablished || ''}
+              onChange={v => updateFormData('business', { yearEstablished: v })}
             />
           </div>
         </GroupRow>
