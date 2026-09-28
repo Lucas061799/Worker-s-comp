@@ -1,26 +1,19 @@
-import { Input, DateInput, Select } from '../../components/FormField'
-import { RemoveButton, AddAnother } from '../../components/wc/primitives'
+import { Input, DateInput, Select, Textarea } from '../../components/FormField'
+import {
+  FieldGroup,
+  RemoveButton,
+  AddAnother,
+  InfoDot,
+} from '../../components/wc/primitives'
 
-const LOSS_TYPES = ['Medical only', 'Lost time', 'Fatality']
-const LOSS_STATUS = ['Closed', 'Open']
+const LOSS_TYPES = ['Medical', 'Indemnity', 'Both']
 
-function FieldGroup({ label, children }) {
-  return (
-    <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5">{label}</div>
-      <div className="rounded-xl p-5 sm:p-6"
-        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-const emptyLoss = () => ({ date: '', type: 'Medical only', amount: '', status: 'Closed' })
+const emptyLoss = () => ({ date: '', amount: '', type: 'Medical', description: '' })
 
 export default function LossDetail({ formData, updateFormData }) {
   const data = formData.history || {}
   const claimCount = data.claimCount || 0
+  // Rows pre-populate to match the count entered on Coverage history.
   const seed = Array.from({ length: Math.max(claimCount, 1) }, () => emptyLoss())
   const losses = data.losses && data.losses.length ? data.losses : seed
 
@@ -34,14 +27,24 @@ export default function LossDetail({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
+      <p className="text-sm text-gray-500 -mt-2">
+        Please enter any claims or work-related injuries during the last 4 years.
+      </p>
+
       <FieldGroup label={`Claims (${losses.length})`}>
         <div className="space-y-3">
           {losses.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-[150px_1fr_130px_130px_40px] gap-3 items-end">
+            <div key={idx} className="grid grid-cols-[150px_140px_130px_1fr_40px] gap-3 items-end">
               <DateInput
                 label={idx === 0 ? 'Date of loss' : undefined}
                 value={row.date}
                 onChange={val => updateLoss(idx, { date: val })}
+              />
+              <Input
+                label={idx === 0 ? 'Total incurred' : undefined}
+                value={row.amount}
+                onChange={val => updateLoss(idx, { amount: val })}
+                placeholder="$"
               />
               <Select
                 label={idx === 0 ? 'Type' : undefined}
@@ -50,16 +53,10 @@ export default function LossDetail({ formData, updateFormData }) {
                 onChange={val => updateLoss(idx, { type: val })}
               />
               <Input
-                label={idx === 0 ? 'Amount paid' : undefined}
-                value={row.amount}
-                onChange={val => updateLoss(idx, { amount: val })}
-                placeholder="$"
-              />
-              <Select
-                label={idx === 0 ? 'Status' : undefined}
-                options={LOSS_STATUS}
-                value={row.status}
-                onChange={val => updateLoss(idx, { status: val })}
+                label={idx === 0 ? 'Description' : undefined}
+                value={row.description}
+                onChange={val => updateLoss(idx, { description: val })}
+                placeholder="What happened?"
               />
               <div className="flex items-center justify-center h-[42px]">
                 <RemoveButton onClick={() => removeLoss(idx)} label="Remove claim" />
@@ -71,6 +68,27 @@ export default function LossDetail({ formData, updateFormData }) {
         <div className="mt-5">
           <AddAnother onClick={addLoss}>Add claim</AddAnother>
         </div>
+      </FieldGroup>
+
+      {/* One explanation covering the claims above, rather than a box per
+          row. Optional — the info dot says why it is worth filling in. */}
+      <FieldGroup
+        label={
+          <span className="inline-flex items-center gap-1.5">
+            Claims corrective action
+            <InfoDot
+              title="Claims corrective action"
+              text="For best pricing available, please provide."
+            />
+          </span>
+        }
+      >
+        <Textarea
+          value={data.correctiveAction}
+          onChange={val => patch({ correctiveAction: val })}
+          placeholder="What has the business changed since these claims — training, equipment, procedures, supervision?"
+          rows={3}
+        />
       </FieldGroup>
     </div>
   )

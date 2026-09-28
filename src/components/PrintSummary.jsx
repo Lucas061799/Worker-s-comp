@@ -11,6 +11,10 @@ const ICONS = {
   clock:    'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
 }
 
+const COVERAGE_STATUS_LABELS = {
+  inforce: 'Coverage in force', lapse: 'Lapse', newventure: 'New venture', noprior: 'No prior',
+}
+
 const ENTITY_LABELS = {
   corp: 'Corporation', llc: 'LLC', sole: 'Sole proprietor', partner: 'Partnership',
 }
@@ -79,7 +83,6 @@ export default function PrintSummary({ formData, visible, onClose }) {
   const state = pz.state || 'CA'
   const stateCov = (formData.coverage || {})[state] || {}
   const classes = stateCov.classes || []
-  const priorTerms = hist.priorTerms || []
   const losses = hist.losses || []
 
   const totalPayroll = classes.reduce((sum, c) => {
@@ -216,12 +219,13 @@ export default function PrintSummary({ formData, visible, onClose }) {
                 </Panel>
 
                 <Panel title="Coverage History" icon="clock">
-                  {priorTerms.filter(t => t.carrier).map((t, i) => (
-                    <Row key={i} label={t.carrier} value={[t.effective, t.expiration].filter(Boolean).join(' – ')} />
-                  ))}
+                  <Row label="Coverage Status" value={COVERAGE_STATUS_LABELS[hist.coverageStatus] || '—'} />
+                  <Row label="Prior Years" value={hist.priorYears} />
+                  <Row label="Current Carrier" value={hist.currentCarrier} />
+                  <Row label="Current Premium" value={hist.currentPremium} />
                   <Row label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
                   {losses.filter(l => l.date).map((l, i) => (
-                    <Row key={i} label={`Claim ${i + 1} · ${l.type || ''}`} value={[l.amount, l.status].filter(Boolean).join(' · ')} />
+                    <Row key={i} label={`Claim ${i + 1} · ${l.type || ''}`} value={l.amount} />
                   ))}
                 </Panel>
 

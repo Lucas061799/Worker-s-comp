@@ -284,39 +284,55 @@ export function Toggle({ checked, onChange, ariaLabel }) {
 /* Yes / No pair — the house control from GL-BOP / CBIC:
    a rounded-lg button with a radio dot on the left and the label
    on the right, a purple ring and a light tinted fill when on. */
-export function YesNo({ value, onChange, name, className = '' }) {
-  const pill = (v, labelText) => {
-    const on = value === v
-    return (
-      <button
-        key={v}
-        type="button"
-        role="radio"
-        aria-checked={on}
-        onClick={() => onChange && onChange(v)}
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium ${
-          on
-            ? 'border-[#5C2ED4] text-[#5C2ED4]'
-            : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
-        }`}
-        style={on ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)' } : undefined}
-      >
-        <span
-          className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-            on ? 'border-[#A614C3]' : 'border-gray-300'
-          }`}
-        >
-          {on && <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND_GRADIENT }} />}
-        </span>
-        {labelText}
-      </button>
-    )
-  }
+/* The house radio pill, in a row. YesNo is the two-option case; pass
+   `options` for anything wider (coverage status, claim type). */
+export function Segmented({ options, value, onChange, name, className = '' }) {
   return (
-    <div className={`flex gap-4 ${className}`} role="radiogroup" aria-label={name}>
-      {pill('yes', 'Yes')}
-      {pill('no', 'No')}
+    <div className={`flex flex-wrap gap-2.5 ${className}`} role="radiogroup" aria-label={name}>
+      {options.map(opt => {
+        const v = typeof opt === 'string' ? opt : opt.value
+        const labelText = typeof opt === 'string' ? opt : opt.label
+        const on = value === v
+        return (
+          <button
+            key={v}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => onChange && onChange(v)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium ${
+              on
+                ? 'border-[#5C2ED4] text-[#5C2ED4]'
+                : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+            }`}
+            style={on ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)' } : undefined}
+          >
+            <span
+              className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                on ? 'border-[#A614C3]' : 'border-gray-300'
+              }`}
+            >
+              {on && <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND_GRADIENT }} />}
+            </span>
+            {labelText}
+          </button>
+        )
+      })}
     </div>
+  )
+}
+
+const YES_NO = [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]
+
+export function YesNo({ value, onChange, name, className = '' }) {
+  return (
+    <Segmented
+      options={YES_NO}
+      value={value}
+      onChange={onChange}
+      name={name}
+      className={`gap-4 ${className}`}
+    />
   )
 }
 

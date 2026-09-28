@@ -346,7 +346,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
             </PreviewSection>
 
             <PreviewSection title="Coverage history">
-              <PreviewRow label="Prior terms" value={(hist.priorTerms || []).length} />
+              <PreviewRow label="Coverage status" value={hist.currentCarrier || hist.coverageStatus} />
               <PreviewRow label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
               <PreviewRow label="Experience mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || ''}`} />
             </PreviewSection>

@@ -26,7 +26,7 @@ import WcSubmission from './pages/wc/WcSubmission'
 const BASE_STEPS = [
   { id: 1, num: '1',  key: 'business',    label: 'Business info',          phase: 1 },
   { id: 2, num: '2',  key: 'history',     label: 'Coverage history',       phase: 1 },
-  { id: 3, num: '2b', key: 'losses',      label: 'Loss detail',            phase: 1, cond: true },
+  { id: 3, num: '2b', key: 'losses',      label: 'Loss history',           phase: 1, cond: true },
   { id: 4, num: '3',  key: 'coverages',   label: 'State coverages',        phase: 1 },
   { id: 5, num: '4',  key: 'questions',   label: 'Credit opportunity',     phase: 1 },
   { id: 6, num: '5',  key: 'carriers',    label: 'Carrier selection',      phase: 1 },
@@ -62,7 +62,10 @@ function App() {
     setFormData(prev => ({ ...prev, [section]: { ...prev[section], ...data } }))
   }, [])
 
-  const hasLosses = (formData.history?.claimCount || 0) > 0
+  // 1–3 claims get the detail screen; 4 or more skip it and go to an
+  // underwriter with loss runs instead.
+  const claimCount = formData.history?.claimCount || 0
+  const hasLosses = claimCount > 0 && claimCount < 4
   const steps = BASE_STEPS.filter(s => !s.cond || hasLosses)
 
   const sectionRefs = useRef({})
@@ -178,12 +181,15 @@ function App() {
       email: 'ops@sierraridgeplumbing.com',
     })
     updateFormData('history', {
-      priorTerms: [
-        { carrier: 'State Fund', effective: '2025-04-01', expiration: '2026-04-01', premium: '$5,980' },
-      ],
+      coverageStatus: 'inforce',
+      priorYears: '4+',
+      currentCarrier: 'State Fund',
+      currentPremium: '$5,980',
+      operations: 'Residential and light commercial plumbing — repipes, water heater replacement, drain and sewer service, and fixture installation across the greater Sacramento area.',
+      claimsPast4: 'yes',
       claimCount: 1,
       losses: [
-        { date: '2025-08-14', type: 'Medical only', amount: '$3,200', status: 'Closed' },
+        { date: '2025-08-14', type: 'Medical', amount: '$3,200', description: 'Technician strained back lifting a water heater.' },
       ],
     })
     updateFormData('coverage', {
@@ -302,7 +308,7 @@ owner_involved: 'yes',
   const titles = {
     business:    'Business information',
     history:     'Coverage history',
-    losses:      'Loss detail',
+    losses:      'Loss history',
     coverages:   'State coverages',
     questions:   'Credit opportunity',
     carriers:    'Choose the markets to approach',
