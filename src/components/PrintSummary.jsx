@@ -81,7 +81,8 @@ export default function PrintSummary({ formData, visible, onClose }) {
   const uw   = formData.underwriting || {}
   const sel  = formData.carrierSelection?.checked || {}
   const state = pz.state || 'CA'
-  const stateCov = (formData.coverage || {})[state] || {}
+  const cov = formData.coverage || {}
+  const stateCov = cov[state] || {}
   const classes = stateCov.classes || []
   const losses = hist.losses || []
 
@@ -89,7 +90,8 @@ export default function PrintSummary({ formData, visible, onClose }) {
     const n = parseInt(String(c.payroll || '').replace(/[^\d]/g, ''), 10)
     return sum + (Number.isFinite(n) ? n : 0)
   }, 0)
-  const totalEmployees = classes.reduce((sum, c) => sum + (parseInt(c.employees, 10) || 0), 0)
+  const totalEmployees = classes.reduce(
+    (sum, c) => sum + (parseInt(c.ftEmployees, 10) || 0) + (parseInt(c.ptEmployees, 10) || 0), 0)
 
   const selectedCarriers = CARRIERS.filter(c => sel[c.id] !== false)
 
@@ -218,7 +220,9 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   <Row label="Total Annual Payroll" value={money(totalPayroll)} />
                   <Row label="Experience Mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || 'Manual'}`} />
                   <Row label="Blanket Waiver" value={yesNo(stateCov.blanketWaiver)} />
-                  <Row label="Officer Election" value={stateCov.officerElection === 'elect' ? 'Elected change' : 'Statutory default'} />
+                  <Row label="Officers" value={(cov.officers || []).map(o => `${o.name} (${o.status === 'exclude' ? 'Excluded' : 'Included'})`).join(', ')} />
+                  <Row label="EL Limits" value={cov.elLimits} />
+                  <Row label="Uses Subcontractors" value={yesNo(stateCov.usesSubs)} />
                 </Panel>
 
                 <Panel title="Coverage History" icon="clock">

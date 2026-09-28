@@ -459,7 +459,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Primary class" value={pageZero.mainClass ? `${pageZero.mainClass} — ${pageZero.classDescription}` : null} isDark={isDark} />
                     <Field label="Total payroll" value={totalPayroll ? money(totalPayroll) : null} isDark={isDark} />
                     <Field label="Experience mod" value={uw.experienceMod} isDark={isDark} />
-                    <Field label="Officer election" value={stateCov.officerElection === 'elect' ? 'Elected' : 'Default'} isDark={isDark} />
+                    <Field label="Officers" value={`${((formData.coverage || {}).officers || []).length} listed`} isDark={isDark} />
                     <Field label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} isDark={isDark} />
                   </SectionCard>
 

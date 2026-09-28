@@ -1,43 +1,28 @@
 import { useState } from 'react'
 import { Input, Select } from '../../components/FormField'
-import { YesNo as Seg } from '../../components/wc/primitives'
+import {
+  RowGroup as FieldGroup,
+  AnswerRow as GroupRow,
+  YesNo as Seg,
+} from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
-/* The card supplies the side padding; the rows supply the vertical
-   rhythm, and divide-y draws rules only between them — so the last row
-   never leaves a hairline floating above the card's edge. */
-function FieldGroup({ label, children }) {
-  return (
-    <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5">{label}</div>
-      <div className="rounded-xl px-5 sm:px-6 py-1 divide-y divide-[#F3F4F6]"
-        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-/* One row of the group: the sentence on the left, its controls on the
-   right, on a fixed 56px line so pill answers and selects sit level. */
-function GroupRow({ label, children }) {
-  return (
-    <div className="flex items-center justify-between gap-4 min-h-[56px] py-1.5">
-      <span className="text-sm text-gray-800 min-w-0">{label}</span>
-      <span className="flex items-center gap-3 shrink-0">{children}</span>
-    </div>
-  )
-}
+const CERTIFICATES = ['Yes', 'No', 'Sometimes']
 
 export default function CarrierFlow({ formData, updateFormData, onContinueToQuote, onBack }) {
   const carrier = formData.bind?.selectedCarrier || 'CNA'
   const pz = formData.pageZero || {}
   const biz = formData.business || {}
   const uw = formData.underwriting || {}
+  const state = pz.state || 'CA'
+  const cov = formData.coverage || {}
+  const stateCov = cov[state] || {}
+  const patchCoverage = (partial) =>
+    updateFormData('coverage', { ...cov, [state]: { ...stateCov, ...partial } })
 
-  const [answers, setAnswers] = useState({ newResidential: 'no', mix: 'mixed' })
-  const canContinue = answers.newResidential && answers.mix
+  const [answers, setAnswers] = useState({ publicInfrastructure: 'no', trenchDepth: '' })
+  const canContinue = !!answers.publicInfrastructure && !!answers.trenchDepth
 
   return (
     <div className="w-full space-y-6">
@@ -73,37 +58,42 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
             />
           </div>
         </GroupRow>
-        <GroupRow label="Subcontracted work > 25% of receipts">
-          <Seg
-            value={uw.sub_25_pct || 'no'}
-            onChange={v => updateFormData('underwriting', { sub_25_pct: v })}
-          />
-        </GroupRow>
-        <GroupRow label="Written safety program in place">
+        <GroupRow label="Is there a written safety program/policy?">
           <Seg
             value={uw.safety_program || 'yes'}
             onChange={v => updateFormData('underwriting', { safety_program: v })}
           />
         </GroupRow>
+        <GroupRow
+          label="Certificates collected for all subs?"
+          help={stateCov.usesSubs === 'yes' && stateCov.subPercent
+            ? `${stateCov.subPercent}% of work subcontracted`
+            : undefined}
+        >
+          <div style={{ width: 150 }}>
+            <Select
+              options={CERTIFICATES}
+              value={stateCov.subCertificates || 'Yes'}
+              onChange={v => patchCoverage({ subCertificates: v })}
+            />
+          </div>
+        </GroupRow>
       </FieldGroup>
 
       <FieldGroup label={`2 questions ${carrier} still needs`}>
-        <GroupRow label="Any work on new residential construction > 3 units?">
+        <GroupRow label="Any work on public infrastructure?">
           <Seg
-            value={answers.newResidential}
-            onChange={v => setAnswers(a => ({ ...a, newResidential: v }))}
+            value={answers.publicInfrastructure}
+            onChange={v => setAnswers(a => ({ ...a, publicInfrastructure: v }))}
           />
         </GroupRow>
-        <GroupRow label="Percentage of commercial vs. residential work">
-          <div style={{ width: 200 }}>
-            <Select
-              options={[
-                { value: 'commercial',   label: 'Mostly commercial' },
-                { value: 'mixed',        label: 'Mixed 50 / 50' },
-                { value: 'residential',  label: 'Mostly residential' },
-              ]}
-              value={answers.mix}
-              onChange={val => setAnswers(a => ({ ...a, mix: val }))}
+        <GroupRow label="Max trench depth (ft)">
+          <div style={{ width: 150 }}>
+            <Input
+              align="right"
+              value={answers.trenchDepth}
+              onChange={val => setAnswers(a => ({ ...a, trenchDepth: val }))}
+              placeholder="0"
             />
           </div>
         </GroupRow>

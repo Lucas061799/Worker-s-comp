@@ -200,12 +200,18 @@ function App() {
       ],
     })
     updateFormData('coverage', {
+      elLimits: '$1M / $1M / $1M',
+      officers: [
+        { name: 'Marcus Ruiz', title: 'President', status: 'include' },
+      ],
       CA: {
-        officerElection: 'auto',
         classes: [
-          { code: '5183', description: 'Plumbing NOC', employees: '6', payroll: '$480,000' },
-          { code: '8810', description: 'Clerical office employees', employees: '2', payroll: '$96,000' },
+          { location: 'Location 1', code: '5183', description: 'Plumbing NOC', payroll: '$480,000', ftEmployees: '6', ptEmployees: '1' },
+          { location: 'Location 1', code: '8810', description: 'Clerical office employees', payroll: '$96,000', ftEmployees: '2', ptEmployees: '0' },
         ],
+        usesSubs: 'yes',
+        subPercent: '15',
+        subCertificates: 'Yes',
         blanketWaiver: false,
       },
     })
