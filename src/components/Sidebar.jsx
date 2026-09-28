@@ -25,7 +25,7 @@ function getCompletion(formData) {
   c['history']     = !!(hist.priorTerms && hist.priorTerms.length > 0) || (hist.claimCount !== undefined)
   c['losses']      = (hist.claimCount || 0) > 0 && !!hist.losses && hist.losses.length > 0
   c['coverages']   = !!(stateCov.classes && stateCov.classes.length > 0 && stateCov.classes.every(cl => cl.code && cl.payroll))
-  c['questions']   = uw.decline_any !== undefined
+  c['questions']   = uw.safety_program !== undefined
   c['carriers']    = Object.values(sel).some(Boolean)
   c['carrierflow'] = !!bnd.selectedCarrier && !!bnd.carrierQuestions
   c['quote']       = !!bnd.bound

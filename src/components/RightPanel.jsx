@@ -43,7 +43,7 @@ function computeProgress(formData) {
     business:  !!(biz.name && biz.address && biz.city && biz.entityType && biz.fein && biz.yearsInBusiness && biz.phone && biz.email),
     history:   !!(hist.priorTerms?.length) || hist.claimCount !== undefined,
     coverages: !!(stateCov.classes && stateCov.classes.length && stateCov.classes.every(c => c.code && c.payroll)),
-    questions: uw.decline_any !== undefined,
+    questions: uw.safety_program !== undefined,
     carriers:  Object.values(sel).some(Boolean),
     carrierflow: !!bnd.selectedCarrier && !!bnd.carrierQuestions,
     quote: !!bnd.bound,

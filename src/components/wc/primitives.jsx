@@ -81,6 +81,37 @@ export function FieldGroup({ label, children, className = '' }) {
   )
 }
 
+/* The compact answer list: the card supplies the side padding, the rows
+   supply the rhythm, and divide-y draws rules only between them so the
+   last row never leaves a hairline above the card's edge. Use this
+   wherever a page asks a run of short questions — a full-width toggle
+   per question reads as an oversized control for a binary answer. */
+export function RowGroup({ label, children, className = '' }) {
+  return (
+    <div className={className}>
+      {label && <SectionLabel>{label}</SectionLabel>}
+      <div className="rounded-xl px-5 sm:px-6 py-1 divide-y divide-[#F3F4F6]"
+        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/* One row of a RowGroup: the question on the left, its control on the
+   right, on a 56px line so pills and selects sit level down the column. */
+export function AnswerRow({ label, help, children }) {
+  return (
+    <div className="flex items-center justify-between gap-4 min-h-[56px] py-1.5">
+      <span className="text-sm text-gray-800 min-w-0">
+        {label}
+        {help && <span className="block text-[11px] text-gray-400 mt-0.5 leading-snug">{help}</span>}
+      </span>
+      <span className="flex items-center gap-3 shrink-0">{children}</span>
+    </div>
+  )
+}
+
 /* Brand-tinted banner — carrier context the agent needs before answering. */
 export function Banner({ children, icon = true }) {
   return (

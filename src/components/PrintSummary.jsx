@@ -15,13 +15,25 @@ const ENTITY_LABELS = {
   corp: 'Corporation', llc: 'LLC', sole: 'Sole proprietor', partner: 'Partnership',
 }
 
+/* Short forms of the credit questions — the summary is a read-back, so
+   the full question wording would crowd the page. */
 const UW_LABELS = {
-  decline_any:      'Knockout Conditions Apply',
-  safety_program:   'Written Safety Program',
-  toolbox_talks:    'Toolbox Talks / Safety Meetings',
-  osha_training:    'OSHA-Compliant Training',
-  sub_certificates: 'Sub Certificates Collected',
-  sub_25_pct:       'Subs > 25% of Receipts',
+  owner_involved:      'Owner Involved Day-to-Day',
+  ten_years_exp:       '10+ Years Industry Experience',
+  supervisor_ratio:    'Low Supervisor Ratio',
+  turnover_rate:       'Annual Turnover Rate',
+  safety_program:      'Written Safety Program',
+  safety_committee:    'Safety Committee / Manager',
+  safety_meetings:     'Regular Safety Meetings',
+  orientation_program: 'Orientation / Training Program',
+  accident_procedures: 'Accident Investigation Procedures',
+  ppe_required:        'PPE Required',
+  machines_guarded:    'Machines Properly Guarded',
+  first_aid:           'First Aid / Eye Wash Available',
+  benefits_provided:   'Employee Benefits',
+  drug_testing:        'Pre-Employment Drug Testing',
+  return_to_work:      'Return to Work Program',
+  cleaning_frequency:  'Work Area Cleaning',
 }
 
 /* The teal chip all the products use on these summary panels — the one
@@ -213,9 +225,12 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   ))}
                 </Panel>
 
-                <Panel title="Underwriting" icon="tools">
+                <Panel title="Credit Opportunity" icon="tools">
+                  {/* Two of these answer with a frequency rather than
+                      yes/no, so print the stored value as-is. */}
                   {Object.entries(UW_LABELS).map(([k, label]) => (
-                    <Row key={k} label={label} value={yesNo(uw[k])} />
+                    <Row key={k} label={label}
+                      value={uw[k] === 'yes' || uw[k] === 'no' ? yesNo(uw[k]) : uw[k]} />
                   ))}
                 </Panel>
 

@@ -1,50 +1,80 @@
 import { useState } from 'react'
 import norbieface from '../../assets/norbieface.png'
+import { Select } from '../../components/FormField'
 import {
   BRAND_GRADIENT,
   BrandText,
-  SectionLabel,
-  QuestionCard,
-  QuestionRow,
+  RowGroup,
+  AnswerRow,
   YesNo,
-  FieldError,
   PrimaryButton,
   Banner,
 } from '../../components/wc/primitives'
 
-/* Six knockout conditions — one Yes answers all of them. */
-const DECLINE_ITEMS = [
-  'Employees under the age of 16',
-  'Work aboard aircraft or watercraft',
-  'Demolition, blasting, or use of explosives',
-  'Work above three stories in height',
-  'Coverage declined or canceled for fraud or misrepresentation',
-  'Operations involving asbestos or hazardous waste removal',
+/* The BTIS credit questionnaire, grouped by topic so the run of fifteen
+   reads as four short lists rather than one wall. No conditional logic —
+   every question is asked on every risk. Eligibility knockouts no longer
+   live here; appetite is settled on page one. */
+const CREDIT_GROUPS = [
+  {
+    label: 'Workforce & experience',
+    questions: [
+      { key: 'owner_involved',   label: 'Is the owner directly involved in day-to-day operations?' },
+      { key: 'ten_years_exp',    label: 'Does the applicant have a minimum of 10 years experience in the industry of business?' },
+      { key: 'supervisor_ratio', label: 'Is the supervisor to employee ratio low (1 sup / 12 or fewer employees)?' },
+      {
+        key: 'turnover_rate',
+        label: "What is the applicant's annual employee turnover rate?",
+        type: 'select',
+        width: 150,
+        options: ['Under 10%', '10-25%', '26-35%', '36-50%', '51-100%'],
+      },
+    ],
+  },
+  {
+    label: 'Safety & training',
+    questions: [
+      { key: 'safety_program',      label: 'Is there a written safety program/policy?' },
+      { key: 'safety_committee',    label: 'Is there a safety committee or designated safety manager?' },
+      { key: 'safety_meetings',     label: 'Are regular safety meetings held with employees?' },
+      { key: 'orientation_program', label: 'Does the business offer a formal orientation or training program?' },
+      { key: 'accident_procedures', label: 'Are there formal accident investigation procedures in place?' },
+      { key: 'ppe_required',        label: 'Are employees required to use appropriate personal protective equipment?' },
+      { key: 'machines_guarded',    label: 'Are all machines, tools, and other devices properly guarded?' },
+      { key: 'first_aid',           label: 'Are first aid kits, eye wash stations, and/or other medical devices available?' },
+    ],
+  },
+  {
+    label: 'Employee programs',
+    questions: [
+      { key: 'benefits_provided', label: 'Are benefits provided for employees?' },
+      { key: 'drug_testing',      label: 'Is drug testing required of employees pre-employment?' },
+      { key: 'return_to_work',    label: 'Is there a return to work program in place?' },
+    ],
+  },
+  {
+    label: 'Housekeeping',
+    questions: [
+      {
+        key: 'cleaning_frequency',
+        label: 'How often does the business clean employee work areas, common areas and/or public areas?',
+        type: 'select',
+        width: 150,
+        options: ['Daily', 'Weekly', 'Never'],
+      },
+    ],
+  },
 ]
 
-const SAFETY_QUESTIONS = [
-  { key: 'safety_program', label: 'Written safety program in place' },
-  { key: 'toolbox_talks',  label: 'Regular toolbox talks / safety meetings' },
-  { key: 'osha_training',  label: 'OSHA-compliant training for field staff' },
-]
+const ALL_QUESTIONS = CREDIT_GROUPS.flatMap(g => g.questions)
+const ALL_KEYS = ALL_QUESTIONS.map(q => q.key)
 
-const EMPLOYEE_QUESTIONS = [
-  { key: 'sub_certificates', label: 'Certificates collected from all subcontractors' },
-  { key: 'sub_25_pct',       label: 'Subcontracted work > 25% of receipts' },
-]
-
-/* Standard (recommended) defaults — matches Inland's prototype-mode idea:
-   an agent can accept the recommended answer set and see it applied. */
-const RECOMMENDED = {
-  decline_any:      'no',
-  safety_program:   'yes',
-  toolbox_talks:    'yes',
-  osha_training:    'yes',
-  sub_certificates: 'yes',
-  sub_25_pct:       'no',
-}
-
-const ALL_KEYS = ['decline_any', 'safety_program', 'toolbox_talks', 'osha_training', 'sub_certificates', 'sub_25_pct']
+/* Every Yes/No answer credits the risk, so Yes is the standard answer;
+   the two dropdowns take the most common response. */
+const RECOMMENDED = Object.fromEntries(ALL_QUESTIONS.map(q => [
+  q.key,
+  q.type === 'select' ? q.options[0] : 'yes',
+]))
 
 export default function UnderwritingQuestions({
   formData,
@@ -64,7 +94,6 @@ export default function UnderwritingQuestions({
   const [showPreview, setShowPreview] = useState(false)
 
   const allAnswered = ALL_KEYS.every(k => data[k] !== undefined && data[k] !== null && data[k] !== '')
-  const declineTriggered = data.decline_any === 'yes'
 
   const handleQuickFill = () => {
     updateFormData('underwriting', RECOMMENDED)
@@ -83,6 +112,10 @@ export default function UnderwritingQuestions({
 
   return (
     <div className="w-full space-y-5">
+      <p className="text-sm text-gray-500 -mt-2">
+        Please validate all credit questions for this risk to improve pricing.
+      </p>
+
       {/* Norbie quick-fill — brand banner, not a bespoke gradient */}
       {!quickFilled && !allAnswered && (
         <Banner icon={false}>
@@ -131,70 +164,28 @@ export default function UnderwritingQuestions({
         </div>
       )}
 
-      {/* Group 1 — Auto-decline */}
-      <div>
-        <SectionLabel>Knockout conditions</SectionLabel>
-        <QuestionCard error={err('decline_any')}>
-          <p className="text-[12px] uppercase tracking-[0.08em] font-bold text-gray-400 mb-3">
-            Do any of the following apply?
-          </p>
-          <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5 mb-4">
-            {DECLINE_ITEMS.map(i => (
-              <div key={i} className="flex items-start gap-2.5">
-                <span
-                  className="w-1.5 h-1.5 rounded-full shrink-0 mt-2"
-                  style={{ background: BRAND_GRADIENT }}
-                />
-                <span className="text-[13px] text-gray-700 leading-snug">{i}</span>
-              </div>
-            ))}
-          </div>
-          <div className="im-rule pt-3 flex items-center justify-between gap-3">
-            <p className="text-sm font-semibold text-gray-900">
-              Any of the above apply to this business?
-            </p>
-            <YesNo value={data.decline_any} onChange={set('decline_any')} name="Auto-decline" />
-          </div>
-          {declineTriggered && (
-            <div className="im-chip im-chip-stop mt-3">
-              One or more knockout conditions apply — expect referrals.
-            </div>
-          )}
-          {err('decline_any') && <FieldError className="mt-2">Please answer this question</FieldError>}
-        </QuestionCard>
-      </div>
-
-      {/* Group 2 — Safety practices */}
-      <div>
-        <SectionLabel>Safety practices</SectionLabel>
-        <div className="space-y-2">
-          {SAFETY_QUESTIONS.map(q => (
-            <QuestionRow
-              key={q.key}
-              label={q.label}
-              value={data[q.key]}
-              onChange={set(q.key)}
-              error={err(q.key)}
-            />
+      {/* Four topic groups, asked as a compact list — question on the
+          left, its answer on the right. */}
+      {CREDIT_GROUPS.map(group => (
+        <RowGroup key={group.label} label={group.label}>
+          {group.questions.map(q => (
+            <AnswerRow key={q.key} label={q.label}>
+              {q.type === 'select' ? (
+                <div style={{ width: q.width || 150 }}>
+                  <Select
+                    options={q.options}
+                    value={data[q.key]}
+                    onChange={set(q.key)}
+                    error={err(q.key)}
+                  />
+                </div>
+              ) : (
+                <YesNo value={data[q.key]} onChange={set(q.key)} name={q.label} />
+              )}
+            </AnswerRow>
           ))}
-        </div>
-      </div>
-
-      {/* Group 3 — Employees & subs */}
-      <div>
-        <SectionLabel>Employees &amp; subcontractors</SectionLabel>
-        <div className="space-y-2">
-          {EMPLOYEE_QUESTIONS.map(q => (
-            <QuestionRow
-              key={q.key}
-              label={q.label}
-              value={data[q.key]}
-              onChange={set(q.key)}
-              error={err(q.key)}
-            />
-          ))}
-        </div>
-      </div>
+        </RowGroup>
+      ))}
 
       {/* Action row — Continue is left-aligned; clicking it opens the
           Application Preview so the agent reviews the whole submission
@@ -360,11 +351,11 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               <PreviewRow label="Experience mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || ''}`} />
             </PreviewSection>
 
-            <PreviewSection title="Underwriting">
-              <PreviewRow label="Knockout conditions" value={uw.decline_any === 'yes' ? 'Yes (referral)' : 'No'} />
+            <PreviewSection title="Credit opportunity">
               <PreviewRow label="Safety program" value={uw.safety_program === 'yes' ? 'Yes' : 'No'} />
-              <PreviewRow label="OSHA training" value={uw.osha_training === 'yes' ? 'Yes' : 'No'} />
-              <PreviewRow label="Subs > 25% of receipts" value={uw.sub_25_pct === 'yes' ? 'Yes' : 'No'} />
+              <PreviewRow label="Safety meetings" value={uw.safety_meetings === 'yes' ? 'Yes' : 'No'} />
+              <PreviewRow label="Return to work program" value={uw.return_to_work === 'yes' ? 'Yes' : 'No'} />
+              <PreviewRow label="Turnover rate" value={uw.turnover_rate} />
             </PreviewSection>
 
             <PreviewSection title="Carriers">

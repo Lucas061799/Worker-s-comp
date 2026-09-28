@@ -28,7 +28,7 @@ const BASE_STEPS = [
   { id: 2, num: '2',  key: 'history',     label: 'Coverage history',       phase: 1 },
   { id: 3, num: '2b', key: 'losses',      label: 'Loss detail',            phase: 1, cond: true },
   { id: 4, num: '3',  key: 'coverages',   label: 'State coverages',        phase: 1 },
-  { id: 5, num: '4',  key: 'questions',   label: 'Underwriting questions', phase: 1 },
+  { id: 5, num: '4',  key: 'questions',   label: 'Credit opportunity',     phase: 1 },
   { id: 6, num: '5',  key: 'carriers',    label: 'Carrier selection',      phase: 1 },
   { id: 7, num: '6',  key: 'carrierflow', label: 'Carrier questions',      phase: 2 },
   { id: 8, num: '7',  key: 'quote',       label: 'Quote & bind',           phase: 2 },
@@ -198,12 +198,22 @@ function App() {
     })
     updateFormData('underwriting', {
       experienceMod: '0.87', experienceModSource: 'WCIRB',
-      decline_any: 'no',
+owner_involved: 'yes',
+      ten_years_exp: 'yes',
+      supervisor_ratio: 'yes',
+      turnover_rate: 'Under 10%',
       safety_program: 'yes',
-      toolbox_talks: 'yes',
-      osha_training: 'yes',
-      sub_certificates: 'yes',
-      sub_25_pct: 'no',
+      safety_committee: 'yes',
+      safety_meetings: 'yes',
+      orientation_program: 'yes',
+      accident_procedures: 'yes',
+      ppe_required: 'yes',
+      machines_guarded: 'yes',
+      first_aid: 'yes',
+      benefits_provided: 'yes',
+      drug_testing: 'yes',
+      return_to_work: 'yes',
+      cleaning_frequency: 'Daily',
     })
     updateFormData('carrierSelection', {
       checked: Object.fromEntries(CARRIERS.map(c => [c.id, true])),
@@ -294,7 +304,7 @@ function App() {
     history:     'Coverage history',
     losses:      'Loss detail',
     coverages:   'State coverages',
-    questions:   'Underwriting questions',
+    questions:   'Credit opportunity',
     carriers:    'Choose the markets to approach',
     loading:     'Rating',
     indication:  'Price indication',
@@ -315,7 +325,7 @@ function App() {
         updateFormData={updateFormData}
         showErrors={attemptedQuote}
         onValidateAll={() => {
-          if (formData.underwriting?.decline_any !== undefined) return true
+          if (formData.underwriting?.safety_program !== undefined) return true
           setAttemptedQuote(true)
           return false
         }}
