@@ -108,7 +108,7 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
       onClick={onCancel}
     >
       <div
-        className="im-sheet max-w-md w-full rounded-2xl px-7 py-7"
+        className="im-modal max-w-md w-full rounded-2xl px-7 py-7"
         style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
@@ -159,7 +159,7 @@ function PromoModal({ onKeep, onUncheck }) {
       onClick={onKeep}
     >
       <div
-        className="im-sheet max-w-md w-full rounded-2xl p-7"
+        className="im-modal max-w-md w-full rounded-2xl p-7"
         style={{ boxShadow: '0 32px 80px rgba(0,0,0,0.22)' }}
         onClick={e => e.stopPropagation()}
       >

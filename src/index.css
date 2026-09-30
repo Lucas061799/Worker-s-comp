@@ -228,6 +228,10 @@ input, select, textarea, button {
    CBIC does the same, painting its preview shell with --surface-card. */
 .im-sheet { background: var(--surface-soft) !important; }
 
+/* A modal with no panels of its own has nothing opaque underneath, so the
+   soft surface lets the page through. Those sit on the card colour. */
+.im-modal { background: var(--surface-card) !important; }
+
 /* A brand edge that means "chosen". CBIC keeps this as .edge-brand so the
    intent is a class rather than an inline colour a shim can overrule, and
    swaps to the lighter brand purple on navy. */

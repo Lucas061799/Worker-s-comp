@@ -100,13 +100,29 @@ export function RowGroup({ label, children, className = '' }) {
 
 /* One row of a RowGroup: the question on the left, its control on the
    right, on a 56px line so pills and selects sit level down the column. */
-export function AnswerRow({ label, help, children }) {
+export function AnswerRow({ label, help, stacked = false, children }) {
+  const question = (
+    <span className="text-sm text-gray-800 min-w-0">
+      {label}
+      {help && <span className="block text-[11px] text-gray-400 mt-0.5 leading-snug">{help}</span>}
+    </span>
+  )
+
+  /* A control with more than two or three options runs out of room beside
+     its question and pushes the text into a second line. Stacked gives the
+     answer the full width on its own row instead. */
+  if (stacked) {
+    return (
+      <div className="py-3">
+        {question}
+        <div className="mt-2.5">{children}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-center justify-between gap-4 min-h-[56px] py-1.5">
-      <span className="text-sm text-gray-800 min-w-0">
-        {label}
-        {help && <span className="block text-[11px] text-gray-400 mt-0.5 leading-snug">{help}</span>}
-      </span>
+      {question}
       <span className="flex items-center gap-3 shrink-0">{children}</span>
     </div>
   )

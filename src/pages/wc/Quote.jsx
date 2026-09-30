@@ -25,7 +25,7 @@ function ClientPresentModal({ price, carrier, effectiveDate, businessName, onClo
       onClick={onClose}
     >
       <div
-        className="im-sheet max-w-md w-full rounded-2xl px-8 py-10 text-center"
+        className="im-modal max-w-md w-full rounded-2xl px-8 py-10 text-center"
         style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >

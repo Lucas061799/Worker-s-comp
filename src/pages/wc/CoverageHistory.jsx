@@ -45,7 +45,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
   return (
     <div className="w-full space-y-6">
       <RowGroup label="Current coverage">
-        <AnswerRow label="What is the current coverage status?">
+        <AnswerRow label="What is the current coverage status?" stacked>
           <Segmented
             options={COVERAGE_STATUS}
             value={status}
