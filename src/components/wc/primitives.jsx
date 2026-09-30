@@ -178,9 +178,11 @@ export function ModalButton({ children, onClick, variant = 'primary' }) {
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 whitespace-nowrap ${primary
-        ? 'px-6 py-3 rounded-xl text-sm font-bold text-white transition hover:opacity-90'
-        : 'px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 transition hover:opacity-80'}`}
+      /* One height for both, set rather than left to padding — the ghost
+         also carries a border, so equal padding would still measure short. */
+      className={`h-11 inline-flex items-center justify-center shrink-0 whitespace-nowrap rounded-xl text-sm transition ${primary
+        ? 'px-6 font-bold text-white hover:opacity-90'
+        : 'px-5 font-semibold text-gray-700 hover:opacity-80'}`}
       style={primary
         ? { background: BRAND_GRADIENT, boxShadow: '0 4px 18px rgba(92,46,212,0.30)' }
         : { border: '1.5px solid var(--line)', background: 'var(--surface-card)' }}
