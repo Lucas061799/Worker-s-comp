@@ -249,6 +249,7 @@ const PREVIEW_ICONS = {
   tools:    'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
   shield:   'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
   user:     'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+  money:    'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
 }
 
 /* Same panel head the submission receipt and print summary use: teal
@@ -329,7 +330,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
 
         <div className="flex-1 overflow-y-auto px-4 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-            <PreviewSection title="Business">
+            <PreviewSection title="Business" icon="building">
               <PreviewRow label="Name" value={biz.name} />
               <PreviewRow label="Entity" value={biz.entityType && ({corp:'Corporation',llc:'LLC',sole:'Sole proprietor',partner:'Partnership'})[biz.entityType]} />
               <PreviewRow label="Primary state" value={pz.state} />
@@ -337,7 +338,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               <PreviewRow label="Year established" value={biz.yearEstablished} />
             </PreviewSection>
 
-            <PreviewSection title="Class & payroll">
+            <PreviewSection title="Class & payroll" icon="money">
               <PreviewRow label="Primary class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
               <PreviewRow label="Industry" value={pz.industry} />
               <PreviewRow label="Classes on file" value={(stateCov.classes || []).length} />
@@ -345,24 +346,24 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               <PreviewRow label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} />
             </PreviewSection>
 
-            <PreviewSection title="Coverage history">
+            <PreviewSection title="Coverage history" icon="clock">
               <PreviewRow label="Coverage status" value={hist.currentCarrier || hist.coverageStatus} />
               <PreviewRow label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
               <PreviewRow label="Experience mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || ''}`} />
             </PreviewSection>
 
-            <PreviewSection title="Credit opportunity">
+            <PreviewSection title="Credit opportunity" icon="tools">
               <PreviewRow label="Safety program" value={uw.safety_program === 'yes' ? 'Yes' : 'No'} />
               <PreviewRow label="Safety meetings" value={uw.safety_meetings === 'yes' ? 'Yes' : 'No'} />
               <PreviewRow label="Return to work program" value={uw.return_to_work === 'yes' ? 'Yes' : 'No'} />
               <PreviewRow label="Turnover rate" value={uw.turnover_rate} />
             </PreviewSection>
 
-            <PreviewSection title="Carriers">
+            <PreviewSection title="Carriers" icon="shield">
               <PreviewRow label="Markets selected" value={selectedCount ? `${selectedCount} of 6` : 'All'} />
             </PreviewSection>
 
-            <PreviewSection title="Contact">
+            <PreviewSection title="Contact" icon="user">
               <PreviewRow label="Phone" value={biz.phone} />
               <PreviewRow label="Email" value={biz.email} />
             </PreviewSection>
