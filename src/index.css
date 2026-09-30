@@ -180,10 +180,24 @@ input, select, textarea, button {
   border-color: rgba(255,255,255,0.06) !important;
 }
 
-/* Preview modal header icon — 12% brand gradient is invisible in dark mode,
-   bump to 35% so the document badge actually reads. */
-[data-dark="true"] .bop-page div[style*="rgba(92, 46, 212, 0.12) 0%, rgba(166, 20, 195, 0.12)"] {
-  background: linear-gradient(88.09deg, rgba(92,46,212,0.45) 0%, rgba(166,20,195,0.45) 100%) !important;
+/* A brand edge that means "chosen". CBIC keeps this as .edge-brand so the
+   intent is a class rather than an inline colour a shim can overrule, and
+   swaps to the lighter brand purple on navy. */
+.im-edge-brand { border-color: #5C2ED4 !important; }
+.im-edge-best  { border-color: #7C3AED !important; }
+/* Scoped to match the surface shims' weight — and declared after them, so
+   a deliberate edge outranks the generic card border. */
+[data-dark="true"] .bop-page div.im-edge-brand,
+[data-dark="true"] div.im-edge-brand { border-color: #A78BFA !important; }
+[data-dark="true"] .bop-page div.im-edge-best,
+[data-dark="true"] div.im-edge-best  { border-color: rgba(167,139,250,0.55) !important; }
+
+/* Brand-tinted icon chips. A 12% wash of the deep brand purples vanishes
+   on navy, but lifting those same purples reads as a loud disc. CBIC
+   switches hue instead: the dark brand pair (#A78BFA / #E879F9) at the
+   same 0.28/0.20 it gives .cb-info-pop-head. */
+[data-dark="true"] div[style*="rgba(92, 46, 212, 0.12) 0%, rgba(166, 20, 195, 0.12)"] {
+  background: linear-gradient(88.09deg, rgba(167,139,250,0.28) 0%, rgba(232,121,249,0.20) 100%) !important;
 }
 /* Preview modal close button — keep it visible without using pure white */
 [data-dark="true"] .bop-page button[aria-label="Close"][style*="background: white"] {

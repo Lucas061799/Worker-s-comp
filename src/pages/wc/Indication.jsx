@@ -58,7 +58,9 @@ function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
 
   return (
     <div
-      className="rounded-lg transition overflow-hidden"
+      className={`rounded-lg transition overflow-hidden ${
+        selected ? 'im-edge-brand' : best ? 'im-edge-best' : ''
+      }`}
       style={{
         background: quoted ? 'white' : '#FAFAFB',
         border: `1.5px solid ${selected ? '#5C2ED4' : best ? '#7C3AED' : '#E5E7EB'}`,

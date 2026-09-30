@@ -270,7 +270,7 @@ export default function StateCoverages({ formData, updateFormData }) {
       >
         <div className="space-y-3">
           {classes.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-2 sm:grid-cols-[126px_minmax(0,1fr)_102px_78px_78px_32px] gap-2.5 items-end">
+            <div key={idx} className="grid grid-cols-2 sm:grid-cols-[126px_minmax(0,1fr)_102px_62px_62px_32px] gap-2.5 items-end">
               <Select
                 label={idx === 0 ? 'Location' : undefined}
                 options={locationOptions}
@@ -296,14 +296,14 @@ export default function StateCoverages({ formData, updateFormData }) {
                 placeholder="$"
               />
               <Input
-                label={idx === 0 ? 'Full-time' : undefined}
+                label={idx === 0 ? 'FT' : undefined}
                 align="right"
                 value={row.ftEmployees}
                 onChange={val => updateClass(idx, { ftEmployees: val })}
                 placeholder="0"
               />
               <Input
-                label={idx === 0 ? 'Part-time' : undefined}
+                label={idx === 0 ? 'PT' : undefined}
                 align="right"
                 value={row.ptEmployees}
                 onChange={val => updateClass(idx, { ptEmployees: val })}
