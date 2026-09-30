@@ -77,7 +77,10 @@ input, select, textarea, button {
   background: rgba(255,255,255,0.06) !important;
   color: rgba(255,255,255,0.35) !important;
 }
-/* Inner white cards in BOP (e.g. coverage rows, premium card) → dark.
+/* White is one step ABOVE the #F9FAFB surface in light — a panel on a
+   card, a field on a card — so in dark it has to lift above that surface's
+   0.03, not drop to a solid below it, or the panel sinks into its own
+   container. Same 0.06 the fields use, which is what white means in light.
    Multiple variants because browsers serialize style="background: white"
    differently (some keep "white", some normalize to rgb()). */
 [data-dark="true"] .bop-page div[style*="background: white"],
@@ -86,7 +89,7 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page div[style*="background:rgb(255, 255, 255)"],
 [data-dark="true"] .bop-page div[style*="background-color: white"],
 [data-dark="true"] .bop-page div[style*="background-color: rgb(255, 255, 255)"] {
-  background: #1A1E38 !important;
+  background: rgba(255,255,255,0.06) !important;
   border-color: rgba(255,255,255,0.10) !important;
 }
 /* #FAFAFB — the "quieter than white" surface (a carrier that didn't
@@ -179,6 +182,12 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page [class*="divide-"] > :not([hidden]) ~ :not([hidden]) {
   border-color: rgba(255,255,255,0.06) !important;
 }
+
+/* A modal sheet covers what is behind it, so it stays a solid — the
+   translucent surfaces only work when something opaque is underneath.
+   CBIC does the same, painting its preview shell with --surface-card. */
+.im-sheet { background: #F9FAFB !important; }
+[data-dark="true"] .im-sheet { background: #1A1E38 !important; }
 
 /* A brand edge that means "chosen". CBIC keeps this as .edge-brand so the
    intent is a class rather than an inline colour a shim can overrule, and

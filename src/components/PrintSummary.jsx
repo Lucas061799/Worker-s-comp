@@ -102,8 +102,8 @@ export default function PrintSummary({ formData, visible, onClose }) {
       onClick={onClose}>
       <div className="mx-auto my-8 px-4" style={{ maxWidth: 940 }} onClick={e => e.stopPropagation()}>
 
-        <div id="submission-print-area" className="rounded-2xl overflow-hidden"
-          style={{ background: 'white', border: '1px solid #F3F4F6' }}>
+        <div id="submission-print-area" className="im-sheet rounded-2xl overflow-hidden"
+          style={{ border: '1px solid #F3F4F6' }}>
           <div className="h-1" style={{ background: BRAND_GRADIENT }} />
 
           {/* Header */}

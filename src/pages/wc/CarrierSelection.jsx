@@ -108,8 +108,8 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
       onClick={onCancel}
     >
       <div
-        className="max-w-md w-full rounded-2xl px-7 py-7"
-        style={{ background: 'white', boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
+        className="im-sheet max-w-md w-full rounded-2xl px-7 py-7"
+        style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
         onClick={e => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold text-navy leading-tight mb-2">
@@ -159,8 +159,8 @@ function PromoModal({ onKeep, onUncheck }) {
       onClick={onKeep}
     >
       <div
-        className="max-w-md w-full rounded-2xl p-7"
-        style={{ background: 'white', boxShadow: '0 32px 80px rgba(0,0,0,0.22)' }}
+        className="im-sheet max-w-md w-full rounded-2xl p-7"
+        style={{ boxShadow: '0 32px 80px rgba(0,0,0,0.22)' }}
         onClick={e => e.stopPropagation()}
       >
         <span className="im-chip im-chip-warn mb-3 inline-flex">Q3 PROMOTION ACTIVE</span>

@@ -292,8 +292,8 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-        style={{ maxHeight: '92vh', background: '#F9FAFB' }}
+        className="im-sheet relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        style={{ maxHeight: '92vh' }}
         onClick={ev => ev.stopPropagation()}
       >
         <div className="shrink-0" style={{ background: 'white', borderBottom: '1px solid #F3F4F6' }}>
