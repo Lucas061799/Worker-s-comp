@@ -43,7 +43,24 @@ const UW_LABELS = {
 
 /* The teal chip all the products use on these summary panels — the one
    place they step outside the purple. */
-function Panel({ title, icon = 'shield', children }) {
+/* The pencil CBIC puts on every panel: a read-back is for catching a
+   mistake, so it has to be a way back in. */
+function EditButton({ onClick, label }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Edit ${label}`}
+      className="no-print w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition hover:bg-gray-50"
+    >
+      <svg className="w-3.5 h-3.5" fill="none" stroke="#9CA3AF" strokeWidth="1.6" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    </button>
+  )
+}
+
+function Panel({ title, icon = 'shield', onEdit, children }) {
   return (
     <div className="rounded-xl p-4" style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', breakInside: 'avoid' }}>
       <div className="flex items-center gap-2 mb-3">
@@ -53,7 +70,8 @@ function Panel({ title, icon = 'shield', children }) {
             <path strokeLinecap="round" strokeLinejoin="round" d={ICONS[icon] || ICONS.shield} />
           </svg>
         </div>
-        <h3 className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{title}</h3>
+        <h3 className="text-xs font-bold flex-1" style={{ color: 'var(--ink)' }}>{title}</h3>
+        {onEdit && <EditButton onClick={onEdit} label={title} />}
       </div>
       <div>{children}</div>
     </div>
@@ -73,7 +91,9 @@ function Row({ label, value }) {
 const yesNo = (v) => (v === 'yes' || v === true ? 'Yes' : v === 'no' || v === false ? 'No' : '')
 const money = (n) => (n ? `$${Number(n).toLocaleString()}` : '')
 
-export default function PrintSummary({ formData, visible, onClose }) {
+export default function PrintSummary({ formData, visible, onClose, onEdit }) {
+  // A pencil sends the agent back to the step that owns the answer.
+  const edit = (stepId) => onEdit ? () => { onClose(); onEdit(stepId) } : undefined
   if (!visible) return null
 
   const pz   = formData.pageZero     || {}
@@ -97,17 +117,18 @@ export default function PrintSummary({ formData, visible, onClose }) {
   const selectedCarriers = CARRIERS.filter(c => sel[c.id] !== false)
 
   return (
-    <div className="bop-page fixed inset-0 z-[9999] overflow-y-auto uw-preview-backdrop"
+    <div className="bop-page fixed inset-0 z-[9999] flex items-center justify-center p-4 uw-preview-backdrop"
       style={{ background: 'rgba(15,10,40,0.6)', backdropFilter: 'blur(8px)' }}
       onClick={onClose}>
-      <div className="mx-auto my-8 px-4" style={{ maxWidth: 940 }} onClick={e => e.stopPropagation()}>
-
-        <div id="submission-print-area" className="im-sheet rounded-2xl overflow-hidden"
-          style={{ border: '1px solid var(--line-soft)' }}>
-          <div className="h-1" style={{ background: BRAND_GRADIENT }} />
-
-          {/* Header */}
-          <div className="flex items-start gap-4 px-6 pt-5 pb-4">
+      <div
+        id="submission-print-area"
+        className="im-sheet relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        style={{ maxHeight: '92vh' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header — sits on the card surface, above the soft body */}
+        <div className="shrink-0" style={{ background: 'var(--surface-card)', borderBottom: '1px solid var(--line-soft)' }}>
+          <div className="flex items-start gap-4 px-5 pt-4 pb-4">
             <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
               style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)' }}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
@@ -122,72 +143,30 @@ export default function PrintSummary({ formData, visible, onClose }) {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold mb-1 text-navy">Application summary</h1>
-              <p className="text-xs text-gray-400 leading-relaxed">
+              <h1 className="text-xl font-bold leading-tight" style={{ color: 'var(--ink)' }}>Application summary</h1>
+              <p className="text-xs mt-0.5 leading-relaxed" style={{ color: '#9CA3AF' }}>
                 {biz.name || 'This submission'} — everything captured so far.
               </p>
             </div>
 
-            <div className="screen-only flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                title="Print / Save as PDF"
-                onClick={() => setTimeout(() => window.print(), 50)}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                style={{ background: 'white', border: '1px solid #E5E7EB' }}
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <defs>
-                    <linearGradient id="wcSumPrintG" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#5C2ED4" /><stop offset="100%" stopColor="#A614C3" />
-                    </linearGradient>
-                  </defs>
-                  <path stroke="url(#wcSumPrintG)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6"
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                title="Close"
-                onClick={onClose}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                style={{ background: 'white', border: '1px solid #E5E7EB' }}
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round">
-                  <path d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              title="Close"
+              className="no-print w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all hover:bg-gray-50"
+              style={{ border: '1px solid var(--line)', background: 'var(--surface-card)' }}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                <path stroke="url(#wcSumCheckG)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
+        </div>
 
-          {/* Facts strip */}
-          <div className="grid grid-cols-3 divide-x divide-gray-100" style={{ borderTop: '1px solid #F3F4F6' }}>
-            <div className="px-6 py-4">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: '#9CA3AF' }}>
-                Submission Number
-              </p>
-              <p className="text-sm font-bold text-gradient">WC-2026-048291</p>
-            </div>
-            <div className="px-6 py-4">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: '#9CA3AF' }}>
-                Effective Date
-              </p>
-              <p className="text-sm font-bold text-navy">{pz.effectiveDate || '—'}</p>
-            </div>
-            <div className="px-6 py-4">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: '#9CA3AF' }}>
-                Primary State
-              </p>
-              <p className="text-sm font-bold text-navy">{state}</p>
-            </div>
-          </div>
+        <div className="flex-1 overflow-y-auto custom-scroll px-4 py-4" style={{ background: 'var(--surface-soft)' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
 
-          {/* Panels */}
-          <div style={{ borderTop: '1px solid #F3F4F6' }}>
-            <div className="px-5 py-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-
-                <Panel title="Business" icon="building">
+                <Panel title="Business" icon="building" onEdit={edit(1)}>
                   <Row label="Legal Name" value={biz.name} />
                   <Row label="Structure" value={ENTITY_LABELS[biz.entityType]} />
                   <Row label="FEIN" value={biz.fein} />
@@ -198,7 +177,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   <Row label="Website" value={biz.website} />
                 </Panel>
 
-                <Panel title="Contact" icon="user">
+                <Panel title="Contact" icon="user" onEdit={edit(1)}>
                   <Row label="Phone" value={biz.phone} />
                   <Row label="Email" value={biz.email} />
                   <Row label="Address" value={biz.address} />
@@ -208,7 +187,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
                     : 'Same as physical'} />
                 </Panel>
 
-                <Panel title="Classifications" icon="doc">
+                <Panel title="Classifications" icon="doc" onEdit={edit(4)}>
                   <Row label="Primary Class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
                   <Row label="Industry" value={pz.industry} />
                   {classes.filter(c => c.code).map((c, i) => (
@@ -216,7 +195,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   ))}
                 </Panel>
 
-                <Panel title="Payroll" icon="money">
+                <Panel title="Payroll" icon="money" onEdit={edit(4)}>
                   <Row label="Total Employees" value={totalEmployees || ''} />
                   <Row label="Total Annual Payroll" value={money(totalPayroll)} />
                   <Row label="Experience Mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || 'Manual'}`} />
@@ -226,7 +205,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   <Row label="Uses Subcontractors" value={yesNo(stateCov.usesSubs)} />
                 </Panel>
 
-                <Panel title="Coverage History" icon="clock">
+                <Panel title="Coverage History" icon="clock" onEdit={edit(2)}>
                   <Row label="Coverage Status" value={COVERAGE_STATUS_LABELS[hist.coverageStatus] || '—'} />
                   <Row label="Prior Years" value={hist.priorYears} />
                   <Row label="Current Carrier" value={hist.currentCarrier} />
@@ -237,7 +216,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   ))}
                 </Panel>
 
-                <Panel title="Credit Opportunity" icon="tools">
+                <Panel title="Credit Opportunity" icon="tools" onEdit={edit(5)}>
                   {/* Two of these answer with a frequency rather than
                       yes/no, so print the stored value as-is. */}
                   {Object.entries(UW_LABELS).map(([k, label]) => (
@@ -246,7 +225,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
                   ))}
                 </Panel>
 
-                <Panel title="Markets Approached" icon="shield">
+                <Panel title="Markets Approached" icon="shield" onEdit={edit(6)}>
                   {selectedCarriers.length === 0
                     ? <Row label="Selected" value="None" />
                     : selectedCarriers.map(c => (
@@ -255,9 +234,31 @@ export default function PrintSummary({ formData, visible, onClose }) {
                     ))}
                 </Panel>
 
-              </div>
-            </div>
           </div>
+        </div>
+
+        {/* Sticky footer — outline action left, brand action right, the
+            shape CBIC's preview uses. */}
+        <div
+          className="no-print shrink-0 px-5 py-3.5 flex items-center justify-between gap-3"
+          style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-card)' }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-sm font-semibold transition hover:opacity-80"
+            style={{ color: 'var(--ink-2)', border: '1px solid var(--line)', background: 'var(--surface-card)' }}
+          >
+            ← Back to Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => setTimeout(() => window.print(), 50)}
+            className="px-7 py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90"
+            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.3)' }}
+          >
+            Print / Save as PDF →
+          </button>
         </div>
 
       </div>

@@ -349,6 +349,7 @@ owner_involved: 'yes',
           return false
         }}
         onGetIndication={() => goToStep(6)}
+        onGoToStep={goToStep}
       />
     ) },
   ]
@@ -493,6 +494,7 @@ owner_involved: 'yes',
         formData={formData}
         visible={showSummary}
         onClose={() => setShowSummary(false)}
+        onEdit={goToStep}
       />
     </div>
   )

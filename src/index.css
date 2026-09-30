@@ -691,6 +691,16 @@ button.force-white-text,
     border: none !important;
   }
 
+  /* The sheet scrolls its body on screen; on paper every section has to
+     flow, so the flex column and its scroller give way. */
+  #submission-print-area > div,
+  #uw-preview-print-area > div {
+    overflow: visible !important;
+    flex: none !important;
+    max-height: none !important;
+    background: white !important;
+  }
+
   /* Show print-only elements */
   #submission-print-area .print-only,
   #uw-preview-print-area .print-only,

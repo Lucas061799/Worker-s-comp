@@ -85,6 +85,7 @@ export default function UnderwritingQuestions({
   quotesReady = false,
   showErrors = false,
   onValidateAll,
+  onGoToStep,
 }) {
   const data = formData.underwriting || {}
   const set = (key) => (val) => updateFormData('underwriting', { [key]: val })
@@ -227,6 +228,7 @@ export default function UnderwritingQuestions({
           formData={formData}
           onClose={() => setShowPreview(false)}
           onSubmit={() => { setShowPreview(false); onGetIndication && onGetIndication() }}
+          onEdit={onGoToStep}
         />
       )}
     </div>
@@ -254,7 +256,22 @@ const PREVIEW_ICONS = {
 
 /* Same panel head the submission receipt and print summary use: teal
    icon chip, bold navy title. */
-function PreviewSection({ title, icon = 'shield', children }) {
+function PreviewEdit({ onClick, label }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Edit ${label}`}
+      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition hover:bg-gray-50"
+    >
+      <svg className="w-3.5 h-3.5" fill="none" stroke="#9CA3AF" strokeWidth="1.6" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    </button>
+  )
+}
+
+function PreviewSection({ title, icon = 'shield', onEdit, children }) {
   return (
     <div className="rounded-xl p-4" style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
       <div className="flex items-center gap-2 mb-3">
@@ -264,14 +281,16 @@ function PreviewSection({ title, icon = 'shield', children }) {
             <path strokeLinecap="round" strokeLinejoin="round" d={PREVIEW_ICONS[icon] || PREVIEW_ICONS.shield} />
           </svg>
         </div>
-        <h3 className="text-xs font-bold text-navy">{title}</h3>
+        <h3 className="text-xs font-bold flex-1" style={{ color: 'var(--ink)' }}>{title}</h3>
+        {onEdit && <PreviewEdit onClick={onEdit} label={title} />}
       </div>
       {children}
     </div>
   )
 }
 
-function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
+function ApplicationPreviewModal({ formData, onClose, onSubmit, onEdit }) {
+  const edit = (stepId) => onEdit ? () => { onClose(); onEdit(stepId) } : undefined
   const pz  = formData.pageZero      || {}
   const biz = formData.business      || {}
   const hist= formData.history       || {}
@@ -296,7 +315,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
         style={{ maxHeight: '92vh' }}
         onClick={ev => ev.stopPropagation()}
       >
-        <div className="shrink-0" style={{ background: 'white', borderBottom: '1px solid #F3F4F6' }}>
+        <div className="shrink-0" style={{ background: 'var(--surface-card)', borderBottom: '1px solid var(--line-soft)' }}>
           <div className="flex items-start gap-4 px-5 pt-4 pb-4">
             <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
               style={{ background: 'linear-gradient(88.09deg,rgba(92,46,212,0.12) 0%,rgba(166,20,195,0.12) 100%)' }}>
@@ -312,25 +331,25 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               </svg>
             </div>
             <div className="flex-1">
-              <h1 className="text-xl font-bold leading-tight text-gray-900">Application Overview</h1>
-              <p className="text-xs mt-0.5 text-gray-500">Review the submission before it goes to rating.</p>
+              <h1 className="text-xl font-bold leading-tight" style={{ color: 'var(--ink)' }}>Application Overview</h1>
+              <p className="text-xs mt-0.5 leading-relaxed" style={{ color: '#9CA3AF' }}>Review the submission before it goes to rating.</p>
             </div>
             <button
               onClick={onClose}
               aria-label="Close"
-              className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all"
-              style={{ border: '1px solid #E5E7EB', background: 'white' }}
+              className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all hover:bg-gray-50"
+              style={{ border: '1px solid var(--line)', background: 'var(--surface-card)' }}
             >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round">
-                <path d="M6 18L18 6M6 6l12 12" />
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                <path stroke="url(#wcPrevHdrG)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex-1 overflow-y-auto custom-scroll px-4 py-4" style={{ background: 'var(--surface-soft)' }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-            <PreviewSection title="Business" icon="building">
+            <PreviewSection title="Business" icon="building" onEdit={edit(1)}>
               <PreviewRow label="Name" value={biz.name} />
               <PreviewRow label="Entity" value={biz.entityType && ({corp:'Corporation',llc:'LLC',sole:'Sole proprietor',partner:'Partnership'})[biz.entityType]} />
               <PreviewRow label="Primary state" value={pz.state} />
@@ -338,7 +357,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               <PreviewRow label="Year established" value={biz.yearEstablished} />
             </PreviewSection>
 
-            <PreviewSection title="Class & payroll" icon="money">
+            <PreviewSection title="Class & payroll" icon="money" onEdit={edit(4)}>
               <PreviewRow label="Primary class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
               <PreviewRow label="Industry" value={pz.industry} />
               <PreviewRow label="Classes on file" value={(stateCov.classes || []).length} />
@@ -346,24 +365,24 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
               <PreviewRow label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} />
             </PreviewSection>
 
-            <PreviewSection title="Coverage history" icon="clock">
+            <PreviewSection title="Coverage history" icon="clock" onEdit={edit(2)}>
               <PreviewRow label="Coverage status" value={hist.currentCarrier || hist.coverageStatus} />
               <PreviewRow label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
               <PreviewRow label="Experience mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || ''}`} />
             </PreviewSection>
 
-            <PreviewSection title="Credit opportunity" icon="tools">
+            <PreviewSection title="Credit opportunity" icon="tools" onEdit={edit(5)}>
               <PreviewRow label="Safety program" value={uw.safety_program === 'yes' ? 'Yes' : 'No'} />
               <PreviewRow label="Safety meetings" value={uw.safety_meetings === 'yes' ? 'Yes' : 'No'} />
               <PreviewRow label="Return to work program" value={uw.return_to_work === 'yes' ? 'Yes' : 'No'} />
               <PreviewRow label="Turnover rate" value={uw.turnover_rate} />
             </PreviewSection>
 
-            <PreviewSection title="Carriers" icon="shield">
+            <PreviewSection title="Carriers" icon="shield" onEdit={edit(6)}>
               <PreviewRow label="Markets selected" value={selectedCount ? `${selectedCount} of 6` : 'All'} />
             </PreviewSection>
 
-            <PreviewSection title="Contact" icon="user">
+            <PreviewSection title="Contact" icon="user" onEdit={edit(1)}>
               <PreviewRow label="Phone" value={biz.phone} />
               <PreviewRow label="Email" value={biz.email} />
             </PreviewSection>
@@ -371,18 +390,18 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
         </div>
 
         <div className="shrink-0 px-5 py-3.5 flex items-center justify-between gap-3"
-          style={{ borderTop: '1px solid #E5E7EB', background: 'white' }}>
+          style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-card)' }}>
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-lg text-sm font-semibold"
-            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+            className="px-4 py-2 rounded-xl text-sm font-semibold transition hover:opacity-80"
+            style={{ color: 'var(--ink-2)', border: '1px solid var(--line)', background: 'var(--surface-card)' }}
           >
-            Keep editing
+            ← Back to Edit
           </button>
           <button
             onClick={onSubmit}
-            className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90"
-            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
+            className="px-7 py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90"
+            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.3)' }}
           >
             Get price indication →
           </button>
