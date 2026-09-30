@@ -232,6 +232,10 @@ input, select, textarea, button {
    soft surface lets the page through. Those sit on the card colour. */
 .im-modal { background: var(--surface-card) !important; }
 
+/* Tailwind's gray-50 hover, mapped the way CBIC maps it. */
+[data-dark="true"] .hover\:bg-gray-50:hover { background-color: rgba(255,255,255,0.06) !important; }
+[data-dark="true"] .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.08) !important; }
+
 /* A brand edge that means "chosen". CBIC keeps this as .edge-brand so the
    intent is a class rather than an inline colour a shim can overrule, and
    swaps to the lighter brand purple on navy. */

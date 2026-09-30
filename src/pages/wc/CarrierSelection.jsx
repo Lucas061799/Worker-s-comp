@@ -131,6 +131,7 @@ function PromoModal({ onKeep, onUncheck }) {
   return (
     <Modal
       title="UNCHECKING AMTRUST?"
+      width={520}
       onDismiss={onKeep}
       footer={
         <>

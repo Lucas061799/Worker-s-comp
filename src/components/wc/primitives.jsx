@@ -166,7 +166,9 @@ export function Modal({ title, onDismiss, children, footer, width = 420 }) {
           </div>
         )}
         <div className="px-7 pb-7">{children}</div>
-        {footer && <div className="px-7 pb-7 flex items-center justify-between gap-3">{footer}</div>}
+        {/* wrap so a pair of long labels stacks rather than spilling past
+            the sheet's edge, whatever width the dialog is given */}
+        {footer && <div className="px-7 pb-7 flex flex-wrap items-center justify-between gap-3">{footer}</div>}
       </div>
     </div>
   )
@@ -182,10 +184,13 @@ export function ModalButton({ children, onClick, variant = 'primary' }) {
          also carries a border, so equal padding would still measure short. */
       className={`h-11 inline-flex items-center justify-center shrink-0 whitespace-nowrap rounded-xl text-sm transition ${primary
         ? 'px-6 font-bold text-white hover:opacity-90'
-        : 'px-5 font-semibold text-gray-700 hover:opacity-80'}`}
+        : 'px-5 font-semibold text-gray-700 hover:bg-gray-50'}`}
+      /* The ghost sits on --surface, not --surface-card: CBIC gives it
+         bg-white, which in dark is the page colour, so the button reads as
+         a well set into the sheet rather than a border drawn on it. */
       style={primary
         ? { background: BRAND_GRADIENT, boxShadow: '0 4px 18px rgba(92,46,212,0.30)' }
-        : { border: '1.5px solid var(--line)', background: 'var(--surface-card)' }}
+        : { border: '1.5px solid var(--line)', background: 'var(--surface)' }}
     >
       {children}
     </button>
