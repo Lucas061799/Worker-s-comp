@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import norbielinkLogo from '../assets/norbielink-logo.png'
+import norbielinkLogoDark from '../assets/norbielink-logo-dark.png'
 import btisLogo from '../assets/btislogo.png'
+import btisLogoDark from '../assets/btislogo-dark.png'
 import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
 import { Input, Select, DateInput } from '../components/FormField'
@@ -33,7 +35,7 @@ const CLASSES = [
 /* Classes that come back as a likely referral rather than a clean yes. */
 const LIMITED_APPETITE = ['9079']
 
-export default function PageZero({ onStart }) {
+export default function PageZero({ onStart, isDark = false }) {
   const [state, setState] = useState('')
   const [effectiveDate, setEffectiveDate] = useState('')
   const [query, setQuery] = useState('')
@@ -90,16 +92,16 @@ export default function PageZero({ onStart }) {
   }
 
   return (
-    <div className="min-h-screen bg-white font-montserrat flex flex-col">
+    <div className="min-h-screen font-montserrat flex flex-col" style={{ background: 'var(--surface)' }}>
       {/* Header */}
       <header
-        className="flex items-center justify-between bg-white border-b border-gray-100 px-5 md:px-8 shrink-0"
-        style={{ height: '56px' }}
+        className="flex items-center justify-between px-5 md:px-8 shrink-0"
+        style={{ height: '56px', background: 'var(--surface)', borderBottom: '1px solid var(--line-soft)' }}
       >
-        <img src={norbielinkLogo} alt="NorbieLink" className="h-7 md:h-8" />
+        <img src={isDark ? norbielinkLogoDark : norbielinkLogo} alt="NorbieLink" className="h-7 md:h-8" />
         <div className="flex items-center gap-1.5 md:gap-2">
           <span className="text-[10px] md:text-xs text-gray-400 tracking-wide font-semibold">POWERED BY</span>
-          <img src={btisLogo} alt="btis" className="h-6 md:h-7" />
+          <img src={isDark ? btisLogoDark : btisLogo} alt="btis" className="h-6 md:h-7" />
         </div>
       </header>
 
@@ -108,14 +110,14 @@ export default function PageZero({ onStart }) {
         {/* Left — form column */}
         <div
           className="flex-1 lg:w-1/2 lg:flex-none overflow-y-auto relative"
-          style={{ borderRight: '1px solid #F3F4F6' }}
+          style={{ borderRight: '1px solid var(--line-soft)' }}
         >
           {/* Faint jungle backdrop on narrow viewports where the right
               illustration is hidden. */}
           <img
             src={jungleImg} alt=""
             className="lg:hidden absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
-            style={{ opacity: 0.06 }}
+            style={{ opacity: 'var(--hero-wash-soft, 0.06)' }}
           />
 
           <div className="relative z-10 min-h-full flex flex-col justify-center items-center py-10 px-6 md:px-[8%] lg:px-[10%]">
@@ -125,8 +127,8 @@ export default function PageZero({ onStart }) {
                   Workers' Compensation Insurance
                 </p>
                 <h1
-                  className="text-3xl md:text-4xl font-bold text-navy leading-tight mb-4"
-                  style={{ fontWeight: 800 }}
+                  className="text-3xl md:text-4xl font-bold leading-tight mb-4"
+                  style={{ fontWeight: 800, color: 'var(--ink)' }}
                 >
                   Get Multiple Quotes.<br />
                   <span className="text-gradient">One Easy Application.</span>
@@ -190,7 +192,7 @@ export default function PageZero({ onStart }) {
                     {showSuggest && suggestList.length > 0 && (
                       <div
                         className="absolute left-0 right-0 top-full mt-1.5 rounded-xl overflow-hidden z-40 bop-select-dropdown"
-                        style={{ background: 'white', border: '1px solid #E5E7EB', boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
+                        style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', boxShadow: '0 8px 24px rgba(0,0,0,0.10)' }}
                       >
                         <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: '260px' }}>
                           {suggestList.map(c => {
@@ -268,8 +270,8 @@ export default function PageZero({ onStart }) {
                   disabled={!canCheck || checking}
                   className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition ${canCheck && !checking ? 'hover:opacity-90' : 'cursor-not-allowed'}`}
                   style={canCheck && !checking
-                    ? { background: 'white', border: '1.5px solid rgba(92,46,212,0.35)', color: '#5C2ED4' }
-                    : { background: '#FAFAFB', border: '1.5px solid #E5E7EB', color: '#9CA3AF' }}
+                    ? { background: 'var(--surface-card)', border: '1.5px solid rgba(92,46,212,0.35)', color: '#5C2ED4' }
+                    : { background: 'var(--surface-soft)', border: '1.5px solid var(--line)', color: '#9CA3AF' }}
                   title={canCheck ? undefined : 'Add state, effective date, class code and payroll first'}
                 >
                   {checking ? 'Checking…' : appetite ? 'Re-run Appetite' : 'Run Appetite'}
@@ -307,9 +309,14 @@ export default function PageZero({ onStart }) {
                 type="button"
                 onClick={handleStart}
                 disabled={!ready}
-                className={`btn-gradient force-white-text w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white transition ${ready ? 'hover:opacity-90' : 'cursor-not-allowed'}`}
+                /* force-white-text only belongs on the gradient; a disabled
+                   button with white text on the muted fill reads clickable. */
+                className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition ${
+                  ready ? 'btn-gradient force-white-text text-white hover:opacity-90' : 'cursor-not-allowed'
+                }`}
                 style={{
-                  background: ready ? BRAND_GRADIENT : '#D1D5DB',
+                  background: ready ? BRAND_GRADIENT : 'var(--fill-subtle)',
+                  color: ready ? 'white' : '#9CA3AF',
                   boxShadow: ready ? '0 4px 14px rgba(92,46,212,0.22)' : 'none',
                 }}
                 title={ready ? undefined : 'Run Appetite to continue'}
@@ -326,12 +333,12 @@ export default function PageZero({ onStart }) {
         {/* Right — illustration (lg+ only) */}
         <div
           className="hidden lg:flex relative overflow-hidden shrink-0 items-center justify-center"
-          style={{ width: '50%', background: 'white' }}
+          style={{ width: '50%', background: 'var(--surface)' }}
         >
           <img
             src={jungleImg} alt=""
             className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
-            style={{ opacity: 0.25 }}
+            style={{ opacity: 'var(--hero-wash, 0.25)' }}
           />
           <img
             src={heroImg}

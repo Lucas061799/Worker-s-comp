@@ -285,12 +285,13 @@ owner_involved: 'yes',
     return (
       <>
         <PageZero
+          isDark={darkMode}
           onStart={(data) => {
             updateFormData('pageZero', data)
             setPageZeroDone(true)
           }}
         />
-        <DemoBar jumps={demoJumps} active={demoActive} />
+        <DemoBar jumps={demoJumps} active={demoActive} isDark={darkMode} />
       </>
     )
   }

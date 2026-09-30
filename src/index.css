@@ -72,6 +72,10 @@ input, select, textarea, button {
   --line-strong: #D1D5DB;
   --ink: #1F1B47;
   --ink-2: #374151;
+  /* The jungle backdrop is a light-paper texture, so it has to sit much
+     further back once the page behind it is navy. */
+  --hero-wash: 0.25;
+  --hero-wash-soft: 0.06;
 }
 
 [data-dark="true"] {
@@ -86,6 +90,8 @@ input, select, textarea, button {
   --line-strong: rgba(255,255,255,0.14);
   --ink: #F9FAFB;
   --ink-2: #D1D5DB;
+  --hero-wash: 0.05;
+  --hero-wash-soft: 0.03;
   color-scheme: dark;
 }
 
