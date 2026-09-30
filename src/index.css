@@ -741,6 +741,8 @@ button.force-white-text,
 .im-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px;
   border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; }
 .im-chip-muted { background: #F3F4F6; color: #6B7280; }
+.im-chip-brand { background: rgba(92,46,212,0.08); border: 1px solid rgba(92,46,212,0.18); color: #5C2ED4; }
+[data-dark="true"] .im-chip-brand { background: rgba(167,139,250,0.18) !important; border-color: rgba(167,139,250,0.32) !important; color: #E9D5FF !important; }
 .im-chip-warn  { background: rgba(245,158,11,0.12); color: #B45309; }
 .im-chip-stop  { background: rgba(239,68,68,0.10); color: #B91C1C; }
 [data-dark="true"] .im-chip-muted { background: rgba(255,255,255,0.08) !important; color: #9CA3AF !important; }
