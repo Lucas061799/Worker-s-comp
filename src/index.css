@@ -189,8 +189,14 @@ input, select, textarea, button {
 /* Brand SVG gradients (#prevHdrG used in preview modal icon + close X) —
    default stops are dark purple→magenta which read black on a dark
    surface; override to bright lavender→pink. */
-[data-dark="true"] #prevHdrG stop:first-child { stop-color: #C4B5FD !important; }
-[data-dark="true"] #prevHdrG stop:last-child  { stop-color: #F0ABFC !important; }
+[data-dark="true"] #prevHdrG stop:first-child,
+[data-dark="true"] #wcPrevHdrG stop:first-child,
+[data-dark="true"] #wcSumCheckG stop:first-child,
+[data-dark="true"] #wcSumPrintG stop:first-child { stop-color: #C4B5FD !important; }
+[data-dark="true"] #prevHdrG stop:last-child,
+[data-dark="true"] #wcPrevHdrG stop:last-child,
+[data-dark="true"] #wcSumCheckG stop:last-child,
+[data-dark="true"] #wcSumPrintG stop:last-child  { stop-color: #F0ABFC !important; }
 
 /* Select dropdown panel — fixed-position, lives outside .bop-page in the DOM */
 [data-dark="true"] .bop-select-dropdown {

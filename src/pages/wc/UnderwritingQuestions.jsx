@@ -287,7 +287,7 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="bop-page fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(15,10,40,0.6)', backdropFilter: 'blur(8px)' }}
       onClick={onClose}
     >

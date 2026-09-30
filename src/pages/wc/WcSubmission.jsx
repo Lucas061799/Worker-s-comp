@@ -16,8 +16,9 @@ const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 const STEP_LABELS = [
   'Business info',
   'Coverage history',
+  'Loss history',
   'State coverages',
-  'Underwriting questions',
+  'Credit opportunity',
   'Carrier selection',
   'Carrier questions',
   'Quote & bind',
@@ -238,7 +239,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
 
           {demoJumps && (
             <div className="px-3 pb-2 relative z-20">
-              <DemoJump jumps={demoJumps} active={demoActive} />
+              <DemoJump jumps={demoJumps} active={demoActive} isDark={isDark} />
             </div>
           )}
 

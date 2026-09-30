@@ -97,7 +97,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
   const selectedCarriers = CARRIERS.filter(c => sel[c.id] !== false)
 
   return (
-    <div className="fixed inset-0 z-[9999] overflow-y-auto uw-preview-backdrop"
+    <div className="bop-page fixed inset-0 z-[9999] overflow-y-auto uw-preview-backdrop"
       style={{ background: 'rgba(15,10,40,0.6)', backdropFilter: 'blur(8px)' }}
       onClick={onClose}>
       <div className="mx-auto my-8 px-4" style={{ maxWidth: 940 }} onClick={e => e.stopPropagation()}>

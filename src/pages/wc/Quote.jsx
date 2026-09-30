@@ -20,7 +20,7 @@ function SummaryRow({ label, value, last }) {
 function ClientPresentModal({ price, carrier, effectiveDate, businessName, onClose }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      className="bop-page fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: 'rgba(15,10,40,0.55)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >

@@ -103,7 +103,7 @@ function InfoPop({ carrier, onClose }) {
 function ApproachModal({ carriers, onCancel, onConfirm }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      className="bop-page fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: 'rgba(15,10,40,0.55)', backdropFilter: 'blur(4px)' }}
       onClick={onCancel}
     >
@@ -154,7 +154,7 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
 function PromoModal({ onKeep, onUncheck }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      className="bop-page fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: 'rgba(15,18,40,0.55)', backdropFilter: 'blur(3px)' }}
       onClick={onKeep}
     >
