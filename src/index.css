@@ -96,10 +96,16 @@ input, select, textarea, button {
   border-color: rgba(255,255,255,0.06) !important;
 }
 /* Inline border-top/bottom hairlines — the border-color rules below only
-   catch the shorthand `border-color`, not `border-top: 1px solid …`. */
-[data-dark="true"] .bop-page [style*="border-top: 1px solid rgb(243, 244, 246)"],
-[data-dark="true"] .bop-page [style*="border-top: 1px solid rgb(229, 231, 235)"] {
+   catch the shorthand `border-color`, not `border-top: 1px solid …`.
+   Not scoped to .bop-page: the preview and summary modals render outside
+   it and draw their rows with exactly these. */
+[data-dark="true"] [style*="border-top: 1px solid rgb(243, 244, 246)"],
+[data-dark="true"] [style*="border-top: 1px solid rgb(229, 231, 235)"] {
   border-top-color: rgba(255,255,255,0.08) !important;
+}
+[data-dark="true"] [style*="border-bottom: 1px solid rgb(243, 244, 246)"],
+[data-dark="true"] [style*="border-bottom: 1px solid rgb(229, 231, 235)"] {
+  border-bottom-color: rgba(255,255,255,0.08) !important;
 }
 /* Neutral-grey chips (e.g. "Not a fit") — gray-500 text on a navy card
    is unreadable; lift both the wash and the label. */
@@ -123,11 +129,9 @@ input, select, textarea, button {
   background: rgba(255,255,255,0.06) !important;
   border-color: rgba(255,255,255,0.12) !important;
 }
-/* Tailwind .bg-white inside bop-page. Form controls are excluded: they
-   carry bg-white too, and this rule outweighs the input rule below on
-   specificity, which painted the field a step *below* the card holding
-   it. Their fill is set there instead. */
-[data-dark="true"] .bop-page .bg-white:not(input):not(select):not(textarea) {
+/* Tailwind .bg-white inside bop-page. Controls use .field-fill instead,
+   so this only ever hits real surfaces. */
+[data-dark="true"] .bop-page .bg-white {
   background-color: #252948 !important;
 }
 /* All light-gray border lines (gray-200 / gray-100) → translucent white */
@@ -148,6 +152,11 @@ input, select, textarea, button {
 }
 [data-dark="true"] .bop-page .border {
   border-color: rgba(255,255,255,0.08) !important;
+}
+/* Controls sit a step brighter than a surface hairline, as in CBIC. */
+[data-dark="true"] .bop-page .border-gray-200,
+[data-dark="true"] .bop-page .border-gray-300 {
+  border-color: rgba(255,255,255,0.10) !important;
 }
 /* The native number stepper is drawn by the OS and ignores our tokens —
    a pair of bright arrows on a dark field. Hide it everywhere. */
@@ -197,19 +206,22 @@ input, select, textarea, button {
   color: #F0ABFC !important;
 }
 /* Inputs / selects keep white text on dark background */
-/* A translucent white, as Builder's Risk, Inland Marine and CBIC all use.
-   A solid fill has to guess what is behind it; on a soft card it lands a
-   step too low and on a brand-tinted panel it reads as a hole. */
+/* Field fills, carried over from CBIC verbatim. In light a control is
+   white on a soft card — a step above what holds it. Mapping .bg-white
+   onto a page colour put the control a step *below* its card, and on a
+   brand-tinted panel it read as a hole. One explicit class on every
+   control settles it, and nothing has to out-specify anything. */
+.field-fill { background: #ffffff; }
+[data-dark="true"] .field-fill { background: rgba(255,255,255,0.06) !important; }
+
 [data-dark="true"] .bop-page input,
 [data-dark="true"] .bop-page select,
 [data-dark="true"] .bop-page textarea {
-  background: rgba(255,255,255,0.05) !important;
-  border-color: rgba(255,255,255,0.10) !important;
   color: #F9FAFB !important;
 }
 [data-dark="true"] .bop-page input::placeholder,
 [data-dark="true"] .bop-page textarea::placeholder {
-  color: rgba(255,255,255,0.3) !important;
+  color: #4B5563 !important;
 }
 /* Graduated text scale for dark mode:
    gray-900 (headings)     → #F9FAFB (true white)

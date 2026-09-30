@@ -38,7 +38,7 @@ export function Input({ label, required, placeholder, type = 'text', value, onCh
         } ${
           error
             ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400'
-            : 'border-gray-200 bg-white focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
+            : 'border-gray-200 field-fill focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
         }`}
       />
       {error && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1"><span>⚠</span> This field is required</p>}
@@ -330,7 +330,7 @@ export function DateInput({ label, required, value, onChange, className = '', er
           className={`w-full border rounded-lg px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 transition-all pr-10 ${
             error
               ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400'
-              : 'border-gray-200 bg-white focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
+              : 'border-gray-200 field-fill focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
           }`}
         />
         {/* Calendar icon */}
@@ -381,7 +381,7 @@ export function Textarea({ label, required, placeholder, rows = 4, value, onChan
         className={`w-full border rounded-lg px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 transition-all resize-none ${
           error
             ? 'border-red-300 bg-red-50/50 focus:ring-red-100 focus:border-red-400'
-            : 'border-gray-200 bg-white focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
+            : 'border-gray-200 field-fill focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300'
         }`}
       />
       {error && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1"><span>⚠</span> This field is required</p>}
@@ -443,9 +443,8 @@ export function Select({ label, required, options = [], value, onChange, placeho
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border text-sm text-left transition-all"
+        className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border text-sm text-left transition-all field-fill"
         style={{
-          background: 'white',
           borderColor: error ? '#FCA5A5' : open ? '#7C3AED' : '#E5E7EB',
           boxShadow: error ? '0 0 0 2px rgba(252,165,165,0.3)' : open ? '0 0 0 2px rgba(124,58,237,0.1)' : 'none',
           color: selectedLabel ? '#1F2937' : '#9CA3AF',
@@ -550,7 +549,7 @@ export function Checkbox({ label, checked, onChange, className = '' }) {
     <label className={`flex items-center gap-2.5 cursor-pointer group ${className}`}>
       <div
         className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-          checked ? 'border-[#A614C3]' : 'border-gray-300 group-hover:border-[#5C2ED4]/40'
+          checked ? 'border-[#A614C3]' : 'border-gray-300 group-hover:border-[#5C2ED4]/40 field-fill'
         }`}
         style={checked ? { background: 'linear-gradient(88.09deg, #5C2ED4 0%, #A614C3 100%)' } : {}}
         onClick={() => onChange && onChange(!checked)}

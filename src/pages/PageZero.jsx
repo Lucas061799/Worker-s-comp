@@ -172,7 +172,7 @@ export default function PageZero({ onStart }) {
                       onFocus={() => setShowSuggest(true)}
                       onBlur={() => setTimeout(() => setShowSuggest(false), 150)}
                       placeholder='Start typing a trade, for example: plumbing'
-                      className={`w-full border rounded-lg pl-10 pr-10 py-2.5 text-sm placeholder-gray-300 focus:outline-none focus:ring-2 transition-all ${picked ? 'text-gray-900' : 'text-gray-800'} border-gray-200 bg-white focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300`}
+                      className={`w-full border rounded-lg pl-10 pr-10 py-2.5 text-sm placeholder-gray-300 focus:outline-none focus:ring-2 transition-all ${picked ? 'text-gray-900' : 'text-gray-800'} border-gray-200 field-fill focus:ring-[#7C3AED]/10 focus:border-[#7C3AED]/40 hover:border-gray-300`}
                     />
                     <button
                       type="button"

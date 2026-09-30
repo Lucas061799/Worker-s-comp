@@ -270,7 +270,7 @@ export default function StateCoverages({ formData, updateFormData }) {
       >
         <div className="space-y-3">
           {classes.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-[1fr_1fr] lg:grid-cols-[minmax(130px,1fr)_minmax(190px,1.3fr)_130px_100px_100px_40px] gap-3 items-end">
+            <div key={idx} className="grid grid-cols-2 sm:grid-cols-[126px_minmax(0,1fr)_102px_78px_78px_32px] gap-2.5 items-end">
               <Select
                 label={idx === 0 ? 'Location' : undefined}
                 options={locationOptions}
@@ -296,20 +296,20 @@ export default function StateCoverages({ formData, updateFormData }) {
                 placeholder="$"
               />
               <Input
-                label={idx === 0 ? 'FT employees' : undefined}
+                label={idx === 0 ? 'Full-time' : undefined}
                 align="right"
                 value={row.ftEmployees}
                 onChange={val => updateClass(idx, { ftEmployees: val })}
                 placeholder="0"
               />
               <Input
-                label={idx === 0 ? 'PT employees' : undefined}
+                label={idx === 0 ? 'Part-time' : undefined}
                 align="right"
                 value={row.ptEmployees}
                 onChange={val => updateClass(idx, { ptEmployees: val })}
                 placeholder="0"
               />
-              <div className="flex items-center justify-center h-[42px]">
+              <div className="flex items-center justify-center h-[42px] -ml-1">
                 <RemoveButton onClick={() => removeClass(idx)} label="Remove class" />
               </div>
             </div>
