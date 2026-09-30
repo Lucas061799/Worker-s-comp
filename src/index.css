@@ -123,8 +123,11 @@ input, select, textarea, button {
   background: rgba(255,255,255,0.06) !important;
   border-color: rgba(255,255,255,0.12) !important;
 }
-/* Tailwind .bg-white inside bop-page (e.g. native <select> in Compare) */
-[data-dark="true"] .bop-page .bg-white {
+/* Tailwind .bg-white inside bop-page. Form controls are excluded: they
+   carry bg-white too, and this rule outweighs the input rule below on
+   specificity, which painted the field a step *below* the card holding
+   it. Their fill is set there instead. */
+[data-dark="true"] .bop-page .bg-white:not(input):not(select):not(textarea) {
   background-color: #252948 !important;
 }
 /* All light-gray border lines (gray-200 / gray-100) → translucent white */
@@ -194,11 +197,14 @@ input, select, textarea, button {
   color: #F0ABFC !important;
 }
 /* Inputs / selects keep white text on dark background */
+/* A translucent white, as Builder's Risk, Inland Marine and CBIC all use.
+   A solid fill has to guess what is behind it; on a soft card it lands a
+   step too low and on a brand-tinted panel it reads as a hole. */
 [data-dark="true"] .bop-page input,
 [data-dark="true"] .bop-page select,
 [data-dark="true"] .bop-page textarea {
-  background: #13162A !important;
-  border-color: rgba(255,255,255,0.12) !important;
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.10) !important;
   color: #F9FAFB !important;
 }
 [data-dark="true"] .bop-page input::placeholder,
