@@ -235,9 +235,9 @@ export default function UnderwritingQuestions({
 
 function PreviewRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+    <div className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid var(--line-soft)' }}>
       <span className="text-xs text-gray-500">{label}</span>
-      <span className="text-xs font-semibold text-gray-800 text-right">{value || '—'}</span>
+      <span className="text-xs font-semibold text-right" style={{ color: 'var(--ink)' }}>{value || '—'}</span>
     </div>
   )
 }
@@ -256,7 +256,7 @@ const PREVIEW_ICONS = {
    icon chip, bold navy title. */
 function PreviewSection({ title, icon = 'shield', children }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
+    <div className="rounded-xl p-4" style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
       <div className="flex items-center gap-2 mb-3">
         <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
           style={{ background: 'rgba(115,201,183,0.12)' }}>

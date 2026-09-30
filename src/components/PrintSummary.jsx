@@ -45,7 +45,7 @@ const UW_LABELS = {
    place they step outside the purple. */
 function Panel({ title, icon = 'shield', children }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB', breakInside: 'avoid' }}>
+    <div className="rounded-xl p-4" style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', breakInside: 'avoid' }}>
       <div className="flex items-center gap-2 mb-3">
         <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
           style={{ background: 'rgba(115,201,183,0.12)' }}>
@@ -53,7 +53,7 @@ function Panel({ title, icon = 'shield', children }) {
             <path strokeLinecap="round" strokeLinejoin="round" d={ICONS[icon] || ICONS.shield} />
           </svg>
         </div>
-        <h3 className="text-xs font-bold text-navy">{title}</h3>
+        <h3 className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{title}</h3>
       </div>
       <div>{children}</div>
     </div>
@@ -63,9 +63,9 @@ function Panel({ title, icon = 'shield', children }) {
 function Row({ label, value }) {
   if (value === '' || value == null) return null
   return (
-    <div className="flex items-start justify-between gap-4 py-1.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+    <div className="flex items-start justify-between gap-4 py-1.5" style={{ borderBottom: '1px solid var(--line-soft)' }}>
       <span className="text-[10px] leading-snug flex-1 min-w-0" style={{ color: '#9CA3AF' }}>{label}</span>
-      <span className="text-[10px] font-semibold text-right leading-snug max-w-[55%] text-navy">{value}</span>
+      <span className="text-[10px] font-semibold text-right leading-snug max-w-[55%]" style={{ color: 'var(--ink)' }}>{value}</span>
     </div>
   )
 }
@@ -103,7 +103,7 @@ export default function PrintSummary({ formData, visible, onClose }) {
       <div className="mx-auto my-8 px-4" style={{ maxWidth: 940 }} onClick={e => e.stopPropagation()}>
 
         <div id="submission-print-area" className="im-sheet rounded-2xl overflow-hidden"
-          style={{ border: '1px solid #F3F4F6' }}>
+          style={{ border: '1px solid var(--line-soft)' }}>
           <div className="h-1" style={{ background: BRAND_GRADIENT }} />
 
           {/* Header */}

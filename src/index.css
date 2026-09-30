@@ -55,6 +55,40 @@ input, select, textarea, button {
   background: rgba(255,255,255,0.32);
 }
 
+/* ── Theme tokens ──────────────────────────────────────────────────
+   Taken from CBIC. Every neutral holds its light/dark pair here, so a
+   component states intent once — a card, a hairline, ink — and neither
+   mode needs a shim to correct it afterwards. The light values are the
+   ones the components already used, so light mode is unchanged. */
+:root {
+  --surface: #ffffff;
+  --surface-rail: #ffffff;
+  --surface-card: #ffffff;
+  --surface-soft: #F9FAFB;
+  --surface-softer: #FAFAFB;
+  --fill-subtle: #F3F4F6;
+  --line: #E5E7EB;
+  --line-soft: #F3F4F6;
+  --line-strong: #D1D5DB;
+  --ink: #1F1B47;
+  --ink-2: #374151;
+}
+
+[data-dark="true"] {
+  --surface: #131629;
+  --surface-rail: #191D35;
+  --surface-card: #1A1E38;
+  --surface-soft: rgba(255,255,255,0.03);
+  --surface-softer: rgba(255,255,255,0.03);
+  --fill-subtle: rgba(255,255,255,0.06);
+  --line: rgba(255,255,255,0.10);
+  --line-soft: rgba(255,255,255,0.06);
+  --line-strong: rgba(255,255,255,0.14);
+  --ink: #F9FAFB;
+  --ink-2: #D1D5DB;
+  color-scheme: dark;
+}
+
 /* ── BOP pages: dark mode overrides ────────────────────────────── */
 /* Field group card backgrounds (light gray #F9FAFB → subtle dark inset)
    Slightly lighter than the white→dark mapping (#252948) so nested
@@ -89,8 +123,8 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page div[style*="background:rgb(255, 255, 255)"],
 [data-dark="true"] .bop-page div[style*="background-color: white"],
 [data-dark="true"] .bop-page div[style*="background-color: rgb(255, 255, 255)"] {
-  background: rgba(255,255,255,0.06) !important;
-  border-color: rgba(255,255,255,0.10) !important;
+  background: var(--surface-card) !important;
+  border-color: var(--line) !important;
 }
 /* #FAFAFB — the "quieter than white" surface (a carrier that didn't
    quote, an empty placeholder row). It has to land *below* the white→dark
@@ -186,8 +220,7 @@ input, select, textarea, button {
 /* A modal sheet covers what is behind it, so it stays a solid — the
    translucent surfaces only work when something opaque is underneath.
    CBIC does the same, painting its preview shell with --surface-card. */
-.im-sheet { background: #F9FAFB !important; }
-[data-dark="true"] .im-sheet { background: #1A1E38 !important; }
+.im-sheet { background: var(--surface-soft) !important; }
 
 /* A brand edge that means "chosen". CBIC keeps this as .edge-brand so the
    intent is a class rather than an inline colour a shim can overrule, and
