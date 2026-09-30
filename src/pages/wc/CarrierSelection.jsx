@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Tag, CarrierLogo } from '../../components/wc/primitives'
+import { Tag, CarrierLogo, Modal, ModalButton } from '../../components/wc/primitives'
 import logoCna          from '../../assets/carrier-cna.png'
 import logoCoterie      from '../../assets/carrier-coterie.png'
 import logoHiscox       from '../../assets/carrier-hiscox.png'
@@ -102,94 +102,50 @@ function InfoPop({ carrier, onClose }) {
 
 function ApproachModal({ carriers, onCancel, onConfirm }) {
   return (
-    <div
-      className="bop-page fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ background: 'rgba(15,10,40,0.55)', backdropFilter: 'blur(4px)' }}
-      onClick={onCancel}
+    <Modal
+      title="APPROACH THESE MARKETS?"
+      width={460}
+      onDismiss={onCancel}
+      footer={
+        <>
+          <ModalButton variant="ghost" onClick={onCancel}>Go back</ModalButton>
+          <ModalButton onClick={onConfirm}>Yes — approach carriers</ModalButton>
+        </>
+      }
     >
-      <div
-        className="im-modal max-w-md w-full rounded-2xl px-7 py-7"
-        style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <h2 className="text-lg font-bold text-navy leading-tight mb-2">
-          Approach these markets?
-        </h2>
-
-        <p className="text-sm text-gray-600 leading-relaxed mb-4">
-          BTIS will submit this risk to the carriers below and be registered as your
-          broker with each.{' '}
-          <b className="text-navy">These markets then can't be approached directly for this risk.</b>
-        </p>
-
-        <ul className="list-disc pl-5 mb-7 space-y-1">
-          {carriers.map(c => (
-            <li key={c.id} className="text-sm text-gray-700">{c.name}</li>
-          ))}
-        </ul>
-
-        <div className="flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold transition shrink-0 whitespace-nowrap"
-            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
-          >
-            Go back
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="h-10 px-6 inline-flex items-center justify-center rounded-xl text-sm font-semibold text-white transition hover:opacity-90 shrink-0 whitespace-nowrap"
-            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
-          >
-            Yes — approach carriers
-          </button>
-        </div>
-      </div>
-    </div>
+      <p className="text-[14px] text-gray-600 leading-relaxed mb-4">
+        BTIS will submit this risk to the carriers below and be registered as your
+        broker with each.{' '}
+        <b className="text-navy">These markets then can't be approached directly for this risk.</b>
+      </p>
+      <ul className="list-disc pl-5 space-y-1">
+        {carriers.map(c => (
+          <li key={c.id} className="text-[14px] text-gray-700">{c.name}</li>
+        ))}
+      </ul>
+    </Modal>
   )
 }
 
 function PromoModal({ onKeep, onUncheck }) {
   return (
-    <div
-      className="bop-page fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ background: 'rgba(15,10,40,0.55)', backdropFilter: 'blur(4px)' }}
-      onClick={onKeep}
+    <Modal
+      title="UNCHECKING AMTRUST?"
+      onDismiss={onKeep}
+      footer={
+        <>
+          <ModalButton variant="ghost" onClick={onUncheck}>Uncheck anyway</ModalButton>
+          <ModalButton onClick={onKeep}>Keep AmTrust checked</ModalButton>
+        </>
+      }
     >
-      <div
-        className="im-modal max-w-md w-full rounded-2xl px-7 py-7"
-        style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <span className="im-chip im-chip-brand mb-3 inline-flex">Q3 PROMOTION ACTIVE</span>
-        <h2 className="text-lg font-bold text-navy leading-tight mb-2">Unchecking AmTrust?</h2>
-        <p className="text-sm text-gray-600 leading-relaxed mb-6">
-          Policies bound with AmTrust through BTIS currently earn <b className="text-navy">+2% boosted commission</b>.
-          If you uncheck, BTIS won't approach AmTrust and this promotion won't apply to this risk.
-        </p>
-        {/* Secondary left, primary right — the same pair ApproachModal sets. */}
-        <div className="flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={onUncheck}
-            className="h-10 px-5 inline-flex items-center justify-center rounded-xl text-sm font-semibold transition shrink-0 whitespace-nowrap"
-            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
-          >
-            Uncheck anyway
-          </button>
-          <button
-            type="button"
-            onClick={onKeep}
-            className="h-10 px-6 inline-flex items-center justify-center rounded-xl text-sm font-semibold text-white transition hover:opacity-90 shrink-0 whitespace-nowrap"
-            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
-          >
-            Keep AmTrust checked
-          </button>
-        </div>
-      </div>
-    </div>
+      <span className="im-chip im-chip-brand mb-3 inline-flex">Q3 PROMOTION ACTIVE</span>
+      <p className="text-[14px] text-gray-600 leading-relaxed">
+        Policies bound with AmTrust through BTIS currently earn{' '}
+        <b className="text-navy">+2% boosted commission</b>. If you uncheck, BTIS won't
+        approach AmTrust and this promotion won't apply to this risk.
+      </p>
+    </Modal>
   )
 }
 
