@@ -14,6 +14,10 @@ body {
   background-color: #ffffff;
 }
 
+/* The shell paints its own surfaces, but body shows at the edges during
+   scroll bounce — CBIC sets this for the same reason. */
+[data-dark="true"] body { background-color: #131629; }
+
 #root {
   width: 100%;
   min-height: 100vh;
@@ -63,8 +67,8 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page div[style*="background:rgb(249, 250, 251)"],
 [data-dark="true"] .bop-page div[style*="background: #F9FAFB"],
 [data-dark="true"] .bop-page div[style*="background:#F9FAFB"] {
-  background: #2A2D45 !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.10) !important;
 }
 /* Disabled buttons (#D1D5DB gray-300) — light grey blob on dark bg
    reads as a focus-magnet. Mute it to a translucent surface instead. */
@@ -82,8 +86,8 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page div[style*="background:rgb(255, 255, 255)"],
 [data-dark="true"] .bop-page div[style*="background-color: white"],
 [data-dark="true"] .bop-page div[style*="background-color: rgb(255, 255, 255)"] {
-  background: #252948 !important;
-  border-color: rgba(255,255,255,0.08) !important;
+  background: #1A1E38 !important;
+  border-color: rgba(255,255,255,0.10) !important;
 }
 /* #FAFAFB — the "quieter than white" surface (a carrier that didn't
    quote, an empty placeholder row). It has to land *below* the white→dark
@@ -92,7 +96,7 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page div[style*="background:#FAFAFB"],
 [data-dark="true"] .bop-page div[style*="background: rgb(250, 250, 251)"],
 [data-dark="true"] .bop-page div[style*="background:rgb(250, 250, 251)"] {
-  background: #1F2340 !important;
+  background: rgba(255,255,255,0.015) !important;
   border-color: rgba(255,255,255,0.06) !important;
 }
 /* Inline border-top/bottom hairlines — the border-color rules below only
@@ -101,11 +105,11 @@ input, select, textarea, button {
    it and draw their rows with exactly these. */
 [data-dark="true"] [style*="border-top: 1px solid rgb(243, 244, 246)"],
 [data-dark="true"] [style*="border-top: 1px solid rgb(229, 231, 235)"] {
-  border-top-color: rgba(255,255,255,0.08) !important;
+  border-top-color: rgba(255,255,255,0.06) !important;
 }
 [data-dark="true"] [style*="border-bottom: 1px solid rgb(243, 244, 246)"],
 [data-dark="true"] [style*="border-bottom: 1px solid rgb(229, 231, 235)"] {
-  border-bottom-color: rgba(255,255,255,0.08) !important;
+  border-bottom-color: rgba(255,255,255,0.06) !important;
 }
 /* Neutral-grey chips (e.g. "Not a fit") — gray-500 text on a navy card
    is unreadable; lift both the wash and the label. */
@@ -119,8 +123,8 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page button[style*="background:white"],
 [data-dark="true"] .bop-page button[style*="background: rgb(255, 255, 255)"],
 [data-dark="true"] .bop-page button[style*="background:rgb(255, 255, 255)"] {
-  background: #252948 !important;
-  border-color: rgba(255,255,255,0.12) !important;
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.10) !important;
   color: #F9FAFB !important;
 }
 /* Spans with white bg (e.g. badge chips) */
@@ -132,7 +136,7 @@ input, select, textarea, button {
 /* Tailwind .bg-white inside bop-page. Controls use .field-fill instead,
    so this only ever hits real surfaces. */
 [data-dark="true"] .bop-page .bg-white {
-  background-color: #252948 !important;
+  background-color: #1A1E38 !important;
 }
 /* All light-gray border lines (gray-200 / gray-100) → translucent white */
 [data-dark="true"] .bop-page [style*="border-color: rgb(243, 244, 246)"],
@@ -141,17 +145,17 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page [style*="border-color: #F3F4F6"],
 [data-dark="true"] .bop-page [style*="border-color: #EAEAEA"],
 [data-dark="true"] .bop-page [style*="border-color: rgb(234, 234, 234)"] {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.06) !important;
 }
 /* Tailwind border-t / border-b / border default to gray-200 — too bright in dark */
 [data-dark="true"] .bop-page .border-t {
-  border-top-color: rgba(255,255,255,0.08) !important;
+  border-top-color: rgba(255,255,255,0.06) !important;
 }
 [data-dark="true"] .bop-page .border-b {
-  border-bottom-color: rgba(255,255,255,0.08) !important;
+  border-bottom-color: rgba(255,255,255,0.06) !important;
 }
 [data-dark="true"] .bop-page .border {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.06) !important;
 }
 /* Controls sit a step brighter than a surface hairline, as in CBIC. */
 [data-dark="true"] .bop-page .border-gray-200,
@@ -173,7 +177,7 @@ input, select, textarea, button {
 /* divide-y draws its rules on the *children*, so none of the rules above
    reach it — the row separators stayed near-white on navy. */
 [data-dark="true"] .bop-page [class*="divide-"] > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.06) !important;
 }
 
 /* Preview modal header icon — 12% brand gradient is invisible in dark mode,
@@ -238,9 +242,9 @@ input, select, textarea, button {
    gray-400 (very subtle)  → #8B8FA8
    gray-300 (placeholders) → #4B5063 */
 [data-dark="true"] .bop-page .text-gray-900 { color: #F9FAFB !important; }
-[data-dark="true"] .bop-page .text-gray-800 { color: #E5E7EB !important; }
+[data-dark="true"] .bop-page .text-gray-800 { color: #F9FAFB !important; }
 [data-dark="true"] .bop-page .text-gray-700 { color: #D1D5DB !important; }
-[data-dark="true"] .bop-page .text-gray-600 { color: #C4C8D4 !important; }
+[data-dark="true"] .bop-page .text-gray-600 { color: #D1D5DB !important; }
 [data-dark="true"] .bop-page .text-gray-500 { color: #9CA3AF !important; }
 [data-dark="true"] .bop-page .text-gray-400 { color: #8B8FA8 !important; }
 [data-dark="true"] .bop-page .placeholder-gray-300::placeholder { color: rgba(255,255,255,0.25) !important; }
@@ -289,7 +293,7 @@ input, select, textarea, button {
 [data-dark="true"] .bop-page button[style*="background: rgb(249, 250, 251)"] {
   background: rgba(255,255,255,0.04) !important;
   color: #D1D5DB !important;
-  border-top-color: rgba(255,255,255,0.08) !important;
+  border-top-color: rgba(255,255,255,0.06) !important;
 }
 /* Dark navy text colors inline (both rgb and hex variants) → light */
 [data-dark="true"] .bop-page [style*="color: rgb(31, 41, 55)"],
@@ -478,10 +482,10 @@ button.force-white-text,
 [data-dark="true"] .border-gray-100,
 [data-dark="true"] .border-gray-200,
 [data-dark="true"] .border-gray-300 {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.06) !important;
 }
 [data-dark="true"] .divide-gray-100 > * + * {
-  border-color: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.06) !important;
 }
 
 /* Inputs, selects, textareas */
