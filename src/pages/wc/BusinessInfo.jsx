@@ -63,15 +63,25 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
     <div className="w-full space-y-6">
       <FieldGroup label="Company Information">
         <div className="space-y-5">
+          {/* The DBA question qualifies the legal name, so it sits under it
+              rather than floating across the group on its own line. */}
           <FormGrid>
-            <Input
-              label="Legal business name"
-              required
-              value={data.name}
-              onChange={set('name')}
-              placeholder="Business name"
-              error={err('name')}
-            />
+            <div>
+              <Input
+                label="Legal business name"
+                required
+                value={data.name}
+                onChange={set('name')}
+                placeholder="Business name"
+                error={err('name')}
+              />
+              <Checkbox
+                className="mt-3"
+                label="Operates under a DBA (doing business as)"
+                checked={!!data.hasDba}
+                onChange={val => updateFormData('business', { hasDba: val, ...(val ? {} : { dbaName: '' }) })}
+              />
+            </div>
             <div>
               <Input
                 label="FEIN"
@@ -93,30 +103,24 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
             </div>
           </FormGrid>
 
-          <div>
-            <Checkbox
-              label="Operates under a DBA (doing business as)"
-              checked={!!data.hasDba}
-              onChange={val => updateFormData('business', { hasDba: val, ...(val ? {} : { dbaName: '' }) })}
+          {/* Website leads the row; the DBA name joins it on the right only
+              when the box above is ticked. */}
+          <FormGrid>
+            <Input
+              label="Website"
+              value={data.website}
+              onChange={set('website')}
+              placeholder="e.g. www.sierraridgeplumbing.com"
             />
-            {data.hasDba && (
-              <div className="mt-4">
-                <Input
-                  label="DBA name"
-                  value={data.dbaName}
-                  onChange={set('dbaName')}
-                  placeholder="e.g. Sierra Ridge Plumbing & Rooter"
-                />
-              </div>
-            )}
-          </div>
-
-          <Input
-            label="Website"
-            value={data.website}
-            onChange={set('website')}
-            placeholder="e.g. www.sierraridgeplumbing.com"
-          />
+            {data.hasDba ? (
+              <Input
+                label="DBA name"
+                value={data.dbaName}
+                onChange={set('dbaName')}
+                placeholder="e.g. Sierra Ridge Plumbing & Rooter"
+              />
+            ) : <div />}
+          </FormGrid>
         </div>
       </FieldGroup>
 
