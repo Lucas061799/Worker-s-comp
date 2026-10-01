@@ -1,8 +1,6 @@
-import { Input, Select, Textarea } from '../../components/FormField'
+import { Input, Select, Textarea, FormGrid } from '../../components/FormField'
 import {
   FieldGroup,
-  RowGroup,
-  AnswerRow,
   Segmented,
   YesNo,
   InfoLine,
@@ -22,6 +20,19 @@ const PRIOR_YEARS = ['1', '2', '3', '4+']
 
 /* The description carries weight in underwriting, so the counter nudges
    for a real sentence rather than a two-word trade name. */
+/* Label above a pill answer — the shape Business info uses for its
+   mailing-address and additional-locations questions. */
+function PillField({ label, required, children }) {
+  return (
+    <div>
+      <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+        {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+      </label>
+      {children}
+    </div>
+  )
+}
+
 const MIN_WORDS = 10
 const countWords = (text) => (text || '').trim().split(/\s+/).filter(Boolean).length
 
@@ -44,96 +55,99 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
-      <RowGroup label="Current coverage">
-        <AnswerRow label="What is the current coverage status?" stacked>
-          <Segmented
-            options={COVERAGE_STATUS}
-            value={status}
-            onChange={val => patch({ coverageStatus: val })}
-            name="Current coverage"
-          />
-        </AnswerRow>
+      {/* A form, not a question list: typed and chosen values carry their
+          label above the field, the way Business info does. The compact
+          label-left row is for Yes/No and segmented answers. */}
+      <FieldGroup label="Current coverage">
+        <div className="space-y-5">
+          <PillField label="What is the current coverage status?" required>
+            <Segmented
+              options={COVERAGE_STATUS}
+              value={status}
+              onChange={val => patch({ coverageStatus: val })}
+              name="Current coverage"
+            />
+          </PillField>
 
-        {status === 'lapse' && (
-          <AnswerRow label="Reason for lapse">
-            <div style={{ width: 260 }}>
-              <Input
-                value={data.lapseReason}
-                onChange={val => patch({ lapseReason: val })}
-                placeholder="Why did coverage lapse?"
-              />
-            </div>
-          </AnswerRow>
-        )}
+          {status === 'lapse' && (
+            <Input
+              label="Reason for lapse"
+              required
+              value={data.lapseReason}
+              onChange={val => patch({ lapseReason: val })}
+              placeholder="Why did coverage lapse?"
+            />
+          )}
 
-        {hasPriorPolicy && (
-          <AnswerRow label="How many prior years?">
-            <div style={{ width: 150 }}>
+          {hasPriorPolicy && (
+            <FormGrid>
               <Select
+                label="How many prior years?"
+                required
                 options={PRIOR_YEARS}
                 value={data.priorYears}
                 onChange={val => patch({ priorYears: val })}
               />
-            </div>
-          </AnswerRow>
-        )}
-
-        {hasPriorPolicy && (
-          <AnswerRow label="What is your current carrier?">
-            <div style={{ width: 260 }}>
               <Input
+                label="What is your current carrier?"
+                required
                 value={data.currentCarrier}
                 onChange={val => patch({ currentCarrier: val })}
                 placeholder="Carrier name"
               />
-            </div>
-          </AnswerRow>
-        )}
+            </FormGrid>
+          )}
 
-        {hasPriorPolicy && (
-          <AnswerRow label="What is your current premium?">
-            <div style={{ width: 150 }}>
+          {hasPriorPolicy && (
+            <FormGrid>
               <Input
-                align="right"
+                label="What is your current premium?"
+                required
                 value={data.currentPremium}
                 onChange={val => patch({ currentPremium: val })}
                 placeholder="$"
               />
-            </div>
-          </AnswerRow>
-        )}
-      </RowGroup>
+              <div />
+            </FormGrid>
+          )}
 
-      <FieldGroup label="Description of operations">
-        <Textarea
-          value={data.operations}
-          onChange={val => patch({ operations: val })}
-          placeholder="Describe what the business actually does day to day — the work performed, where, and for whom."
-          rows={3}
-        />
-        <p className="text-[11px] mt-2" style={{ color: words >= MIN_WORDS ? '#9CA3AF' : '#A614C3' }}>
-          {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
-        </p>
+          <Textarea
+            label="Description of operations"
+            required
+            value={data.operations}
+            onChange={val => patch({ operations: val })}
+            placeholder="Describe what the business actually does day to day — the work performed, where, and for whom."
+            rows={3}
+          />
+          <p className="text-[11px] -mt-3" style={{ color: words >= MIN_WORDS ? '#9CA3AF' : '#A614C3' }}>
+            {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
+          </p>
+        </div>
       </FieldGroup>
 
-      <RowGroup label="Claims">
-        <AnswerRow label="Has the business had any claims or work-related injuries in the past 4 years?">
-          <YesNo value={claimsPast4} onChange={setClaims} name="Claims in past 4 years" />
-        </AnswerRow>
+      <FieldGroup label="Claims">
+        <div className="space-y-5">
+          <PillField
+            label="Has the business had any claims or work-related injuries in the past 4 years?"
+            required
+          >
+            <YesNo value={claimsPast4} onChange={setClaims} name="Claims in past 4 years" />
+          </PillField>
 
-        {claimsPast4 === 'yes' && (
-          <AnswerRow label="How many claims?">
-            <div style={{ width: 150 }}>
+          {claimsPast4 === 'yes' && (
+            <FormGrid>
               <Input
-                align="right"
+                label="How many claims?"
+                required
                 value={claimCount ? String(claimCount) : ''}
                 onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
                 placeholder="0"
               />
-            </div>
-          </AnswerRow>
-        )}
-      </RowGroup>
+              <div />
+            </FormGrid>
+          )}
+        </div>
+      </FieldGroup>
 
       {/* Four or more claims goes to an underwriter rather than through
           the self-service detail screen, so we ask for loss runs instead. */}

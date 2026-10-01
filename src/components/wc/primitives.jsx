@@ -260,55 +260,84 @@ export function Tag({ children, tone = 'default' }) {
 /* Info dot with a hover-opened definition card. */
 export function InfoDot({ text, title, label = 'What this covers' }) {
   const [open, setOpen] = useState(false)
+  const [popStyle, setPopStyle] = useState({})
   const ref = useRef(null)
+  const btnRef = useRef(null)
   useClickAway(ref, () => setOpen(false))
 
+  /* Fixed, and positioned off the trigger — the same escape the Select
+     dropdown makes. Absolute put the card inside the page's scroller, so
+     an overflow ancestor clipped it. */
+  useEffect(() => {
+    if (!open || !btnRef.current) return
+    const recalc = () => {
+      if (!btnRef.current) return
+      const r = btnRef.current.getBoundingClientRect()
+      const width = Math.min(320, window.innerWidth - 32)
+      // flip left or above rather than running off the edge
+      const left = Math.min(Math.max(12, r.left), window.innerWidth - width - 12)
+      const below = r.bottom + 8
+      const flipUp = below + 180 > window.innerHeight
+      setPopStyle({
+        position: 'fixed',
+        left,
+        ...(flipUp ? { bottom: window.innerHeight - r.top + 8 } : { top: below }),
+        width,
+        zIndex: 10001,
+      })
+    }
+    recalc()
+    window.addEventListener('scroll', recalc, true)
+    window.addEventListener('resize', recalc)
+    return () => {
+      window.removeEventListener('scroll', recalc, true)
+      window.removeEventListener('resize', recalc)
+    }
+  }, [open])
+
   return (
-    <span
-      className="relative inline-flex"
-      ref={ref}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
+    <span className="relative inline-flex" ref={ref}>
       <button
+        ref={btnRef}
         type="button"
         aria-label={label}
         aria-expanded={open}
+        data-open={open}
         onClick={() => setOpen(v => !v)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
         className="im-info-dot w-3.5 h-3.5 rounded-full flex items-center justify-center"
       >
         <span className="text-[9px] font-bold leading-none">i</span>
       </button>
 
       {open && (
-        <span className="absolute left-0 top-full pt-2 z-40">
-          <span
-            role="dialog"
-            aria-label={title || label}
-            className="im-info-pop block w-80 max-w-[80vw] rounded-2xl overflow-hidden text-left"
-          >
-            <span className="im-info-pop-head flex items-start justify-between gap-3 px-4 py-3">
-              <span className="text-[14px] font-bold text-gray-900 leading-snug">{title || label}</span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close"
-                className="im-info-pop-close w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
-              >
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </span>
-            <span className="block px-4 py-3.5 text-[12.5px] text-gray-600 leading-relaxed">{text}</span>
+        <span
+          role="dialog"
+          aria-label={title || label}
+          /* The dot often sits inside a SectionLabel, which is uppercase
+             and tracked — the card must not inherit either. */
+          style={{ ...popStyle, textTransform: 'none', letterSpacing: 'normal' }}
+          className="im-info-pop block rounded-2xl overflow-hidden text-left normal-case"
+        >
+          <span className="im-info-pop-head flex items-start justify-between gap-3 px-4 py-3">
+            <span className="text-[13px] font-bold leading-snug" style={{ color: 'var(--ink)' }}>{title || label}</span>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close"
+              className="im-info-pop-close w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
+            >
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </span>
+          <span className="block px-4 py-3.5 text-[12.5px] text-gray-600 leading-relaxed">{text}</span>
         </span>
       )}
     </span>
   )
 }
+
 
 /* $ inside a spinning ring. */
 export function PriceTicker({ isDark = false }) {
