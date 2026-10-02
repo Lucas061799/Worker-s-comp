@@ -41,7 +41,7 @@ export function StepHeader({ title, subtitle }) {
   return (
     <div className="pt-6 md:pt-8 mb-4 md:mb-5">
       <div className="pb-3 md:pb-4 border-b" style={{ borderColor: '#D1D5DB' }}>
-        <h2 className="text-base md:text-lg font-bold text-gray-900">{title}</h2>
+        <h2 className="text-base md:text-lg font-bold text-navy">{title}</h2>
         {subtitle && <p className="text-sm text-gray-500 leading-relaxed max-w-2xl mt-1.5">{subtitle}</p>}
       </div>
     </div>
@@ -304,9 +304,9 @@ export function InfoDot({ text, title, label = 'What this covers' }) {
         aria-expanded={open}
         data-open={open}
         onClick={() => setOpen(v => !v)}
-        className="im-info-dot w-3.5 h-3.5 rounded-full flex items-center justify-center"
+        className="im-info-dot w-4 h-4 rounded-full flex items-center justify-center"
       >
-        <span className="text-[9px] font-bold leading-none">i</span>
+        <span className="text-[10px] font-bold leading-none">i</span>
       </button>
 
       {open && (
