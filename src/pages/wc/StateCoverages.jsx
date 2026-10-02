@@ -60,6 +60,15 @@ export default function StateCoverages({ formData, updateFormData }) {
   const homeState = pz.state || 'CA'
   const availableStates = US_STATES.filter(s => s !== homeState && !addedStates.includes(s))
 
+  const removeState = (st) => {
+    setAddedStates(prev => prev.filter(x => x !== st))
+    if (activeState === st) setActiveState(homeState)
+    // the state's own class/payroll/waiver data goes with it
+    const next = { ...data }
+    delete next[st]
+    updateFormData('coverage', next)
+  }
+
   const commitAddState = (next) => {
     if (next) {
       setAddedStates([...addedStates, next])
@@ -132,72 +141,83 @@ export default function StateCoverages({ formData, updateFormData }) {
         </AnswerRow>
       </RowGroup>
 
-      {/* One enclosed track, as the prototype's .seg does it: the states
-          are segments of a single control rather than loose pills, and the
-          add-state affordance is the last segment, so picking a state never
-          changes the row's shape. */}
+      {/* One chip per state. The home state came from page one and stays;
+          every state the agent added carries its own ✕, which is what the
+          enclosed track had no room for. Add opens a list below rather than
+          swapping itself into a field, so the row keeps its shape. */}
       <div>
         <SectionLabel>State</SectionLabel>
-        <div className="relative inline-flex">
-          <div
-            className="inline-flex rounded-lg overflow-hidden divide-x"
-            style={{ border: '1px solid var(--line)', borderColor: 'var(--line)' }}
-            role="radiogroup"
-            aria-label="Active state"
-          >
-            {[homeState, ...addedStates].map(s => {
-              const selected = activeState === s
-              return (
+        <div className="flex items-center gap-2 flex-wrap" role="radiogroup" aria-label="Active state">
+          {[homeState, ...addedStates].map(st => {
+            const selected = activeState === st
+            const removable = st !== homeState
+            return (
+              <span
+                key={st}
+                className={`inline-flex items-center rounded-full transition-all ${selected ? '' : 'border'}`}
+                style={selected
+                  ? { background: BRAND_GRADIENT }
+                  : { background: 'var(--surface-card)', borderColor: 'var(--line)' }}
+              >
                 <button
-                  key={s}
                   type="button"
                   role="radio"
                   aria-checked={selected}
-                  onClick={() => setActiveState(s)}
-                  className={`px-4 py-2 text-[13px] transition-all ${selected ? 'force-white-text font-semibold' : 'font-medium hover:bg-gray-50'}`}
-                  style={selected
-                    ? { background: BRAND_GRADIENT, color: 'white', borderColor: 'transparent' }
-                    : { background: 'var(--surface-card)', color: 'var(--ink-2)', borderColor: 'var(--line)' }
-                  }
+                  onClick={() => setActiveState(st)}
+                  className={`py-1.5 text-[13px] font-semibold transition-all ${removable ? 'pl-4 pr-1.5' : 'px-4'} ${selected ? 'force-white-text' : ''}`}
+                  style={{ color: selected ? 'white' : 'var(--ink-2)' }}
                 >
-                  {s}
+                  {st}
                 </button>
-              )
-            })}
+                {removable && (
+                  <button
+                    type="button"
+                    onClick={() => removeState(st)}
+                    aria-label={`Remove ${st}`}
+                    className="pr-3 pl-0.5 py-1.5 transition hover:opacity-70"
+                    style={{ color: selected ? 'rgba(255,255,255,0.75)' : '#9CA3AF' }}
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </span>
+            )
+          })}
 
+          <span className="relative inline-flex">
             <button
               type="button"
               onClick={() => setAddOpen(v => !v)}
-              aria-label="Add a state"
               aria-expanded={addOpen}
-              className="px-3.5 py-2 text-[13px] font-semibold transition hover:bg-gray-50"
-              style={{ background: 'var(--surface-card)', color: '#A614C3', borderColor: 'var(--line)' }}
+              className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed transition hover:opacity-80"
+              style={{ background: 'var(--surface-card)', borderColor: 'rgba(166,20,195,0.35)', color: '#A614C3' }}
             >
-              +
+              + Add state
             </button>
-          </div>
 
-          {/* The picker hangs off the track rather than replacing a segment. */}
-          {addOpen && (
-            <div
-              className="absolute left-0 top-full mt-1.5 rounded-xl overflow-hidden bop-select-dropdown z-40"
-              style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', boxShadow: '0 8px 24px rgba(15,10,40,0.16)', minWidth: 160 }}
-            >
-              <div className="overflow-y-auto" style={{ maxHeight: 220 }}>
-                {availableStates.map(st => (
-                  <button
-                    key={st}
-                    type="button"
-                    onClick={() => commitAddState(st)}
-                    className="w-full text-left px-3.5 py-2 text-sm transition hover:bg-gray-50"
-                    style={{ color: 'var(--ink-2)' }}
-                  >
-                    {st}
-                  </button>
-                ))}
+            {addOpen && (
+              <div
+                className="absolute left-0 top-full mt-1.5 rounded-xl overflow-hidden bop-select-dropdown z-40"
+                style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', boxShadow: '0 8px 24px rgba(15,10,40,0.16)', minWidth: 160 }}
+              >
+                <div className="overflow-y-auto" style={{ maxHeight: 220 }}>
+                  {availableStates.map(opt => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => commitAddState(opt)}
+                      className="w-full text-left px-3.5 py-2 text-sm transition hover:bg-gray-50"
+                      style={{ color: 'var(--ink-2)' }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </span>
         </div>
       </div>
 
