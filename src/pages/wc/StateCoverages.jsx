@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Input, Select } from '../../components/FormField'
 import {
   FieldGroup,
+  SectionLabel,
   RowGroup,
   AnswerRow,
   RemoveButton,
@@ -131,42 +132,73 @@ export default function StateCoverages({ formData, updateFormData }) {
         </AnswerRow>
       </RowGroup>
 
-      {/* State tabs — one pill per state, gradient fill for the active one.
-          Everything below is that state's own data. */}
-      <div className="flex items-center gap-2 flex-wrap" role="radiogroup" aria-label="Active state">
-        {[homeState, ...addedStates].map(s => {
-          const selected = activeState === s
-          return (
-            <button
-              key={s}
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              onClick={() => setActiveState(s)}
-              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition-all ${selected ? 'force-white-text' : 'border-[1.5px]'}`}
-              style={selected
-                ? { background: BRAND_GRADIENT, color: 'white' }
-                : { background: 'white', borderColor: '#E5E7EB', color: '#6B7280' }
-              }
-            >
-              {s}
-            </button>
-          )
-        })}
-        {addOpen ? (
-          <div className="w-[150px]">
-            <Select options={availableStates} value="" onChange={commitAddState} placeholder="Pick a state…" />
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setAddOpen(true)}
-            className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed border-[#A614C3]/30 transition hover:border-[#A614C3]/60"
-            style={{ background: 'white', color: '#A614C3' }}
+      {/* One enclosed track, as the prototype's .seg does it: the states
+          are segments of a single control rather than loose pills, and the
+          add-state affordance is the last segment, so picking a state never
+          changes the row's shape. */}
+      <div>
+        <SectionLabel>State</SectionLabel>
+        <div className="relative inline-flex">
+          <div
+            className="inline-flex rounded-lg overflow-hidden divide-x"
+            style={{ border: '1px solid var(--line)', borderColor: 'var(--line)' }}
+            role="radiogroup"
+            aria-label="Active state"
           >
-            + Add state
-          </button>
-        )}
+            {[homeState, ...addedStates].map(s => {
+              const selected = activeState === s
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setActiveState(s)}
+                  className={`px-4 py-2 text-[13px] transition-all ${selected ? 'force-white-text font-semibold' : 'font-medium hover:bg-gray-50'}`}
+                  style={selected
+                    ? { background: BRAND_GRADIENT, color: 'white', borderColor: 'transparent' }
+                    : { background: 'var(--surface-card)', color: 'var(--ink-2)', borderColor: 'var(--line)' }
+                  }
+                >
+                  {s}
+                </button>
+              )
+            })}
+
+            <button
+              type="button"
+              onClick={() => setAddOpen(v => !v)}
+              aria-label="Add a state"
+              aria-expanded={addOpen}
+              className="px-3.5 py-2 text-[13px] font-semibold transition hover:bg-gray-50"
+              style={{ background: 'var(--surface-card)', color: '#A614C3', borderColor: 'var(--line)' }}
+            >
+              +
+            </button>
+          </div>
+
+          {/* The picker hangs off the track rather than replacing a segment. */}
+          {addOpen && (
+            <div
+              className="absolute left-0 top-full mt-1.5 rounded-xl overflow-hidden bop-select-dropdown z-40"
+              style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', boxShadow: '0 8px 24px rgba(15,10,40,0.16)', minWidth: 160 }}
+            >
+              <div className="overflow-y-auto" style={{ maxHeight: 220 }}>
+                {availableStates.map(st => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => commitAddState(st)}
+                    className="w-full text-left px-3.5 py-2 text-sm transition hover:bg-gray-50"
+                    style={{ color: 'var(--ink-2)' }}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <RowGroup label="Experience mod">
