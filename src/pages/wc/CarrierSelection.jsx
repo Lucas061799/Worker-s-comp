@@ -320,7 +320,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
           onClick={() => setShowApproach(true)}
           className="btn-gradient force-white-text px-8 py-3 rounded-xl text-sm font-bold transition-all"
           style={{
-            background: selected.length ? BRAND_GRADIENT : '#D1D5DB',
+            background: selected.length ? BRAND_GRADIENT : 'var(--fill-disabled)',
             boxShadow: selected.length ? '0 4px 20px rgba(92,46,212,0.3)' : 'none',
             cursor: selected.length ? 'pointer' : 'not-allowed',
           }}

@@ -268,7 +268,7 @@ export default function PageZero({ onStart, isDark = false }) {
                   type="button"
                   onClick={runAppetite}
                   disabled={!canCheck || checking}
-                  className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition ${canCheck && !checking ? 'hover:opacity-90' : 'cursor-not-allowed'}`}
+                  className={`w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${canCheck && !checking ? 'hover:opacity-90' : 'cursor-not-allowed'}`}
                   style={canCheck && !checking
                     ? { background: 'var(--surface-card)', border: '1.5px solid rgba(92,46,212,0.35)', color: '#5C2ED4' }
                     : { background: 'var(--surface-soft)', border: '1.5px solid var(--line)', color: '#9CA3AF' }}
@@ -311,11 +311,11 @@ export default function PageZero({ onStart, isDark = false }) {
                 disabled={!ready}
                 /* force-white-text only belongs on the gradient; a disabled
                    button with white text on the muted fill reads clickable. */
-                className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition ${
+                className={`w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${
                   ready ? 'btn-gradient force-white-text text-white hover:opacity-90' : 'cursor-not-allowed'
                 }`}
                 style={{
-                  background: ready ? BRAND_GRADIENT : 'var(--fill-subtle)',
+                  background: ready ? BRAND_GRADIENT : 'var(--fill-disabled)',
                   color: ready ? 'white' : '#9CA3AF',
                   boxShadow: ready ? '0 4px 14px rgba(92,46,212,0.22)' : 'none',
                 }}

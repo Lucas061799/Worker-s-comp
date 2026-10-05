@@ -561,7 +561,7 @@ export function PrimaryButton({ children, onClick, disabled = false, className =
       disabled={disabled}
       className={`h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-bold transition-all ${disabled ? '' : 'force-white-text'} ${className}`}
       style={disabled
-        ? { background: '#D1D5DB', color: 'white', cursor: 'not-allowed' }
+        ? { background: 'var(--fill-disabled)', color: '#9CA3AF', cursor: 'not-allowed' }
         : { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 16px rgba(92,46,212,0.28)' }}
     >
       {children}

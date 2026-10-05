@@ -214,7 +214,7 @@ export default function UnderwritingQuestions({
           className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90 disabled:cursor-not-allowed"
           style={allAnswered && !quoting && !quotesReady
             ? { background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
-            : { background: '#D1D5DB' }}
+            : { background: 'var(--fill-disabled)', color: '#9CA3AF' }}
         >
           {quoting ? 'Getting Quotes…' : quotesReady ? 'Quotes Ready ✓' : 'Preview & Continue'}
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

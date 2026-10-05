@@ -67,6 +67,8 @@ input, select, textarea, button {
   --surface-soft: #F9FAFB;
   --surface-softer: #FAFAFB;
   --fill-subtle: #F3F4F6;
+  /* A disabled action, at the value CBIC's landing CTA uses. */
+  --fill-disabled: #E5E7EB;
   --line: #E5E7EB;
   --line-soft: #F3F4F6;
   --line-strong: #D1D5DB;
@@ -85,6 +87,7 @@ input, select, textarea, button {
   --surface-soft: rgba(255,255,255,0.03);
   --surface-softer: rgba(255,255,255,0.03);
   --fill-subtle: rgba(255,255,255,0.06);
+  --fill-disabled: rgba(255,255,255,0.08);
   --line: rgba(255,255,255,0.10);
   --line-soft: rgba(255,255,255,0.06);
   --line-strong: rgba(255,255,255,0.14);
