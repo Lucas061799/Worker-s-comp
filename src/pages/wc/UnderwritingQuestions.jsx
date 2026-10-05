@@ -359,7 +359,6 @@ function ApplicationPreviewModal({ formData, onClose, onSubmit, onEdit }) {
 
             <PreviewSection title="Class & payroll" icon="money" onEdit={edit(4)}>
               <PreviewRow label="Primary class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
-              <PreviewRow label="Industry" value={pz.industry} />
               <PreviewRow label="Classes on file" value={(stateCov.classes || []).length} />
               <PreviewRow label="Annual payroll" value={totalPayroll ? `$${totalPayroll.toLocaleString()}` : '—'} />
               <PreviewRow label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} />

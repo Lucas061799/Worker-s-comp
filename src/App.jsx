@@ -166,8 +166,8 @@ function App() {
   const seedDemoData = () => {
     updateFormData('pageZero', {
       productType: 'wc', state: 'CA', effectiveDate: '2026-04-01',
-      mainClass: '5183', classDescription: 'Plumbing NOC',
-      industry: 'Construction', isContractor: true,
+      mainClass: '5183', classDescription: 'Plumbing — shop & outside (≥ $31/hr)',
+      isContractor: true,
     })
     updateFormData('business', {
       name: 'Sierra Ridge Plumbing Inc.',

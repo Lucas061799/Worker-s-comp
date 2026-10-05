@@ -189,7 +189,6 @@ export default function PrintSummary({ formData, visible, onClose, onEdit }) {
 
                 <Panel title="Classifications" icon="doc" onEdit={edit(4)}>
                   <Row label="Primary Class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
-                  <Row label="Industry" value={pz.industry} />
                   {classes.filter(c => c.code).map((c, i) => (
                     <Row key={i} label={`${c.code} — ${c.description || ''}`} value={c.payroll} />
                   ))}

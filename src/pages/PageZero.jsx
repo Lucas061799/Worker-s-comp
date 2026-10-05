@@ -15,21 +15,19 @@ const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','
 // NCCI class typeahead — matches the shape used by the HTML proposal's
 // step 1 typeahead. Industry is derived from the class so the user
 // never has to self-select it.
+/* The prototype's own nine demo codes, verbatim — including 5187, the
+   dual-wage twin of 5183 that the Coverages popover tells the agent to
+   enter but that was not selectable here. */
 const CLASSES = [
-  { code: '5183', desc: 'Plumbing NOC',                     ind: 'Construction',          contractor: true },
-  { code: '5645', desc: 'Carpentry — detached dwellings',   ind: 'Construction',          contractor: true },
-  { code: '5474', desc: 'Painting NOC',                     ind: 'Construction',          contractor: true },
-  { code: '5551', desc: 'Roofing — all kinds',              ind: 'Construction',          contractor: true },
-  { code: '5190', desc: 'Electrical wiring — within bldgs', ind: 'Construction',          contractor: true },
-  { code: '9079', desc: 'Restaurant — full service',        ind: 'Hospitality',           contractor: false },
-  { code: '9082', desc: 'Restaurant — quick service',       ind: 'Hospitality',           contractor: false },
-  { code: '8810', desc: 'Clerical office employees',        ind: 'Professional services', contractor: false },
-  { code: '8742', desc: 'Salespersons — outside',           ind: 'Professional services', contractor: false },
-  { code: '8017', desc: 'Store — retail NOC',               ind: 'Retail',                contractor: false },
-  { code: '7228', desc: 'Trucking — long haul',             ind: 'Transportation',        contractor: false, transport: true },
-  { code: '7229', desc: 'Trucking — local hauling',         ind: 'Transportation',        contractor: false, transport: true },
-  { code: '9014', desc: 'Janitorial services — contractor', ind: 'Services',              contractor: true },
-  { code: '0042', desc: 'Landscape gardening',              ind: 'Services',               contractor: true },
+  { code: '5183', desc: 'Plumbing — shop & outside (≥ $31/hr)', contractor: true },
+  { code: '5187', desc: 'Plumbing — shop & outside (< $31/hr)', contractor: true },
+  { code: '5645', desc: 'Carpentry — detached dwellings',       contractor: true },
+  { code: '5474', desc: 'Painting or decorating',               contractor: true },
+  { code: '9079', desc: 'Restaurant / food service' },
+  { code: '8810', desc: 'Clerical office employees' },
+  { code: '8017', desc: 'Retail store' },
+  { code: '7228', desc: 'Trucking — long haul',                 transport: true },
+  { code: '7229', desc: 'Trucking — local hauling',             transport: true },
 ]
 
 /* Classes that come back as a likely referral rather than a clean yes. */
@@ -86,7 +84,6 @@ export default function PageZero({ onStart, isDark = false }) {
       effectiveDate,
       mainClass: picked.code,
       classDescription: picked.desc,
-      industry: picked.ind,
       isContractor: picked.contractor,
       isTransportation: !!picked.transport,
       estimatedPayroll: payroll,
@@ -223,11 +220,6 @@ export default function PageZero({ onStart, isDark = false }) {
                       </div>
                     )}
                   </div>
-                  {picked && (
-                    <p className="mt-1.5 text-xs text-gray-500">
-                      Industry: <span className="font-semibold text-gray-700">{picked.ind}</span> — derived from class {picked.code}
-                    </p>
-                  )}
                 </div>
 
                 <div>
