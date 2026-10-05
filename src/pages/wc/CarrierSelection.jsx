@@ -195,16 +195,19 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
             <div
               key={c.id}
               className="relative rounded-xl transition-all cursor-pointer group"
+              /* Every card is checked by default, so a brand border on the
+                 selected state painted the whole grid purple. The checkbox
+                 already says which markets are in. */
               style={{
                 background: 'white',
-                border: `1.5px solid ${isChecked ? '#7C3AED' : '#E5E7EB'}`,
+                border: '1.5px solid #E5E7EB',
               }}
               onClick={() => toggle(c.id)}
               onMouseEnter={e => {
-                if (!isChecked) e.currentTarget.style.borderColor = 'rgba(124,58,237,0.55)'
+                e.currentTarget.style.borderColor = 'rgba(124,58,237,0.55)'
               }}
               onMouseLeave={e => {
-                if (!isChecked) e.currentTarget.style.borderColor = '#E5E7EB'
+                e.currentTarget.style.borderColor = '#E5E7EB'
               }}
             >
               {/* Corner ribbon badges — straddle the top border of the

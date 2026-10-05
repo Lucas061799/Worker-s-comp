@@ -126,7 +126,10 @@ export default function CoverageHistory({ formData, updateFormData }) {
       </FieldGroup>
 
       <FieldGroup label="Claims">
-        <div className="space-y-5">
+        {/* The count belongs beside the question it depends on, not under
+            it. items-end keeps the pills and the field on one baseline
+            however many lines the question wraps to. */}
+        <FormGrid className="items-end">
           <PillField
             label="Has the business had any claims or work-related injuries in the past 4 years?"
             required
@@ -134,19 +137,16 @@ export default function CoverageHistory({ formData, updateFormData }) {
             <YesNo value={claimsPast4} onChange={setClaims} name="Claims in past 4 years" />
           </PillField>
 
-          {claimsPast4 === 'yes' && (
-            <FormGrid>
-              <Input
-                label="How many claims?"
-                required
-                value={claimCount ? String(claimCount) : ''}
-                onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
-                placeholder="0"
-              />
-              <div />
-            </FormGrid>
-          )}
-        </div>
+          {claimsPast4 === 'yes' ? (
+            <Input
+              label="How many claims?"
+              required
+              value={claimCount ? String(claimCount) : ''}
+              onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
+              placeholder="0"
+            />
+          ) : <div />}
+        </FormGrid>
       </FieldGroup>
 
       {/* Four or more claims goes to an underwriter rather than through
