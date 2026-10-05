@@ -117,8 +117,9 @@ export default function UnderwritingQuestions({
         Please validate all credit questions for this risk to improve pricing.
       </p>
 
-      {/* Norbie quick-fill — brand banner, not a bespoke gradient */}
-      {!quickFilled && !allAnswered && (
+      {/* Norbie quick-fill, as Commercial Auto offers it: available
+          whenever it has not been used, not only on an untouched form. */}
+      {!quickFilled && (
         <Banner icon={false}>
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
@@ -141,18 +142,18 @@ export default function UnderwritingQuestions({
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
-              Quick-fill
+              Quick-fill standard answers
             </button>
           </div>
         </Banner>
       )}
 
-      {quickFilled && allAnswered && (
+      {quickFilled && (
         <div
           className="im-info-panel rounded-xl px-4 py-3 flex items-center justify-between gap-3"
         >
           <p className="text-xs font-medium" style={{ color: '#5C2ED4' }}>
-            Standard answers applied — expand each card below to review or adjust.
+            Standard answers applied — review each one below and adjust anything that differs.
           </p>
           <button
             type="button"
