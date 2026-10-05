@@ -243,11 +243,13 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
 
       <FieldGroup label="Officers & Owners">
         <div className="im-info-panel rounded-xl p-4 mb-4 flex items-start gap-3">
-          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" />
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
             <path d="M12 8v5" strokeLinecap="round" />
             <circle cx="12" cy="16.5" r="0.6" fill="currentColor" />
-          </svg>
+            </svg>
+          </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed flex-1">
             <span className="font-bold text-navy">
               {activeState} · {ENTITY_LABELS[entityType] || 'Corporation'}.
@@ -411,9 +413,11 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
 
       {stateData.usesSubs === 'yes' && (
         <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-          </svg>
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+          </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">
             <span className="font-bold text-navy">Collect certificates of insurance from every subcontractor before work begins.</span>{' '}
             Payroll paid to uninsured or uncertificated subs is added to your payroll at audit and

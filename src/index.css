@@ -229,6 +229,17 @@ input, select, textarea, button {
 /* A modal sheet covers what is behind it, so it stays a solid — the
    translucent surfaces only work when something opaque is underneath.
    CBIC does the same, painting its preview shell with --surface-card. */
+/* Panel icons sit in a tinted disc, the way every other icon in the app
+   does, rather than floating as a bare glyph against the copy. */
+.im-panel-icon {
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.14) 0%, rgba(166,20,195,0.14) 100%);
+  color: #5C2ED4;
+}
+[data-dark="true"] .im-panel-icon {
+  background: rgba(167,139,250,0.22) !important;
+  color: #E9D5FF !important;
+}
+
 .im-sheet { background: var(--surface-soft) !important; }
 
 /* A modal with no panels of its own has nothing opaque underneath, so the

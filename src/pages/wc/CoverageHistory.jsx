@@ -153,9 +153,11 @@ export default function CoverageHistory({ formData, updateFormData }) {
           the self-service detail screen, so we ask for loss runs instead. */}
       {claimsPast4 === 'yes' && claimCount >= 4 && (
         <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">
             <span className="font-bold text-navy">{claimCount} claims reported.</span>{' '}
             Please email currently valued loss runs to comp@btisinc.com, and upload them as a

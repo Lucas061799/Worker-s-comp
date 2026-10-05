@@ -69,11 +69,13 @@ export default function Loading({ onDone, onSkip }) {
 
         {/* While you wait — the canonical info panel, not a gradient slab. */}
         <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" />
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
             <path d="M12 8v5" strokeLinecap="round" />
             <circle cx="12" cy="16.5" r="0.6" fill="currentColor" />
-          </svg>
+            </svg>
+          </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">
             <span className="font-bold text-navy">Q3 promotion — +2% boosted commission on AmTrust binds.</span>{' '}
             Applies to policies bound with AmTrust through BTIS this quarter.

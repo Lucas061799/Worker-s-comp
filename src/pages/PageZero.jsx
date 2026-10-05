@@ -294,9 +294,11 @@ export default function PageZero({ onStart, isDark = false }) {
 
                 {appetite === 'good' && (
                   <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
-                    <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
+                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
                     <p className="text-[12.5px] text-gray-600 leading-relaxed">
                       <span className="font-bold text-navy">Good news!</span>{' '}
                       Based on class, state and payroll, we have at least 1 carrier available.
@@ -307,9 +309,11 @@ export default function PageZero({ onStart, isDark = false }) {
 
                 {appetite === 'limited' && (
                   <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
-                    <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                    </svg>
+                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      </svg>
+                    </span>
                     <p className="text-[12.5px] text-gray-600 leading-relaxed">
                       <span className="font-bold text-navy">
                         Limited appetite for {picked?.code} in {state} at this payroll — likely referral.
