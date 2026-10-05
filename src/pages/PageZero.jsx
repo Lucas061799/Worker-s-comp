@@ -256,14 +256,15 @@ export default function PageZero({ onStart, isDark = false }) {
                         text="Certain carriers will require this in order to bind. We'll also prefill information based on this license."
                       />
                     </label>
-                    {/* A CSLB licence is 8 digits. */}
+                    {/* Digits only, capped at 8 — CSLB numbers run to eight
+                        but are often shorter, so there is no count to meet
+                        and nothing to nag about. */}
                     <Input
                       value={license}
                       onChange={setLicense}
-                      placeholder="00000000"
+                      placeholder="e.g. 1042113"
                       digits
                       maxLength={8}
-                      help={license && license.length < 8 ? `${license.length} of 8 digits` : undefined}
                     />
                   </div>
                 )}
