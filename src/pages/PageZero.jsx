@@ -139,7 +139,11 @@ export default function PageZero({ onStart, isDark = false }) {
                 </p>
               </div>
 
-              <div className="space-y-4 mb-6">
+              {/* Two columns, as CBIC's landing form is — a single column
+                  ran the page long enough to scroll past the illustration.
+                  The class code spans both, since its label and its
+                  suggestions need the full width. */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5 mb-6">
                 <Select
                   label="Primary State"
                   required
@@ -158,7 +162,7 @@ export default function PageZero({ onStart, isDark = false }) {
                 {/* Class code search — mirrors Inland's ClassSearch:
                     magnifying glass on the left, chevron on the right,
                     the full catalogue when the field is empty. */}
-                <div className="relative">
+                <div className="relative sm:col-span-2">
                   <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
                     Primary Class Code<span className="text-red-400 ml-0.5">*</span>
                   </label>
