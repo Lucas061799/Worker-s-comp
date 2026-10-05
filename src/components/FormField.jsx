@@ -16,7 +16,7 @@ function formatPhone(raw) {
    simply never holds a value it should not. */
 export function Input({
   label, required, placeholder, type = 'text', value, onChange,
-  className = '', error = false, align = 'left', maxLength, digits = false, help,
+  className = '', error = false, align = 'left', maxLength, digits = false, help, disabled = false,
 }) {
   const handleChange = (e) => {
     if (!onChange) return
@@ -41,7 +41,8 @@ export function Input({
         value={value || ''}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`w-full border rounded-lg px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 transition-all ${
+        disabled={disabled}
+        className={`w-full border rounded-lg px-3.5 py-2.5 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
           align === 'right' ? 'text-right' : ''
         } ${
           error

@@ -241,29 +241,29 @@ export default function PageZero({ onStart, isDark = false }) {
                   />
                 </div>
 
-                {/* Only contracting classes need a licence number, and the
-                    CSLB lookup off it pre-fills General info. */}
-                {picked?.contractor && (
-                  <div>
-                    <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
-                      Contractor License Number
-                      <InfoDot
-                        title="Contractor license number"
-                        text="Certain carriers will require this in order to bind. We'll also prefill information based on this license."
-                      />
-                    </label>
-                    {/* Digits only, capped at 8 — CSLB numbers run to eight
-                        but are often shorter, so there is no count to meet
-                        and nothing to nag about. */}
-                    <Input
-                      value={license}
-                      onChange={setLicense}
-                      placeholder="e.g. 1042113"
-                      digits
-                      maxLength={8}
+                {/* Kept on the page rather than appearing and vanishing with
+                    the class: it only applies to contracting classes, so it
+                    says so and disables itself instead of disappearing. */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+                    Contractor License Number
+                    <InfoDot
+                      title="Contractor license number"
+                      text="Certain carriers will require this in order to bind. We'll also prefill information based on this license."
                     />
-                  </div>
-                )}
+                  </label>
+                  {/* Digits only, capped at 8 — CSLB numbers run to eight
+                      but are often shorter. */}
+                  <Input
+                    value={picked?.contractor ? license : ''}
+                    onChange={setLicense}
+                    placeholder="e.g. 1042113"
+                    digits
+                    maxLength={8}
+                    disabled={!picked?.contractor}
+                    help={!picked?.contractor ? 'Only asked for contracting class codes.' : undefined}
+                  />
+                </div>
               </div>
 
               {/* Appetite gate — a class, a state and a payroll are enough
