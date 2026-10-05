@@ -73,7 +73,7 @@ function InfoPop({ carrier, onClose }) {
       className="im-info-pop absolute right-2 top-14 w-72 rounded-2xl overflow-hidden text-xs z-20"
       onClick={e => e.stopPropagation()}
     >
-      <div className="im-info-pop-head flex items-start justify-between gap-3 px-4 py-3">
+      <div className="im-info-pop-head flex items-center justify-between gap-3 px-4 py-3">
         <div className="min-w-0">
           <h4 className="text-sm font-bold text-gray-900 truncate">{carrier.name}</h4>
           <p className="text-[11px] text-gray-500 mt-0.5">{carrier.sla}</p>

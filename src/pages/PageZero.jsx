@@ -60,7 +60,11 @@ export default function PageZero({ onStart, isDark = false }) {
 
   const handlePick = (cls) => {
     setPicked(cls)
-    setQuery(`${cls.code} — ${cls.desc}`)
+    // The input reads its label off `picked`, so the query stays empty —
+    // writing the label into it made the filter match nothing, and
+    // reopening the list showed an empty catalogue you could not re-pick
+    // from.
+    setQuery('')
     setShowSuggest(false)
     setAppetite(null)
   }

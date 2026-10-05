@@ -146,7 +146,7 @@ export function Modal({ title, onDismiss, children, footer, width = 420 }) {
       >
         {title && (
           <div className="px-7 pt-6 pb-4">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center justify-between gap-4">
               <h3 className="text-[17px] font-bold text-navy tracking-wide">{title}</h3>
               {onDismiss && (
                 <button
@@ -318,7 +318,7 @@ export function InfoDot({ text, title, label = 'What this covers' }) {
           style={{ ...popStyle, textTransform: 'none', letterSpacing: 'normal' }}
           className="im-info-pop block rounded-2xl overflow-hidden text-left normal-case"
         >
-          <span className="im-info-pop-head flex items-start justify-between gap-3 px-4 py-3">
+          <span className="im-info-pop-head flex items-center justify-between gap-3 px-4 py-3">
             <span className="text-[13px] font-bold leading-snug" style={{ color: 'var(--ink)' }}>{title || label}</span>
             <button
               type="button"
