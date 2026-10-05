@@ -256,10 +256,14 @@ export default function PageZero({ onStart, isDark = false }) {
                         text="Certain carriers will require this in order to bind. We'll also prefill information based on this license."
                       />
                     </label>
+                    {/* A CSLB licence is 8 digits. */}
                     <Input
                       value={license}
                       onChange={setLicense}
-                      placeholder="#0000000"
+                      placeholder="00000000"
+                      digits
+                      maxLength={8}
+                      help={license && license.length < 8 ? `${license.length} of 8 digits` : undefined}
                     />
                   </div>
                 )}
@@ -272,10 +276,20 @@ export default function PageZero({ onStart, isDark = false }) {
                   type="button"
                   onClick={runAppetite}
                   disabled={!canCheck || checking}
-                  className={`w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${canCheck && !checking ? 'hover:opacity-90' : 'cursor-not-allowed'}`}
-                  style={canCheck && !checking
-                    ? { background: 'var(--surface-card)', border: '1.5px solid rgba(92,46,212,0.35)', color: '#5C2ED4' }
-                    : { background: 'var(--surface-soft)', border: '1.5px solid var(--line)', color: '#9CA3AF' }}
+                  /* Until appetite answers, this is the step to take, so it
+                     wears the brand and Start Application stays disabled
+                     below it. Once it has answered, it demotes to the house
+                     ghost and the brand moves to Start Application — only
+                     one action is ever the loud one. The purple outline it
+                     used before was a variant nothing else in the app has. */
+                  className={`w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${
+                    canCheck && !checking ? 'hover:opacity-90' : 'cursor-not-allowed'
+                  } ${canCheck && !checking && !appetite ? 'btn-gradient force-white-text' : ''}`}
+                  style={!canCheck || checking
+                    ? { background: 'var(--fill-disabled)', color: '#9CA3AF' }
+                    : appetite
+                      ? { background: 'var(--surface)', border: '1.5px solid var(--line)', color: 'var(--ink-2)' }
+                      : { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.22)' }}
                   title={canCheck ? undefined : 'Add state, effective date, class code and payroll first'}
                 >
                   {checking ? 'Checking…' : appetite ? 'Re-run Appetite' : 'Run Appetite'}

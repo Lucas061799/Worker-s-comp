@@ -10,14 +10,21 @@ function formatPhone(raw) {
 }
 
 // Reusable input
-export function Input({ label, required, placeholder, type = 'text', value, onChange, className = '', error = false, align = 'left' }) {
+/* `digits` restricts entry to numerals and `maxLength` caps it, so a field
+   with a known shape — a licence number, an FEIN — cannot be overtyped.
+   Filtering on the way in rather than validating afterwards means the box
+   simply never holds a value it should not. */
+export function Input({
+  label, required, placeholder, type = 'text', value, onChange,
+  className = '', error = false, align = 'left', maxLength, digits = false, help,
+}) {
   const handleChange = (e) => {
     if (!onChange) return
-    if (type === 'tel') {
-      onChange(formatPhone(e.target.value))
-    } else {
-      onChange(e.target.value)
-    }
+    let next = e.target.value
+    if (type === 'tel') return onChange(formatPhone(next))
+    if (digits) next = next.replace(/[^0-9]/g, '')
+    if (maxLength) next = next.slice(0, maxLength)
+    onChange(next)
   }
 
   return (
@@ -29,7 +36,8 @@ export function Input({ label, required, placeholder, type = 'text', value, onCh
       )}
       <input
         type={type === 'tel' ? 'text' : type}
-        inputMode={type === 'tel' ? 'numeric' : undefined}
+        inputMode={type === 'tel' || digits ? 'numeric' : undefined}
+        maxLength={maxLength}
         value={value || ''}
         onChange={handleChange}
         placeholder={placeholder}
@@ -42,6 +50,7 @@ export function Input({ label, required, placeholder, type = 'text', value, onCh
         }`}
       />
       {error && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1"><span>⚠</span> This field is required</p>}
+      {help && !error && <p className="text-xs text-gray-500 mt-1.5">{help}</p>}
     </div>
   )
 }
