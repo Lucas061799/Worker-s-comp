@@ -48,7 +48,7 @@ const DUAL_WAGE = [
 const emptyClass  = () => ({ location: '', code: '', description: '', payroll: '', ftEmployees: '', ptEmployees: '' })
 const emptyOfficer = () => ({ name: '', title: '', status: 'include' })
 
-export default function StateCoverages({ formData, updateFormData }) {
+export default function StateCoverages({ formData, updateFormData, replaceFormSection }) {
   const pz = formData.pageZero || {}
   const business = formData.business || {}
   const data = formData.coverage || {}
@@ -63,10 +63,11 @@ export default function StateCoverages({ formData, updateFormData }) {
   const removeState = (st) => {
     setAddedStates(prev => prev.filter(x => x !== st))
     if (activeState === st) setActiveState(homeState)
-    // the state's own class/payroll/waiver data goes with it
+    // the state's own class/payroll/waiver data goes with it — a merge
+    // would quietly keep the key, so the section is replaced wholesale
     const next = { ...data }
     delete next[st]
-    updateFormData('coverage', next)
+    ;(replaceFormSection || updateFormData)('coverage', next)
   }
 
   const commitAddState = (next) => {

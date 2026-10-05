@@ -62,6 +62,13 @@ function App() {
     setFormData(prev => ({ ...prev, [section]: { ...prev[section], ...data } }))
   }, [])
 
+  /* updateFormData merges, so a section can be added to but never pruned —
+     removing a state left its class and payroll behind, where rating still
+     read it. This hands over the whole section instead. */
+  const replaceFormSection = useCallback((section, data) => {
+    setFormData(prev => ({ ...prev, [section]: data }))
+  }, [])
+
   // 1–3 claims get the detail screen; 4 or more skip it and go to an
   // underwriter with loss runs instead.
   const claimCount = formData.history?.claimCount || 0
@@ -338,7 +345,7 @@ owner_involved: 'yes',
     { id: 1, key: 'business',  title: titles.business,  el: <BusinessInfo formData={formData} updateFormData={updateFormData} showErrors={attemptedQuote} /> },
     { id: 2, key: 'history',   title: titles.history,   el: <CoverageHistory formData={formData} updateFormData={updateFormData} /> },
     ...(hasLosses ? [{ id: 3, key: 'losses', title: titles.losses, el: <LossDetail formData={formData} updateFormData={updateFormData} /> }] : []),
-    { id: 4, key: 'coverages', title: titles.coverages, el: <StateCoverages formData={formData} updateFormData={updateFormData} /> },
+    { id: 4, key: 'coverages', title: titles.coverages, el: <StateCoverages formData={formData} updateFormData={updateFormData} replaceFormSection={replaceFormSection} /> },
     { id: 5, key: 'questions', title: titles.questions, el: (
       <UnderwritingQuestions
         formData={formData}

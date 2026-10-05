@@ -93,7 +93,7 @@ export default function PageZero({ onStart, isDark = false }) {
   }
 
   return (
-    <div className="min-h-screen font-montserrat flex flex-col" style={{ background: 'var(--surface)' }}>
+    <div className="bop-page min-h-screen font-montserrat flex flex-col" style={{ background: 'var(--surface)' }}>
       {/* Header */}
       <header
         className="flex items-center justify-between px-5 md:px-8 shrink-0"

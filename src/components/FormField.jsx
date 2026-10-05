@@ -454,9 +454,9 @@ export function Select({ label, required, options = [], value, onChange, placeho
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg border text-sm text-left transition-all field-fill"
         style={{
-          borderColor: error ? '#FCA5A5' : open ? '#7C3AED' : '#E5E7EB',
+          borderColor: error ? '#FCA5A5' : open ? '#7C3AED' : 'var(--line)',
           boxShadow: error ? '0 0 0 2px rgba(252,165,165,0.3)' : open ? '0 0 0 2px rgba(124,58,237,0.1)' : 'none',
-          color: selectedLabel ? '#1F2937' : '#9CA3AF',
+          color: selectedLabel ? 'var(--ink)' : '#9CA3AF',
         }}
       >
         <span className="truncate pr-2">{selectedLabel || placeholder}</span>
