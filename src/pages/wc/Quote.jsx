@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag } from '../../components/wc/primitives'
+import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag, Modal, ModalButton } from '../../components/wc/primitives'
 import { CARRIERS } from './CarrierSelection'
 
 function SummaryRow({ label, value, last }) {
@@ -87,10 +87,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
     }, 900)
   }
 
-  const handleEmail = () => {
-    setEmailToast(true)
-    setTimeout(() => setEmailToast(false), 2500)
-  }
+  const handleEmail = () => setEmailToast(true)
 
   return (
     <div className="w-full space-y-6">
@@ -174,12 +171,17 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
       )}
 
       {emailToast && (
-        <div
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full text-sm z-50"
-          style={{ background: '#252948', color: 'white', boxShadow: '0 8px 24px rgba(15,10,40,0.28)' }}
+        <Modal
+          title="Quote emailed"
+          width={440}
+          onDismiss={() => setEmailToast(false)}
+          footer={<ModalButton onClick={() => setEmailToast(false)}>OK</ModalButton>}
         >
-          Quote proposal emailed (placeholder).
-        </div>
+          <p className="text-[14px] text-gray-600 leading-relaxed">
+            Quote emailed to <b className="text-navy">Agent@btisinc.com</b>.
+            Please contact BTIS if this email is incorrect.
+          </p>
+        </Modal>
       )}
     </div>
   )

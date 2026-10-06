@@ -21,6 +21,7 @@ import SubClassCode from './pages/wc/SubClassCode'
 import Referral, { ReferralSubmitted } from './pages/wc/Referral'
 import BindFlow from './pages/wc/BindFlow'
 import { feesFor, FACTORS, premiumForCarrier } from './pages/wc/Indication'
+import { Modal, ModalButton } from './components/wc/primitives'
 import Indication from './pages/wc/Indication'
 import CarrierFlow from './pages/wc/CarrierFlow'
 import Quote from './pages/wc/Quote'
@@ -84,6 +85,9 @@ function App() {
   // null → not referring · 'form' → filling it in · 'submitted' → sent
   const [referralStage, setReferralStage] = useState(null)
   const [binding, setBinding] = useState(false)
+  /* A step the agent asked for while a referral is out, held until they
+     confirm they want to reopen the submission. */
+  const [pendingStep, setPendingStep] = useState(null)
 
   const [submitted, setSubmitted] = useState(false)
   const [bindSummary, setBindSummary] = useState(null)
@@ -146,6 +150,9 @@ function App() {
 
   const goToStep = useCallback((stepId) => {
     const step = BASE_STEPS.find(s => s.id === stepId)
+    /* Editing while an underwriter has it is the one thing we stop and ask
+       about — reworking the answers can send it back round. */
+    if (referralInPlayRef.current) { setPendingStep(stepId); return }
     const inAppPhase = step && APP_KEYS.includes(step.key)
     setActiveStep(stepId)
     setShowingIndication(false)
@@ -162,6 +169,22 @@ function App() {
       setTimeout(() => { isScrollingToRef.current = false }, 800)
     }, 50)
   }, [])
+
+  /* goToStep is memoised with no deps, so it reads the lock through a ref
+     rather than closing over a stale value. */
+  const referralInPlayRef = useRef(false)
+  useEffect(() => { referralInPlayRef.current = referralInPlay }, [referralInPlay])
+
+  /* Confirming reopens the submission: the referral stops being in play, which
+     is what puts the markets callout back and lets the nav move again. */
+  const confirmEdit = () => {
+    const target = pendingStep
+    setPendingStep(null)
+    setReferralInPlay(false)
+    setReferralStage(null)
+    referralInPlayRef.current = false
+    if (target != null) goToStep(target)
+  }
 
   // Scroll observer — while user is in the Application-phase scroll,
   // update activeStep to whichever section is nearest the top.
@@ -653,6 +676,26 @@ owner_involved: 'yes',
         onClose={() => setShowSummary(false)}
         onEdit={goToStep}
       />
+
+      {pendingStep != null && (
+        <Modal
+          title="Are you sure you want to edit this?"
+          width={480}
+          onDismiss={() => setPendingStep(null)}
+          footer={
+            <>
+              <ModalButton variant="ghost" onClick={() => setPendingStep(null)}>Cancel</ModalButton>
+              <ModalButton onClick={confirmEdit}>Yes, edit submission</ModalButton>
+            </>
+          }
+        >
+          <p className="text-[14px] text-gray-600 leading-relaxed">
+            This submission is with an underwriter. Editing it could trigger a new
+            underwriting referral, and you'll need to go back through the full
+            application again.
+          </p>
+        </Modal>
+      )}
     </div>
   )
 }

@@ -156,24 +156,27 @@ function ApproachModal({ carriers, onCancel, onConfirm }) {
   )
 }
 
+/* The prototype is careful here: this is a heads-up, not a nudge. Our version
+   warned the promotion "won't apply", which reads as pressure to keep the
+   carrier checked — theirs says plainly that removing them is the agent's call
+   and affects nothing else. */
 function PromoModal({ onKeep, onUncheck }) {
   return (
     <Modal
-      title="UNCHECKING AMTRUST?"
+      title="Before you remove AmTrust"
       width={520}
       onDismiss={onKeep}
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onUncheck}>Uncheck anyway</ModalButton>
-          <ModalButton onClick={onKeep}>Keep AmTrust checked</ModalButton>
+          <ModalButton variant="ghost" onClick={onUncheck}>Remove AmTrust anyway</ModalButton>
+          <ModalButton onClick={onKeep}>Keep AmTrust</ModalButton>
         </>
       }
     >
-      <span className="im-chip im-chip-brand mb-3 inline-flex">Q3 PROMOTION ACTIVE</span>
       <p className="text-[14px] text-gray-600 leading-relaxed">
-        Policies bound with AmTrust through BTIS currently earn{' '}
-        <b className="text-navy">+2% boosted commission</b>. If you uncheck, BTIS won't
-        approach AmTrust and this promotion won't apply to this risk.
+        FYI: AmTrust is running <b className="text-navy">+2% commission</b> on CA artisan
+        classes bound by Sept 30. This is informational only — removing them is entirely
+        your call and doesn't affect other markets.
       </p>
     </Modal>
   )

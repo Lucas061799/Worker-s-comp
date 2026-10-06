@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Input, FormGrid } from '../../components/FormField'
 import {
+  Modal,
+  ModalButton,
   FieldGroup,
   SectionLabel,
   InfoLine,
@@ -107,6 +109,8 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   const [card, setCard] = useState({ number: '', exp: '' })
   const [paid, setPaid] = useState(false)
   const [showErrors, setShowErrors] = useState(false)
+  // The fee disclosure has to be acknowledged before the card is charged.
+  const [authorising, setAuthorising] = useState(false)
 
   const grandTotal = fees?.total ?? premium
   const chosen = PLANS.find(p => p.id === plan) || PLANS[0]
@@ -263,11 +267,40 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
 
         <StepNav
           onBack={back}
-          onContinue={() => { if (!cardOk) { setShowErrors(true); return } setPaid(true); setStep(3) }}
+          onContinue={() => { if (!cardOk) { setShowErrors(true); return } setAuthorising(true) }}
           continueLabel={`Pay ${money2(dueToday)}`}
           canContinue={cardOk}
           hint={cardOk ? undefined : 'Card details are needed to take the down payment.'}
         />
+
+        {authorising && (
+          <Modal
+            title="Authorize payment"
+            width={520}
+            onDismiss={() => setAuthorising(false)}
+            footer={
+              <>
+                <ModalButton variant="ghost" onClick={() => setAuthorising(false)}>Cancel</ModalButton>
+                <ModalButton onClick={() => { setAuthorising(false); setPaid(true); setStep(3) }}>
+                  Authorize
+                </ModalButton>
+              </>
+            }
+          >
+            <p className="text-[13.5px] text-gray-600 leading-relaxed">
+              The applicable BTIS service fee for this policy is{' '}
+              <b className="text-navy">{money2(fees?.service || 0)}</b>. By authorizing payment,
+              you acknowledge receipt of this fee disclosure and confirm that you are responsible
+              for providing any disclosures to, and obtaining any acknowledgement from, the
+              applicant/insured.
+            </p>
+            <p className="text-[13.5px] text-gray-600 leading-relaxed mt-3">
+              I authorize a one-time payment in the amount of{' '}
+              <b className="text-navy">{money2(dueToday)}</b> from the card specified above
+              on {new Date().toLocaleDateString('en-US')}.
+            </p>
+          </Modal>
+        )}
       </div>
     )
   }
