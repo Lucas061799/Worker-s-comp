@@ -663,6 +663,21 @@ button.force-white-text,
   background: rgba(167,139,250,0.15) !important;
   border-color: rgba(216,180,254,0.5) !important;
 }
+/* …and again at the blanket `.border` shim's weight, which is three classes
+   and !important, so the two rules above lose to it and the dashed magenta
+   edge came out as the same faint white as every other box. */
+[data-dark="true"] .bop-page .add-another-btn {
+  border-color: rgba(166,20,195,0.55) !important;
+}
+[data-dark="true"] .bop-page .add-another-btn:hover {
+  border-color: rgba(216,180,254,0.5) !important;
+}
+/* The generic "inline brand magenta → bright pink" shim matches this glyph's
+   inline colour and lightens it to #F0ABFC; Commercial Auto keeps it on
+   #E879F9, so outrank that shim for this button alone. */
+[data-dark="true"] .bop-page .add-another-btn svg {
+  color: #E879F9 !important;
+}
 
 /* Print Submission / outline action buttons in dark */
 [data-dark="true"] .btn-outline-action {

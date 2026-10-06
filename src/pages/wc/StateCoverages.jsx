@@ -242,7 +242,7 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
       </RowGroup>
 
       <FieldGroup label="Officers & Owners">
-        <div className="im-info-panel rounded-xl p-4 mb-4 flex items-start gap-3">
+        <div className="im-info-panel rounded-xl p-4 mb-4 flex items-center gap-3">
           <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="9" />
@@ -412,7 +412,7 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
       </RowGroup>
 
       {stateData.usesSubs === 'yes' && (
-        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
+        <div className="im-info-panel rounded-xl p-4 flex items-center gap-3">
           <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
               <path strokeLinecap="round" d="M12 7v6m0 4h.01" />
