@@ -34,14 +34,36 @@ const BASE_STEPS = [
   { id: 8, num: '7',  key: 'quote',       label: 'Quote & bind',           phase: 2 },
 ]
 
+/* Save-per-page resume. The agent's answers and where they had got to are
+   written on every change and read back on load, so a reload — or coming back
+   tomorrow — picks up where they left off instead of dropping them on an empty
+   landing page. Only the application itself is kept: the Loading interstitial
+   and the bind confirmation are moments, not state worth restoring into. */
+const SAVE_KEY = 'wc-submission'
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY)
+    if (!raw) return null
+    const saved = JSON.parse(raw)
+    return saved && typeof saved === 'object' ? saved : null
+  } catch {
+    return null   // private window, or something else wrote over the key
+  }
+}
+
 function App() {
-  const [formData, setFormData] = useState({})
-  const [activeStep, setActiveStep] = useState(1)
-  const [pageZeroDone, setPageZeroDone] = useState(false)
+  const restored = useRef(loadSaved()).current
+
+  const [formData, setFormData] = useState(() => restored?.formData || {})
+  const [activeStep, setActiveStep] = useState(() => restored?.activeStep || 1)
+  const [pageZeroDone, setPageZeroDone] = useState(() => !!restored?.pageZeroDone)
 
   // Rating flow state
   const [rating, setRating] = useState(false)          // showing the Loading interstitial
-  const [indicationReady, setIndicationReady] = useState(false)   // results computed → gate unlocked
+  /* Restored with the rest: it gates which steps the nav shows, so dropping it
+     would strand a resumed agent on a page the nav no longer lists. */
+  const [indicationReady, setIndicationReady] = useState(() => !!restored?.indicationReady)   // results computed → gate unlocked
   const [showingIndication, setShowingIndication] = useState(false) // currently on the Indication screen
 
   const [submitted, setSubmitted] = useState(false)
@@ -84,7 +106,12 @@ function App() {
   // underwriter with loss runs instead.
   const claimCount = formData.history?.claimCount || 0
   const hasLosses = claimCount > 0 && claimCount < 4
-  const steps = BASE_STEPS.filter(s => !s.cond || hasLosses)
+  /* Phase 2 is behind the indication gate and stays out of the nav until it
+     opens, rather than sitting there greyed — per the VP note, the nav never
+     shows more pages than the agent is ready to think about. */
+  const steps = BASE_STEPS.filter(s =>
+    (!s.cond || hasLosses) && (s.phase !== 2 || indicationReady)
+  )
 
   const sectionRefs = useRef({})
   const isScrollingToRef = useRef(false)
@@ -165,6 +192,16 @@ function App() {
     setSubmitted(true)
   }
 
+  /* One write per change. The payload is small and this is the only place it
+     is persisted, so there is nothing to keep in step by hand. */
+  useEffect(() => {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        formData, activeStep, pageZeroDone, indicationReady,
+      }))
+    } catch { /* nothing to persist to */ }
+  }, [formData, activeStep, pageZeroDone, indicationReady])
+
   const resetAll = () => {
     setFormData({})
     setActiveStep(1)
@@ -175,6 +212,7 @@ function App() {
     setSubmitted(false)
     setBindSummary(null)
     setAttemptedQuote(false)
+    try { localStorage.removeItem(SAVE_KEY) } catch { /* nothing to clear */ }
   }
 
   /* A whole CA plumbing contractor, so a quick-jump lands on a page with
