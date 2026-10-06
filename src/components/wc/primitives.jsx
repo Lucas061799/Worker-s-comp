@@ -231,15 +231,17 @@ export function AlertGlyph({ className = 'w-3.5 h-3.5' }) {
 
 export function InfoLine({ children, className = '', icon = 'info' }) {
   return (
-    /* Same family as the panel notes it sits beside: the disc is the
-       container and the glyph is a bare mark, just scaled down for a line
-       of 11.5px text. It used to be a circled glyph with no disc, which read
-       as a different component directly under one. */
-    <p className={`flex items-center gap-2 text-[11.5px] text-gray-400 leading-relaxed ${className}`}>
+    /* The same box the panel notes use, scaled down for a single line: it sat
+       loose on the page as bare text and a glyph, which read as a different
+       component from the notes directly above it. */
+    <p className={`im-info-panel rounded-xl px-4 py-3 flex items-center gap-2.5 text-[11.5px] leading-relaxed ${className}`}>
       <span className="im-panel-icon w-5 h-5 rounded-full flex items-center justify-center shrink-0">
         <AlertGlyph className="w-3 h-3" />
       </span>
-      <span>{children}</span>
+      {/* The colour rides on the text, not the box: .im-info-panel sets `color`
+          for the glyph, and at equal specificity it was winning over the
+          utility and painting the copy brand purple. */}
+      <span className="text-gray-500">{children}</span>
     </p>
   )
 }
