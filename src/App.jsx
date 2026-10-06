@@ -20,7 +20,7 @@ import Locations from './pages/wc/Locations'
 import SubClassCode from './pages/wc/SubClassCode'
 import Referral, { ReferralSubmitted } from './pages/wc/Referral'
 import BindFlow from './pages/wc/BindFlow'
-import { feesFor, FACTORS } from './pages/wc/Indication'
+import { feesFor, FACTORS, premiumForCarrier } from './pages/wc/Indication'
 import Indication from './pages/wc/Indication'
 import CarrierFlow from './pages/wc/CarrierFlow'
 import Quote from './pages/wc/Quote'
@@ -342,13 +342,15 @@ owner_involved: 'yes',
 
   const jumpToSubmission = () => {
     seedDemoData()
+    /* Priced off the seeded risk rather than written down — the figure here
+       was from the old rate and no longer matched anything on screen. */
     updateFormData('bind', {
       selectedCarrier: 'CNA',
-      premium: 5174,
+      selectedCarrierId: 'cna',
       carrierQuestions: true,
       bound: true,
     })
-    setBindSummary({ carrier: 'CNA', premium: 5174 })
+    setBindSummary({ carrier: 'CNA' })
     setIndicationReady(true)
     setSubmitted(true)
   }
@@ -405,8 +407,17 @@ owner_involved: 'yes',
 
   /* The market the agent went forward with — the bind flow and the carrier
      questions both key off it. */
-  const selectedCarrier = CARRIERS.find(c => c.id === formData.bind?.selectedCarrierId) || null
-  const selectedPremium = formData.bind?.premium || 0
+  /* Reaching Quote & bind without coming through the indication — a jump
+     straight to the step — left no carrier and no premium on the submission,
+     so the payment screen totalled a $0 policy. Fall back the way Quote does,
+     and price the carrier rather than trusting a figure that may never have
+     been written. */
+  const selectedCarrier =
+    CARRIERS.find(c => c.id === formData.bind?.selectedCarrierId)
+    || CARRIERS.find(c => c.name === formData.bind?.selectedCarrier)
+    || CARRIERS.find(c => c.id === 'cna')
+  const selectedPremium = formData.bind?.premium
+    || (selectedCarrier ? premiumForCarrier(formData, selectedCarrier.id) : 0)
 
   const titles = {
     business:    'Business information',
