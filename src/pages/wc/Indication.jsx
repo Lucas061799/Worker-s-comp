@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
-import { BRAND_GRADIENT, InfoLine, Tag } from '../../components/wc/primitives'
+import { BRAND_GRADIENT, InfoLine, Tag, AlertGlyph } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
    set so the prototype's reference risk prices out where its own figures do —
@@ -224,7 +224,12 @@ function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
   )
 }
 
-export default function Indication({ formData, onPickCarrier }) {
+/* The prototype's threshold: the callout is offered only once prices are back
+   and only when the cheapest of them is over this, so most submissions never
+   see it. */
+const REFERRAL_THRESHOLD = 20000
+
+export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false }) {
   const checked = formData.carrierSelection?.checked || {}
   const [selected, setSelected] = useState(null)
   const [expanded, setExpanded] = useState(null)
@@ -247,6 +252,9 @@ export default function Indication({ formData, onPickCarrier }) {
   const quoted = results.filter(r => !r.noquote)
   const selectedCarrier = results.find(r => r.id === selected)
 
+  const lowest = quoted.length ? Math.min(...quoted.map(r => r.price)) : null
+  const showRefer = !referralInPlay && lowest !== null && lowest > REFERRAL_THRESHOLD
+
   return (
     <div className="w-full">
       <p className="text-sm text-gray-500 -mt-2">
@@ -266,6 +274,41 @@ export default function Indication({ formData, onPickCarrier }) {
           />
         ))}
       </div>
+
+      {showRefer && (
+        <div className="rounded-xl p-4 mt-3.5"
+          style={{ background: 'var(--surface-soft)', border: '1px dashed var(--line-strong)' }}>
+          <p className="text-[13px] font-semibold mb-1" style={{ color: 'var(--ink)' }}>
+            Didn't find the right quote?
+          </p>
+          <div className="flex items-center justify-between gap-3.5 flex-wrap">
+            <p className="text-[12.5px] text-gray-500">
+              You can refer this submission to an underwriter for manual review.
+            </p>
+            <button
+              type="button"
+              onClick={onRefer}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 shrink-0 transition hover:opacity-80"
+              style={{ border: '1px solid var(--line)', background: 'transparent' }}
+            >
+              Refer to Underwriter
+            </button>
+          </div>
+        </div>
+      )}
+
+      {referralInPlay && (
+        <div className="im-info-panel rounded-xl p-4 mt-3.5 flex items-center gap-3">
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <AlertGlyph />
+          </span>
+          <p className="text-[12.5px] text-gray-600 leading-relaxed">
+            <span className="font-bold text-navy">Referred to an underwriter.</span>{' '}
+            We'll notify you by email once a decision is available — typically 1–2 business days.
+            Contact BTIS at 877.649.6682 for any changes.
+          </p>
+        </div>
+      )}
 
       <InfoLine className="mt-6">
         Indications on the payroll and mod on file — the carrier's own questions come next.

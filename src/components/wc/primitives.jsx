@@ -219,18 +219,26 @@ export function Banner({ children, icon = true }) {
 }
 
 /* A note under a group of fields: an icon and one grey line. */
+/* Material Symbols "error" — the alert mark the design calls for. Filled, so
+   it takes its colour from the disc it sits in. */
+export function AlertGlyph({ className = 'w-3.5 h-3.5' }) {
+  return (
+    <svg className={className} viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+      <path d="M508.5-291.5Q520-303 520-320t-11.5-28.5Q497-360 480-360t-28.5 11.5Q440-337 440-320t11.5 28.5Q463-280 480-280t28.5-11.5ZM440-440h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+    </svg>
+  )
+}
+
 export function InfoLine({ children, className = '', icon = 'info' }) {
   return (
-    <p className={`flex items-start gap-2 text-[11.5px] text-gray-400 leading-relaxed ${className}`}>
-      <svg className="w-3.5 h-3.5 shrink-0 mt-px" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9" stroke="url(#imInfoLine)" strokeWidth="1.7" />
-        <path d={icon === 'alert' ? 'M12 7v6M12 16h.01' : 'M12 11v5M12 8h.01'} stroke="url(#imInfoLine)" strokeWidth="1.9" strokeLinecap="round" />
-        <defs>
-          <linearGradient id="imInfoLine" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#5C2ED4" /><stop offset="100%" stopColor="#A614C3" />
-          </linearGradient>
-        </defs>
-      </svg>
+    /* Same family as the panel notes it sits beside: the disc is the
+       container and the glyph is a bare mark, just scaled down for a line
+       of 11.5px text. It used to be a circled glyph with no disc, which read
+       as a different component directly under one. */
+    <p className={`flex items-center gap-2 text-[11.5px] text-gray-400 leading-relaxed ${className}`}>
+      <span className="im-panel-icon w-5 h-5 rounded-full flex items-center justify-center shrink-0">
+        <AlertGlyph className="w-3 h-3" />
+      </span>
       <span>{children}</span>
     </p>
   )

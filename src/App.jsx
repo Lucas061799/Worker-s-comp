@@ -66,6 +66,12 @@ function App() {
   const [indicationReady, setIndicationReady] = useState(() => !!restored?.indicationReady)   // results computed → gate unlocked
   const [showingIndication, setShowingIndication] = useState(false) // currently on the Indication screen
 
+  /* Whether a referral is already in play. The prototype's uwStatus carries a
+     good deal more, but the markets callout only asks this much: it hides once
+     one is running. The Referral screen itself is still to come, so this
+     records the intent and says so rather than pretending to submit. */
+  const [referralInPlay, setReferralInPlay] = useState(() => !!restored?.referralInPlay)
+
   const [submitted, setSubmitted] = useState(false)
   const [bindSummary, setBindSummary] = useState(null)
 
@@ -197,10 +203,10 @@ function App() {
   useEffect(() => {
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify({
-        formData, activeStep, pageZeroDone, indicationReady,
+        formData, activeStep, pageZeroDone, indicationReady, referralInPlay,
       }))
     } catch { /* nothing to persist to */ }
-  }, [formData, activeStep, pageZeroDone, indicationReady])
+  }, [formData, activeStep, pageZeroDone, indicationReady, referralInPlay])
 
   const resetAll = () => {
     setFormData({})
@@ -212,6 +218,7 @@ function App() {
     setSubmitted(false)
     setBindSummary(null)
     setAttemptedQuote(false)
+    setReferralInPlay(false)
     try { localStorage.removeItem(SAVE_KEY) } catch { /* nothing to clear */ }
   }
 
@@ -500,7 +507,12 @@ owner_involved: 'yes',
                     <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
                   )}
                   {!rating && showingIndication && (
-                    <Indication formData={formData} onPickCarrier={handlePickCarrier} />
+                    <Indication
+                      formData={formData}
+                      onPickCarrier={handlePickCarrier}
+                      referralInPlay={referralInPlay}
+                      onRefer={() => setReferralInPlay(true)}
+                    />
                   )}
                   {!rating && !showingIndication && currentKey === 'carriers' && (
                     <CarrierSelection

@@ -6,7 +6,7 @@ import btisLogoDark from '../assets/btislogo-dark.png'
 import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
 import { Input, Select, DateInput } from '../components/FormField'
-import { InfoDot } from '../components/wc/primitives'
+import { InfoDot, AlertGlyph } from '../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -320,9 +320,7 @@ export default function PageZero({ onStart, isDark = false }) {
                 {appetite === 'limited' && (
                   <div className="im-info-panel rounded-xl p-4 mt-3 flex items-center gap-3">
                     <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" d="M12 7v6m0 4h.01" />
-                      </svg>
+                      <AlertGlyph />
                     </span>
                     <p className="text-[12.5px] text-gray-600 leading-relaxed">
                       <span className="font-bold text-navy">
