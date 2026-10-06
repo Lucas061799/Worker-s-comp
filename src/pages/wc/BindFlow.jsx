@@ -33,6 +33,26 @@ const DOCS_BY_CARRIER = {
   employers:     ['Signed loss runs', 'Inclusion/exclusion forms'],
 }
 
+/* How the premium gets paid, which is what the bind flow's help text turns
+   on. The prototype's carrier-pay carriers also take a down payment on their
+   own site; that hand-off is theirs to handle, so it is left out here and only
+   the invoicing difference remains. */
+const BIND_TYPE = {
+  amtrust: 'carrier-pay',
+  clearspring: 'direct-invoice',
+  cna: 'direct-invoice',
+  greatamerican: 'direct-invoice',
+  pie: 'carrier-pay',
+  employers: 'carrier-pay',
+}
+
+function bindHelpFor(carrier) {
+  const name = carrier?.name || 'the carrier'
+  return BIND_TYPE[carrier?.id] === 'carrier-pay'
+    ? `${name} requires signed documents up front, then the BTIS Service Fee here before we bind.`
+    : `Submit the documents below, pay the BTIS Service Fee, and we bind — ${name} invoices the insured directly for premium.`
+}
+
 const SUBJECTIVITIES_BY_CARRIER = {
   amtrust: ['3 years of loss runs on file and reviewed.', 'Insured maintains a written safety program.'],
   clearspring: ['Signed ACORD 130 on file.', 'Insured does not perform any roofing or elevated work above 30ft.'],
@@ -131,10 +151,10 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
       <div className="w-full space-y-6">
         <Stepper at={0} />
         <FieldGroup label="Required documents">
+          {/* The flow differs by carrier, so the screen says how this one
+              works rather than leaving the agent to infer it. */}
           <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
-            {required.length
-              ? `Upload the documents ${carrier?.name} needs to bind.`
-              : `No additional documents required for ${carrier?.name}.`}
+            {bindHelpFor(carrier)}
           </p>
 
           {required.length ? (
