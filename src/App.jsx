@@ -48,7 +48,17 @@ function App() {
   const [bindSummary, setBindSummary] = useState(null)
 
   const [showSummary, setShowSummary] = useState(false)
-  const [darkMode, setDarkMode] = useState(false)
+  /* Dark mode survives a reload, and an agent whose machine is already dark
+     gets a dark app on first load rather than a white flash and a light
+     header — the logos key off this, so starting light showed the navy
+     wordmark where the white one belongs. */
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem('wc-theme')
+      if (saved === 'dark' || saved === 'light') return saved === 'dark'
+    } catch { /* private window — fall through to the OS preference */ }
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
+  })
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [attemptedQuote, setAttemptedQuote] = useState(false)
 
@@ -56,6 +66,7 @@ function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-dark', darkMode ? 'true' : 'false')
+    try { localStorage.setItem('wc-theme', darkMode ? 'dark' : 'light') } catch { /* nothing to persist to */ }
   }, [darkMode])
 
   const updateFormData = useCallback((section, data) => {
