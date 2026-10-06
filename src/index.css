@@ -209,48 +209,38 @@ input, select, textarea, button {
   border-color: rgba(255,255,255,0.10) !important;
 }
 
-/* Radio pills, drawn the way Commercial Auto draws them.
+/* Radio pills, matching Commercial Auto exactly — values measured off the
+   live app, not inferred. The brand colours do not shift between modes there:
+   the violet edge, the magenta ring, the purple-to-magenta dot and the 0.08
+   tint are identical in dark. Only the text goes white, and the unchosen
+   pill's greys become white at low alpha.
 
-   These have to be named rules rather than Tailwind classes: the blanket
-   `.border` shim above repaints every bordered box the same faint white in
-   dark, so the chosen pill came out with a *fainter* edge (0.06) than the
-   unchosen ones beside it (0.10) — selection reading as less than no
-   selection. Yes keeps the violet, No the magenta. In dark the fill goes
-   neutral and the text white, because a brand tint that thin is invisible
-   on navy and the deep purple text with it. */
-.yn-on       { border-color: #5C2ED4 !important; color: #5C2ED4; background: rgba(92,46,212,0.08); }
-.yn-on-no    { border-color: #A614C3 !important; color: #A614C3; background: rgba(166,20,195,0.08); }
-.yn-ring     { border-color: #5C2ED4 !important; }
-.yn-ring-no  { border-color: #A614C3 !important; }
-.yn-dot      { background: linear-gradient(88.09deg, #5C2ED4 0%, #7C3AED 100%); }
-.yn-dot-no   { background: linear-gradient(88.09deg, #A614C3 0%, #D946EF 100%); }
-.yn-off      { border-color: #E5E7EB !important; color: #6B7280; background: transparent; }
-.yn-off:hover { border-color: #D1D5DB !important; background: #F9FAFB; }
-.yn-off-ring { border-color: #D1D5DB !important; }
+   Named rules rather than Tailwind classes because the blanket `.border` shim
+   above repaints every bordered box faint white in dark, with !important and
+   three classes behind it — the chosen pill ended up with a fainter edge
+   (0.06) than the unchosen ones (0.10). */
+.yn-on {
+  border-color: #5C2ED4 !important;
+  color: #5C2ED4;
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%) !important;
+}
+.yn-ring { border-color: #A614C3 !important; }
+.yn-dot  { background: linear-gradient(88.09deg, #5C2ED4 0%, #A614C3 100%) !important; }
+.yn-off       { border-color: #E5E7EB !important; color: #6B7280; background: transparent !important; }
+.yn-off:hover { border-color: #D1D5DB !important; background: #F9FAFB !important; }
+.yn-off-ring  { border-color: #D1D5DB !important; }
 
-[data-dark="true"] .yn-on,
-[data-dark="true"] .yn-on-no {
-  color: #FFFFFF !important;
-  background: rgba(255,255,255,0.08) !important;
-}
-[data-dark="true"] .yn-off {
-  border-color: rgba(255,255,255,0.22) !important;
-  color: #FFFFFF !important;
-  background: transparent !important;
-}
+[data-dark="true"] .yn-on  { color: #FFFFFF !important; }
+[data-dark="true"] .yn-off { color: #FFFFFF !important; }
 [data-dark="true"] .yn-off:hover { background: rgba(255,255,255,0.06) !important; }
-[data-dark="true"] .yn-off-ring  { border-color: rgba(255,255,255,0.30) !important; }
+[data-dark="true"] .yn-off-ring  { border-color: rgba(255,255,255,0.08) !important; }
 
-/* The blanket `.border` shim is [data-dark] .bop-page .border — three classes,
-   already !important — so it outranks a bare .yn-* rule however loudly that
-   shouts. Match its weight and come after it. The unscoped pair is for the
-   modals, which render outside .bop-page. */
+/* Matching the shim's weight so the brand edge survives it; the unscoped pair
+   is for the modals, which render outside .bop-page. */
 [data-dark="true"] .bop-page .yn-on,
-[data-dark="true"] .yn-on       { border-color: #5C2ED4 !important; }
-[data-dark="true"] .bop-page .yn-on-no,
-[data-dark="true"] .yn-on-no    { border-color: #A614C3 !important; }
+[data-dark="true"] .yn-on  { border-color: #5C2ED4 !important; }
 [data-dark="true"] .bop-page .yn-off,
-[data-dark="true"] .yn-off      { border-color: rgba(255,255,255,0.22) !important; }
+[data-dark="true"] .yn-off { border-color: rgba(255,255,255,0.18) !important; }
 /* The native number stepper is drawn by the OS and ignores our tokens —
    a pair of bright arrows on a dark field. Hide it everywhere. */
 .bop-page input[type="number"] {
