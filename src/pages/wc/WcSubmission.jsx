@@ -176,72 +176,35 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar — every step done, "Application Summary" active */}
-        <aside
-          className="no-print hidden md:flex w-64 2xl:w-72 flex-col h-full shrink-0 relative overflow-hidden"
-          style={{
-            background: isDark ? '#191D35' : 'white',
-            borderRight: isDark ? '1px solid rgba(255,255,255,0.12)' : '1px solid #F3F4F6',
-          }}
-        >
-          <div className="px-5 pt-5 pb-3 relative z-10">
-            <h2 className="text-base font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : undefined }}>Workers' Compensation</h2>
-            <p className="text-xs mt-0.5 font-mono" style={{ color: '#9CA3AF' }}>Quote Number: {quoteId}</p>
-            <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` }} />
-          </div>
-
-          <div className="flex-1" />
-
-          {demoJumps && (
-            <div className="px-3 pb-2 relative z-20">
-              <DemoJump jumps={demoJumps} active={demoActive} isDark={isDark} />
+        {/* Once it is bound there is nowhere to navigate — the steps are behind
+            you and cannot be reopened — so the rail goes and only Norbie stays,
+            floating. No Quick Jump and no theme toggle with it: the receipt is
+            a record, not somewhere to change settings or skip elsewhere. The
+            card shrinks to the avatar, since a full-width one with no rail
+            around it reads as a piece of one that was taken away. CBIC's
+            receipt does exactly this. */}
+        <div className="no-print fixed bottom-4 left-4 w-56 z-30">
+          <div className="group relative w-12">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center"
+              style={{ background: 'var(--glass)', border: '1.5px solid var(--line)', backdropFilter: 'blur(6px)' }}>
+              <img src={norbieface} alt="Chat with Norbie" className="w-7 h-7 rounded-full object-cover" />
             </div>
-          )}
-
-          {/* Norbie */}
-          <div className="px-3 pb-2 relative z-10">
-            <div className="flex items-center gap-3 rounded-xl px-4 py-3"
-              style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)', border: isDark ? '1.5px solid transparent' : '1.5px solid #E5E7EB' }}>
-              <img src={norbieface} alt="Norbie" className="w-8 h-8 rounded-full shrink-0 object-cover" />
-              <div>
-                <p className="text-sm font-normal" style={{ color: isDark ? '#F9FAFB' : '#374151' }}>Chat with Norbie</p>
-                <p className="text-xs" style={{ color: '#9CA3AF' }}>AI Assistant</p>
-              </div>
-            </div>
+            <span
+              className="absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded-lg px-3 py-1.5
+                         opacity-0 -translate-x-1 pointer-events-none transition-all duration-150
+                         group-hover:opacity-100 group-hover:translate-x-0"
+              style={{
+                background: 'var(--surface-card)',
+                border: '1px solid var(--line)',
+                boxShadow: '0 6px 20px rgba(17,24,39,0.12)',
+                fontSize: '12.5px',
+                color: 'var(--ink-2)',
+              }}
+            >
+              Chat with Norbie
+            </span>
           </div>
-
-          {/* Dark mode */}
-          <div className="px-3 pb-4 relative z-10">
-            <button onClick={onToggleDark} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
-              style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)', border: isDark ? '1.5px solid transparent' : '1.5px solid #E5E7EB' }}>
-              <div className="w-10 h-5 rounded-full relative transition-all shrink-0"
-                style={{ background: isDark ? '#E8622A' : '#D1D5DB' }}>
-                <div className="absolute top-0.5 w-4 h-4 rounded-full shadow transition-all flex items-center justify-center"
-                  style={{ left: isDark ? '22px' : '2px', background: 'white' }}>
-                  {isDark ? (
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="#6B7280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                    </svg>
-                  ) : (
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="#6B7280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="5"/>
-                      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                    </svg>
-                  )}
-                </div>
-              </div>
-              <span style={{ fontSize: '14.5px', fontWeight: 400, color: isDark ? '#F9FAFB' : '#6B7280' }}>Dark Mode</span>
-            </button>
-          </div>
-
-          <div className="absolute bottom-0 left-0 right-0 h-full pointer-events-none select-none">
-            <img src={sidebarBg} alt="" className="absolute bottom-0 left-0 w-full h-full object-cover object-bottom"
-              style={{ opacity: isDark ? 0.6 : 0.58, clipPath: 'inset(0 1px 0 0)' }} />
-          </div>
-        </aside>
+        </div>
 
         {/* Main */}
         <main className="flex-1 overflow-y-auto custom-scroll bop-page" style={{ background: isDark ? '#131629' : 'white' }}>

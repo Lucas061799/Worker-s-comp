@@ -67,6 +67,7 @@ input, select, textarea, button {
   --surface-soft: #F9FAFB;
   --surface-softer: #FAFAFB;
   --fill-subtle: #F3F4F6;
+  --glass: rgba(255,255,255,0.55);
   /* A disabled action, at the value CBIC's landing CTA uses. */
   --fill-disabled: #E5E7EB;
   --line: #E5E7EB;
@@ -87,6 +88,7 @@ input, select, textarea, button {
   --surface-soft: rgba(255,255,255,0.03);
   --surface-softer: rgba(255,255,255,0.03);
   --fill-subtle: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.06);
   /* Below the field fill, not above it. In light a disabled action is #E5E7EB
      against a #ffffff field — it recedes. On navy, 0.08 against the field's
      0.06 did the opposite and made the dead button the brightest thing in the
