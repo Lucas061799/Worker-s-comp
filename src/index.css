@@ -809,6 +809,27 @@ button.force-white-text,
   color: #C4B5FD !important;
 }
 
+/* A limited appetite still lets the agent continue, so it stays in the brand
+   panel. Only a hard decline — nothing to quote — earns its own family, and it
+   borrows the red .im-chip-stop already carries for that meaning. */
+.im-info-panel--stop {
+  background: rgba(239,68,68,0.07);
+  border-color: rgba(239,68,68,0.26);
+  color: #B91C1C;
+}
+[data-dark="true"] .im-info-panel--stop {
+  background: rgba(239,68,68,0.12) !important;
+  border-color: rgba(239,68,68,0.34) !important;
+  color: #FCA5A5 !important;
+}
+
+/* The disc follows its panel. `background` shorthand clears the brand
+   gradient the base chip sets. */
+.im-panel-icon--stop { background: rgba(239,68,68,0.14); color: #B91C1C; }
+[data-dark="true"] .im-panel-icon--stop {
+  background: rgba(239,68,68,0.24) !important; color: #FCA5A5 !important;
+}
+
 [data-dark="true"] .im-banner {
   background: linear-gradient(88.09deg, rgba(124,58,237,0.18) 0%, rgba(166,20,195,0.12) 100%) !important;
   border-color: rgba(167,139,250,0.32) !important;

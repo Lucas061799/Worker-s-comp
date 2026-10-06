@@ -33,6 +33,12 @@ const CLASSES = [
 /* Classes that come back as a likely referral rather than a clean yes. */
 const LIMITED_APPETITE = ['9079']
 
+/* PLACEHOLDER — BRD v2 §7.3 leaves the real appetite rules open, including
+   which class/state/payroll combinations should hard-decline rather than
+   soft-warn. Long-haul trucking stands in so the declined state is reachable;
+   swap this for the confirmed rules when they land. */
+const DECLINED_APPETITE = ['7228']
+
 export default function PageZero({ onStart, isDark = false }) {
   const [state, setState] = useState('')
   const [effectiveDate, setEffectiveDate] = useState('')
@@ -54,7 +60,7 @@ export default function PageZero({ onStart, isDark = false }) {
 
   const canCheck = !!(state && effectiveDate && picked && payroll)
   // Nothing else is asked until we know the risk is worth the agent's time.
-  const ready = canCheck && !!appetite
+  const ready = canCheck && !!appetite && appetite !== 'declined'
 
   const handlePick = (cls) => {
     setPicked(cls)
@@ -71,7 +77,11 @@ export default function PageZero({ onStart, isDark = false }) {
     if (!canCheck || checking) return
     setChecking(true)
     setTimeout(() => {
-      setAppetite(LIMITED_APPETITE.includes(picked.code) ? 'limited' : 'good')
+      setAppetite(
+        DECLINED_APPETITE.includes(picked.code) ? 'declined'
+          : LIMITED_APPETITE.includes(picked.code) ? 'limited'
+            : 'good'
+      )
       setChecking(false)
     }, 900)
   }
@@ -295,7 +305,7 @@ export default function PageZero({ onStart, isDark = false }) {
                 {appetite === 'good' && (
                   <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
                     <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     </span>
@@ -310,8 +320,8 @@ export default function PageZero({ onStart, isDark = false }) {
                 {appetite === 'limited' && (
                   <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
                     <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" d="M12 7v6m0 4h.01" />
                       </svg>
                     </span>
                     <p className="text-[12.5px] text-gray-600 leading-relaxed">
@@ -319,6 +329,23 @@ export default function PageZero({ onStart, isDark = false }) {
                         Limited appetite for {picked?.code} in {state} at this payroll — likely referral.
                       </span>{' '}
                       You can continue; the start is recorded either way.
+                    </p>
+                  </div>
+                )}
+
+                {appetite === 'declined' && (
+                  <div className="im-info-panel im-info-panel--stop rounded-xl p-4 mt-3 flex items-start gap-3">
+                    <span className="im-panel-icon im-panel-icon--stop w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
+                      </svg>
+                    </span>
+                    <p className="text-[12.5px] text-gray-600 leading-relaxed">
+                      <span className="font-bold text-navy">
+                        Outside appetite for {picked?.code} in {state} at this payroll.
+                      </span>{' '}
+                      We have no carrier for this risk, so there is nothing to quote.
+                      Try a different class or state, or call us on 877.649.6682 to talk it through.
                     </p>
                   </div>
                 )}
@@ -338,7 +365,11 @@ export default function PageZero({ onStart, isDark = false }) {
                   color: ready ? 'white' : '#9CA3AF',
                   boxShadow: ready ? '0 4px 14px rgba(92,46,212,0.22)' : 'none',
                 }}
-                title={ready ? undefined : 'Run Appetite to continue'}
+                title={
+                  ready ? undefined
+                    : appetite === 'declined' ? 'Outside appetite — nothing to quote'
+                      : 'Run Appetite to continue'
+                }
               >
                 Start Application
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
