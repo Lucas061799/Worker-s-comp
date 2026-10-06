@@ -7,6 +7,7 @@ import norbieface from '../../assets/norbieface.png'
 import sidebarBg from '../../assets/sidebar-bg.png'
 import sellMoreBg from '../../assets/sell-more-bg.png'
 import { DemoJump } from '../../components/DemoJump'
+import { premiumForCarrier } from './Indication'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -137,7 +138,11 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
   }, 0)
 
   const carrier   = summary?.carrier   || bind.selectedCarrier
-  const premium   = summary?.premium   || bind.premium
+  /* Price the carrier when nothing was written down. The receipt used to read
+     whatever happened to be on the submission, so a route that never set a
+     premium printed a bound policy with no number on it. */
+  const premium   = summary?.premium ?? bind.premium
+    ?? premiumForCarrier(formData, bind.selectedCarrierId || 'cna')
 
   const money = (n) => (n == null ? '—' : '$' + Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 }))
 
@@ -185,57 +190,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
             <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` }} />
           </div>
 
-          <nav className="flex-1 py-1 px-3 overflow-y-auto sidebar-nav relative z-10">
-            {[...STEP_LABELS, 'Application Summary'].map((label, i) => {
-              const isLast = i === STEP_LABELS.length
-              return (
-                <div key={label} className="relative mb-0.5">
-                  {isLast && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-full z-20"
-                      style={{ background: 'linear-gradient(180deg, #5C2ED4 0%, #A614C3 100%)' }} />
-                  )}
-                  <div
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl"
-                    style={isLast
-                      ? isDark
-                        ? { background: 'linear-gradient(180deg, rgba(42,28,70,0.28) 0%, rgba(166,20,195,0.68) 100%)', border: '1.5px solid rgba(166,20,195,0.65)', boxShadow: '0 4px 24px rgba(166,20,195,0.25)' }
-                        : { background: '#ffffff', border: '1.5px solid #7C3AED', boxShadow: '0 2px 12px rgba(92,46,212,0.12)' }
-                      : { border: '1.5px solid transparent' }}
-                  >
-                    <span
-                      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-                      style={{ background: isLast
-                        ? isDark ? 'rgba(255,255,255,0.2)' : BRAND_GRADIENT
-                        : isDark ? 'rgba(166,20,195,0.28)' : 'rgba(166,20,195,0.10)' }}
-                    >
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 14 14" fill="none">
-                        <defs>
-                          <linearGradient id={`wcSubStep${i}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#5C2ED4"/>
-                            <stop offset="100%" stopColor="#A614C3"/>
-                          </linearGradient>
-                        </defs>
-                        <path d="M2.5 7l3 3 6-6"
-                          stroke={isLast ? '#FFFFFF' : (isDark ? '#D8A8F0' : `url(#wcSubStep${i})`)}
-                          strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </span>
-                    <span
-                      className={`text-xs truncate ${isLast ? 'font-semibold' : 'font-medium'}`}
-                      style={isLast
-                        ? isDark
-                          ? { color: '#FFFFFF' }
-                          : { background: BRAND_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }
-                        : { color: isDark ? '#9CA3AF' : '#6B7280' }
-                      }
-                    >
-                      {label}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </nav>
+          <div className="flex-1" />
 
           {demoJumps && (
             <div className="px-3 pb-2 relative z-20">
@@ -473,132 +428,11 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
               </div>
             </div>
 
-            {/* Return to NorbieLink CTA */}
-            <div
-              className="jungle-cta rounded-2xl relative cursor-pointer hover:opacity-95 transition overflow-hidden"
-              onClick={onBack}
-              style={{ minHeight: '100px' }}
-            >
-              <img src={sellMoreBg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="px-8 py-6 relative z-10">
-                <p className="text-lg font-bold mb-1" style={{ color: '#111827' }}>Return to the Jungle?</p>
-                <p className="text-xs text-gray-400">
-                  Head back to{' '}
-                  <span
-                    className="font-semibold underline underline-offset-2"
-                    style={{
-                      background: BRAND_GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    Norbielink
-                  </span>
-                </p>
-              </div>
-            </div>
 
             <div className="pb-8" />
           </div>
         </main>
 
-        {/* Right rail — Bind Received + What's Next */}
-        <aside
-          className="no-print hidden md:flex w-80 2xl:w-96 flex-col shrink-0"
-          style={{
-            background: isDark ? '#191D35' : 'white',
-            borderLeft: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #F3F4F6',
-          }}
-        >
-          <div className="p-5 flex-1 overflow-y-auto custom-scroll">
-            <h2 className="text-lg font-bold mb-3" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>Bind Received</h2>
-
-            {/* Auto-saved + 100% row */}
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none">
-                  <defs>
-                    <linearGradient id="autoGradWcSub" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor={isDark ? '#A78BFA' : '#5C2ED4'}/>
-                      <stop offset="100%" stopColor={isDark ? '#E879F9' : '#A614C3'}/>
-                    </linearGradient>
-                  </defs>
-                  <path d="M12 16V9m0 0l-3 3m3-3l3 3" stroke="url(#autoGradWcSub)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M6.5 18A4.5 4.5 0 016 9.1V9a6 6 0 0111.9-.9A4.5 4.5 0 0118 18H6.5z" stroke="url(#autoGradWcSub)" strokeWidth="1.8" strokeLinejoin="round"/>
-                </svg>
-                <span
-                  className="text-xs font-medium"
-                  style={{
-                    background: BRAND_GRADIENT,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >
-                  All progress auto-saved
-                </span>
-              </div>
-              <span
-                className="text-xs font-bold"
-                style={{
-                  background: BRAND_GRADIENT,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                100%
-              </span>
-            </div>
-
-            {/* Progress bar */}
-            <div className="w-full h-1.5 rounded-full overflow-hidden mb-4"
-              style={{ background: isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6' }}>
-              <div className="h-full rounded-full w-full transition-all duration-500"
-                style={{ background: BRAND_GRADIENT }} />
-            </div>
-
-            {/* Divider */}
-            <div className="mb-5" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` }} />
-
-            {/* What's Next */}
-            <div className="mb-6">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-4 pl-0.5">
-                What's Next?
-              </div>
-              <div className="space-y-5">
-                {[
-                  { n: 1, t: 'Review & Processing', d: 'Your application will be reviewed as soon as possible.' },
-                  { n: 2, t: 'Email Confirmation',  d: "You'll receive detailed policy confirmation via email." },
-                  { n: 3, t: 'Policy in Force',     d: 'Coverage starts on the effective date you selected.' },
-                ].map(step => (
-                  <div key={step.n} className="flex gap-3">
-                    <span
-                      className="w-9 h-9 rounded-full text-sm font-bold flex items-center justify-center shrink-0"
-                      style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.25) 0%, rgba(166,20,195,0.25) 100%)' }}
-                    >
-                      <span
-                        style={{
-                          background: BRAND_GRADIENT,
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                        }}
-                      >
-                        {step.n}
-                      </span>
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-semibold leading-tight" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>{step.t}</p>
-                      <p className="text-[11px] mt-1 leading-relaxed" style={{ color: isDark ? '#9CA3AF' : '#9CA3AF' }}>{step.d}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   )
