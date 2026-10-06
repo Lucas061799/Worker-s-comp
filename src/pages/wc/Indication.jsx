@@ -60,7 +60,7 @@ function turnaroundFor(carrier) {
    to set, so it is passed in rather than derived. */
 const SERVICE_FEE = 250
 
-function feesFor(premium, brokerFee = 0) {
+export function feesFor(premium, brokerFee = 0) {
   return {
     service: SERVICE_FEE,
     broker: brokerFee,
@@ -278,13 +278,18 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
       {showRefer && (
         <div className="rounded-xl p-4 mt-3.5"
           style={{ background: 'var(--surface-soft)', border: '1px dashed var(--line-strong)' }}>
-          <p className="text-[13px] font-semibold mb-1" style={{ color: 'var(--ink)' }}>
-            Didn't find the right quote?
-          </p>
-          <div className="flex items-center justify-between gap-3.5 flex-wrap">
-            <p className="text-[12.5px] text-gray-500">
-              You can refer this submission to an underwriter for manual review.
-            </p>
+          {/* The copy is one block and the button sits against it. The
+              prototype stacks the heading above a space-between row, which at
+              this width left the sentence stranded far from the button. */}
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="min-w-0">
+              <p className="text-[13px] font-semibold mb-1" style={{ color: 'var(--ink)' }}>
+                Didn't find the right quote?
+              </p>
+              <p className="text-[12.5px] text-gray-500">
+                You can refer this submission to an underwriter for manual review.
+              </p>
+            </div>
             <button
               type="button"
               onClick={onRefer}

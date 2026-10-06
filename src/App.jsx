@@ -16,6 +16,11 @@ import StateCoverages from './pages/wc/StateCoverages'
 import UnderwritingQuestions from './pages/wc/UnderwritingQuestions'
 import CarrierSelection, { CARRIERS } from './pages/wc/CarrierSelection'
 import Loading from './pages/wc/Loading'
+import Locations from './pages/wc/Locations'
+import SubClassCode from './pages/wc/SubClassCode'
+import Referral, { ReferralSubmitted } from './pages/wc/Referral'
+import BindFlow from './pages/wc/BindFlow'
+import { feesFor, FACTORS } from './pages/wc/Indication'
 import Indication from './pages/wc/Indication'
 import CarrierFlow from './pages/wc/CarrierFlow'
 import Quote from './pages/wc/Quote'
@@ -27,6 +32,7 @@ const BASE_STEPS = [
   { id: 1, num: '1',  key: 'business',    label: 'Business info',          phase: 1 },
   { id: 2, num: '2',  key: 'history',     label: 'Coverage history',       phase: 1 },
   { id: 3, num: '2b', key: 'losses',      label: 'Loss history',           phase: 1, cond: true },
+  { id: 9, num: '2c', key: 'locations',   label: 'Locations',              phase: 1, condLocations: true },
   { id: 4, num: '3',  key: 'coverages',   label: 'State coverages',        phase: 1 },
   { id: 5, num: '4',  key: 'questions',   label: 'Credit opportunity',     phase: 1 },
   { id: 6, num: '5',  key: 'carriers',    label: 'Carrier selection',      phase: 1 },
@@ -72,6 +78,13 @@ function App() {
      records the intent and says so rather than pretending to submit. */
   const [referralInPlay, setReferralInPlay] = useState(() => !!restored?.referralInPlay)
 
+  /* Carrier flow asks for sub-class descriptors before the carrier's own
+     questions, so the step has two screens rather than one. */
+  const [subclassDone, setSubclassDone] = useState(false)
+  // null → not referring · 'form' → filling it in · 'submitted' → sent
+  const [referralStage, setReferralStage] = useState(null)
+  const [binding, setBinding] = useState(false)
+
   const [submitted, setSubmitted] = useState(false)
   const [bindSummary, setBindSummary] = useState(null)
 
@@ -115,9 +128,13 @@ function App() {
   /* Phase 2 is behind the indication gate and stays out of the nav until it
      opens, rather than sitting there greyed — per the VP note, the nav never
      shows more pages than the agent is ready to think about. */
-  const steps = BASE_STEPS.filter(s =>
-    (!s.cond || hasLosses) && (s.phase !== 2 || indicationReady)
-  )
+  /* Locations is asked only when General Info says there are more of them. */
+  const hasLocations = formData.business?.additionalLocations === 'yes'
+  const steps = BASE_STEPS
+    .filter(s => (!s.cond || hasLosses)
+      && (!s.condLocations || hasLocations)
+      && (s.phase !== 2 || indicationReady))
+    .sort((a, b) => a.num.localeCompare(b.num, undefined, { numeric: true }))
 
   const sectionRefs = useRef({})
   const isScrollingToRef = useRef(false)
@@ -125,7 +142,7 @@ function App() {
   // Application-phase step keys — these all render in ONE scrolling
   // page. Clicking the sidebar scrolls to that section instead of
   // switching views.
-  const APP_KEYS = ['business', 'history', 'losses', 'coverages', 'questions']
+  const APP_KEYS = ['business', 'history', 'losses', 'locations', 'coverages', 'questions']
 
   const goToStep = useCallback((stepId) => {
     const step = BASE_STEPS.find(s => s.id === stepId)
@@ -188,7 +205,8 @@ function App() {
   const handlePickCarrier = (result) => {
     updateFormData('bind', { selectedCarrier: result.name, selectedCarrierId: result.id, premium: result.price })
     setShowingIndication(false)
-    setActiveStep(7) // carrier flow
+    setSubclassDone(false)
+    setActiveStep(7) // carrier flow — sub-class first, then the questions
   }
 
   const handleContinueToQuote = () => setActiveStep(8)
@@ -219,6 +237,9 @@ function App() {
     setBindSummary(null)
     setAttemptedQuote(false)
     setReferralInPlay(false)
+    setSubclassDone(false)
+    setReferralStage(null)
+    setBinding(false)
     try { localStorage.removeItem(SAVE_KEY) } catch { /* nothing to clear */ }
   }
 
@@ -382,16 +403,26 @@ owner_involved: 'yes',
 
   const inAppPhase = APP_KEYS.includes(currentKey)
 
+  /* The market the agent went forward with — the bind flow and the carrier
+     questions both key off it. */
+  const selectedCarrier = CARRIERS.find(c => c.id === formData.bind?.selectedCarrierId) || null
+  const selectedPremium = formData.bind?.premium || 0
+
   const titles = {
     business:    'Business information',
     history:     'Coverage history',
     losses:      'Loss history',
+    locations:   'Locations',
     coverages:   'State coverages',
     questions:   'Credit opportunity',
     carriers:    'Choose the markets to approach',
     loading:     'Rating',
     indication:  'Price indication',
+    subclass:    'Sub-class code',
     carrierflow: 'Carrier questions',
+    referral:    'Refer to underwriter',
+    referred:    'Referral submitted',
+    bind:        'Bind',
     quote:       'Your quote',
   }
 
@@ -401,6 +432,10 @@ owner_involved: 'yes',
     { id: 1, key: 'business',  title: titles.business,  el: <BusinessInfo formData={formData} updateFormData={updateFormData} showErrors={attemptedQuote} /> },
     { id: 2, key: 'history',   title: titles.history,   el: <CoverageHistory formData={formData} updateFormData={updateFormData} /> },
     ...(hasLosses ? [{ id: 3, key: 'losses', title: titles.losses, el: <LossDetail formData={formData} updateFormData={updateFormData} /> }] : []),
+    ...(hasLocations ? [{ id: 9, key: 'locations', title: titles.locations, el: (
+      <Locations formData={formData} updateFormData={updateFormData}
+        onBack={() => goToStep(hasLosses ? 3 : 2)} onContinue={() => goToStep(4)} />
+    ) }] : []),
     { id: 4, key: 'coverages', title: titles.coverages, el: <StateCoverages formData={formData} updateFormData={updateFormData} replaceFormSection={replaceFormSection} /> },
     { id: 5, key: 'questions', title: titles.questions, el: (
       <UnderwritingQuestions
@@ -500,21 +535,27 @@ owner_involved: 'yes',
             {!inAppPhase && (
               <section className="bop-page">
                 <div className="px-4 md:px-6">
-                  <StepHeader title={titles[currentKey] || ''} />
+                  <StepHeader title={
+                    referralStage === 'form' ? titles.referral
+                      : referralStage === 'submitted' ? titles.referred
+                        : binding ? titles.bind
+                          : currentKey === 'carrierflow' && !subclassDone ? titles.subclass
+                            : (titles[currentKey] || '')
+                  } />
                 </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
                     <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
                   )}
-                  {!rating && showingIndication && (
+                  {!rating && !referralStage && showingIndication && (
                     <Indication
                       formData={formData}
                       onPickCarrier={handlePickCarrier}
                       referralInPlay={referralInPlay}
-                      onRefer={() => setReferralInPlay(true)}
+                      onRefer={() => setReferralStage('form')}
                     />
                   )}
-                  {!rating && !showingIndication && currentKey === 'carriers' && (
+                  {!rating && !showingIndication && !referralStage && currentKey === 'carriers' && (
                     <CarrierSelection
                       formData={formData}
                       updateFormData={updateFormData}
@@ -522,21 +563,57 @@ owner_involved: 'yes',
                       onBack={() => goToStep(5)}
                     />
                   )}
-                  {!rating && !showingIndication && currentKey === 'carrierflow' && (
+                  {!rating && referralStage === 'form' && (
+                    <Referral
+                      formData={formData}
+                      updateFormData={updateFormData}
+                      carrierName={selectedCarrier?.name}
+                      carrierMandated={!!selectedCarrier && !(FACTORS[selectedCarrier.id] || {}).bind}
+                      onBack={() => setReferralStage(null)}
+                      onSubmit={() => { setReferralStage('submitted'); setReferralInPlay(true) }}
+                    />
+                  )}
+                  {!rating && referralStage === 'submitted' && (
+                    <ReferralSubmitted
+                      quoteNumber="WC-2026-048291"
+                      onBackToQuote={() => setReferralStage(null)}
+                    />
+                  )}
+                  {!rating && !showingIndication && !referralStage && currentKey === 'carrierflow' && !subclassDone && (
+                    <SubClassCode
+                      formData={formData}
+                      updateFormData={updateFormData}
+                      carrierName={selectedCarrier?.name || 'the carrier'}
+                      onBack={goToIndication}
+                      onContinue={() => setSubclassDone(true)}
+                    />
+                  )}
+                  {!rating && !showingIndication && !referralStage && currentKey === 'carrierflow' && subclassDone && (
                     <CarrierFlow
                       formData={formData}
                       updateFormData={updateFormData}
                       onContinueToQuote={handleContinueToQuote}
                       onGoToStep={goToStep}
-                      onBack={goToIndication}
+                      onBack={() => setSubclassDone(false)}
                     />
                   )}
-                  {!rating && !showingIndication && currentKey === 'quote' && (
+                  {!rating && !showingIndication && !referralStage && currentKey === 'quote' && !binding && (
                     <Quote
                       formData={formData}
                       updateFormData={updateFormData}
-                      onBound={handleBound}
+                      onBound={() => setBinding(true)}
                       onBack={() => setActiveStep(7)}
+                    />
+                  )}
+                  {!rating && !showingIndication && !referralStage && currentKey === 'quote' && binding && (
+                    <BindFlow
+                      carrier={selectedCarrier}
+                      premium={selectedPremium}
+                      fees={feesFor(selectedPremium)}
+                      quoteNumber="WC-2026-048291"
+                      effectiveDate={formData.pageZero?.effectiveDate}
+                      onBack={() => setBinding(false)}
+                      onBound={handleBound}
                     />
                   )}
                 </div>
