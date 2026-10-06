@@ -8,6 +8,7 @@ import sidebarBg from '../../assets/sidebar-bg.png'
 import sellMoreBg from '../../assets/sell-more-bg.png'
 import { DemoJump } from '../../components/DemoJump'
 import { premiumForCarrier } from './Indication'
+import CrossSell from '../../components/CrossSell'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -391,6 +392,11 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
               </div>
             </div>
 
+
+            {/* The block every product in the house closes on. It took the
+                jungle banner's place: that one's only link led away from the
+                receipt, this one leads to the next sale. */}
+            <CrossSell />
 
             <div className="pb-8" />
           </div>
