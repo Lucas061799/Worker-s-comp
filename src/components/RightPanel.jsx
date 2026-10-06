@@ -1,30 +1,9 @@
 import { useMemo } from 'react'
 import { CARRIERS } from '../pages/wc/CarrierSelection'
+import { premiumForCarrier, FACTORS } from '../pages/wc/Indication'
 import { CarrierLogo, PriceTicker, BrandText } from './wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
-
-const CARRIER_FACTORS = {
-  amtrust:     0.90,
-  clearspring: 0.93,
-  cna:         0.98,
-  employers:   1.02,
-  hartford:    1.05,
-  travelers:   1.10,
-}
-
-/* Rough per-carrier premium — matches Indication.jsx so the right-rail
-   numbers agree with what the user sees on the Price Indication screen. */
-function estimatePremium(formData, factor = 1) {
-  const state = formData.pageZero?.state || 'CA'
-  const stateData = formData.coverage?.[state] || {}
-  const payroll = (stateData.classes || []).reduce((sum, c) => {
-    const n = parseInt(String(c.payroll || '').replace(/[^0-9]/g, ''), 10) || 0
-    return sum + n
-  }, 0) || 480000
-  const emod = Number(formData.underwriting?.experienceMod) || 1
-  return Math.round(payroll * 0.011 * emod * factor)
-}
 
 const money = (n) => '$' + Math.round(n).toLocaleString()
 
@@ -71,8 +50,11 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
   const quotes = useMemo(() => {
     const list = CARRIERS
       .filter(c => selected[c.id] !== false)
-      .map(c => ({ ...c, premium: estimatePremium(formData, CARRIER_FACTORS[c.id] || 1) }))
-    return list.sort((a, b) => a.premium - b.premium)
+      .map(c => ({ ...c, premium: premiumForCarrier(formData, c.id),
+                   noquote: (FACTORS[c.id] || {}).noquote }))
+    /* A market that declines has no price to sort on, so it goes last rather
+       than landing wherever its unused factor happens to put it. */
+    return list.sort((a, b) => (!!a.noquote - !!b.noquote) || a.premium - b.premium)
   }, [formData, selected])
 
   return (
@@ -143,10 +125,16 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
               </div>
               {showPrices ? (
                 <div className="text-right shrink-0">
-                  <div className="text-sm font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
-                    {money(q.premium)}
-                  </div>
-                  <div className="text-[9px] text-gray-400">per year</div>
+                  {q.noquote ? (
+                    <div className="text-[11px] font-semibold text-gray-400">Not a fit</div>
+                  ) : (
+                    <>
+                      <div className="text-sm font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
+                        {money(q.premium)}
+                      </div>
+                      <div className="text-[9px] text-gray-400">per year</div>
+                    </>
+                  )}
                 </div>
               ) : (
                 <PriceTicker isDark={isDark} />

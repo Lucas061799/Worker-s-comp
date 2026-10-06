@@ -245,10 +245,14 @@ export default function PrintSummary({ formData, visible, onClose, onEdit }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-sm font-semibold transition hover:opacity-80"
-            style={{ color: 'var(--ink-2)', border: '1px solid var(--line)', background: 'var(--surface-card)' }}
+            /* Commercial Auto's secondary button: no fill, a 1px --line
+               stroke and gray-500 text (its #6B7280 in light, #9CA3AF in
+               dark). Transparent also means it never comes out darker than
+               the card it sits on. */
+            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 transition hover:opacity-80"
+            style={{ border: '1px solid var(--line)', background: 'transparent' }}
           >
-            ← Back to Edit
+            Back to Edit
           </button>
           <button
             type="button"

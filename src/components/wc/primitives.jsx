@@ -184,13 +184,14 @@ export function ModalButton({ children, onClick, variant = 'primary' }) {
          also carries a border, so equal padding would still measure short. */
       className={`h-11 inline-flex items-center justify-center shrink-0 whitespace-nowrap rounded-xl text-sm transition ${primary
         ? 'px-6 font-bold text-white hover:opacity-90'
-        : 'px-5 font-semibold text-gray-700 hover:bg-gray-50'}`}
-      /* The ghost sits on --surface, not --surface-card: CBIC gives it
-         bg-white, which in dark is the page colour, so the button reads as
-         a well set into the sheet rather than a border drawn on it. */
+        : 'px-5 font-medium text-gray-500 hover:bg-gray-50'}`}
+      /* Commercial Auto's secondary button: no fill, a 1px --line stroke and
+         gray-500 text. It used to take --surface, which in dark is the page
+         colour — darker than the card it sits on, so it read as a hole
+         punched in the sheet. Transparent simply inherits the card. */
       style={primary
         ? { background: BRAND_GRADIENT, boxShadow: '0 4px 18px rgba(92,46,212,0.30)' }
-        : { border: '1.5px solid var(--line)', background: 'var(--surface)' }}
+        : { border: '1px solid var(--line)', background: 'transparent' }}
     >
       {children}
     </button>

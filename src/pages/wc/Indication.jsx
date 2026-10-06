@@ -2,8 +2,14 @@ import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import { BRAND_GRADIENT, InfoLine, Tag } from '../../components/wc/primitives'
 
-// Rough WC premium: 3% of payroll × ex-mod × per-carrier factor.
-function estimatePremium(formData, factor = 1) {
+/* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
+   set so the prototype's reference risk prices out where its own figures do —
+   the old 0.011 came out around a quarter of that, which put every market far
+   under the $20,000 referral threshold and made that rule unreachable. */
+export const WC_RATE = 0.0494
+
+// Rough WC premium: rate of payroll × ex-mod × per-carrier factor.
+export function estimatePremium(formData, factor = 1) {
   const pz = formData.pageZero || {}
   const state = pz.state || 'CA'
   const stateData = formData.coverage?.[state] || {}
@@ -12,18 +18,33 @@ function estimatePremium(formData, factor = 1) {
     return sum + n
   }, 0) || 480000
   const emod = Number(formData.underwriting?.experienceMod) || 1
-  return Math.round(totalPayroll * 0.011 * emod * factor)
+  return Math.round(totalPayroll * WC_RATE * emod * factor)
 }
 
-const FACTORS = {
-  amtrust:     { factor: 0.90, bind: true },
-  clearspring: { factor: 0.93, bind: true },
-  cna:         { factor: 0.98, bind: true },
-  employers:   { factor: 1.02, bind: true },
-  hartford:    { factor: 1.05, bind: false, noquote: 'Class outside appetite for this state' },
-  travelers:   { factor: 1.10, bind: true },
+/* Factors are the prototype's own prices expressed as ratios, so the reference
+   risk it was drawn against — $480K CA plumbing payroll, 0.87 mod — lands back
+   on its figures while everything still scales with payroll. ICW/Zenith always
+   declines there, which is the only way the declined-market state is reachable
+   at all. Pie and Employers quote but need underwriting, so they do not bind
+   online. */
+export const FACTORS = {
+  amtrust:       { factor: 1.000, bind: true },
+  clearspring:   { factor: 1.178, bind: true },
+  cna:           { factor: 1.274, bind: true },
+  greatamerican: { factor: 1.074, bind: true },
+  pie:           { factor: 1.445, bind: false },
+  employers:     { factor: 1.673, bind: false },
+  icwzenith:     { factor: 1, bind: false,
+                   noquote: 'This class and payroll combination falls outside their current underwriting appetite' },
 }
 
+
+/* One way in for anyone who needs a carrier's number — the right rail used to
+   carry its own copy of the rate and the factor table, which is exactly the
+   sort of pair that drifts apart. */
+export function premiumForCarrier(formData, carrierId) {
+  return estimatePremium(formData, (FACTORS[carrierId] || { factor: 1 }).factor)
+}
 
 const money = (n) => '$' + Math.round(n).toLocaleString()
 
@@ -32,13 +53,19 @@ function turnaroundFor(carrier) {
   return m ? `${m[1]} business days` : carrier.sla
 }
 
-/* Broker fee and statutory loads, so the row can show what the agent
-   will actually be charged rather than the premium alone. */
-function feesFor(premium) {
-  const service = 95
-  const tax = Math.round(premium * 0.0235)
-  const stamping = Math.round(premium * 0.002)
-  return { service, tax, stamping, total: premium + service + tax + stamping }
+/* The prototype's breakdown exactly: premium, a flat BTIS service fee and
+   the agent's own broker fee, totalled. It carries no tax and no stamping
+   fee — the 2.35% and 0.2% lines that used to sit here were invented, and a
+   quote is the wrong place to invent a charge. The broker fee is the agent's
+   to set, so it is passed in rather than derived. */
+const SERVICE_FEE = 250
+
+function feesFor(premium, brokerFee = 0) {
+  return {
+    service: SERVICE_FEE,
+    broker: brokerFee,
+    total: premium + SERVICE_FEE + brokerFee,
+  }
 }
 
 function FeeRow({ label, value, bold }) {
@@ -147,12 +174,11 @@ function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="rounded-xl p-4" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
               <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2.5">Fee breakdown</div>
-              <FeeRow label="Premium" value={money(carrier.price)} />
-              <FeeRow label="Service fee" value={money(fees.service)} />
-              <FeeRow label="Tax" value={money(fees.tax)} />
-              <FeeRow label="Stamping fee" value={money(fees.stamping)} />
-              <div className="mt-2 pt-2" style={{ borderTop: '1px solid #E5E7EB' }}>
-                <FeeRow label="Total annual cost" value={money(fees.total)} bold />
+              <FeeRow label="Workers' Comp Premium" value={money(carrier.price)} />
+              <FeeRow label="BTIS Service Fee" value={money(fees.service)} />
+              <FeeRow label="Broker Fee" value={money(fees.broker)} />
+              <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
+                <FeeRow label="Grand Total" value={money(fees.total)} bold />
               </div>
             </div>
 
