@@ -87,7 +87,11 @@ input, select, textarea, button {
   --surface-soft: rgba(255,255,255,0.03);
   --surface-softer: rgba(255,255,255,0.03);
   --fill-subtle: rgba(255,255,255,0.06);
-  --fill-disabled: rgba(255,255,255,0.08);
+  /* Below the field fill, not above it. In light a disabled action is #E5E7EB
+     against a #ffffff field — it recedes. On navy, 0.08 against the field's
+     0.06 did the opposite and made the dead button the brightest thing in the
+     form. */
+  --fill-disabled: rgba(255,255,255,0.04);
   --line: rgba(255,255,255,0.10);
   --line-soft: rgba(255,255,255,0.06);
   --line-strong: rgba(255,255,255,0.14);
