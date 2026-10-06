@@ -407,6 +407,9 @@ export function Segmented({ options, value, onChange, name, className = '' }) {
         const v = typeof opt === 'string' ? opt : opt.value
         const labelText = typeof opt === 'string' ? opt : opt.label
         const on = value === v
+        /* No answers in magenta, everything else in the violet — the pairing
+           Commercial Auto uses. */
+        const isNo = String(v).toLowerCase() === 'no'
         return (
           <button
             key={v}
@@ -415,18 +418,15 @@ export function Segmented({ options, value, onChange, name, className = '' }) {
             aria-checked={on}
             onClick={() => onChange && onChange(v)}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium ${
-              on
-                ? 'border-[#5C2ED4] text-[#5C2ED4]'
-                : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+              on ? (isNo ? 'yn-on-no' : 'yn-on') : 'yn-off'
             }`}
-            style={on ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)' } : undefined}
           >
             <span
               className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                on ? 'border-[#A614C3]' : 'border-gray-300'
+                on ? (isNo ? 'yn-ring-no' : 'yn-ring') : 'yn-off-ring'
               }`}
             >
-              {on && <span className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND_GRADIENT }} />}
+              {on && <span className={`w-1.5 h-1.5 rounded-full ${isNo ? 'yn-dot-no' : 'yn-dot'}`} />}
             </span>
             {labelText}
           </button>
