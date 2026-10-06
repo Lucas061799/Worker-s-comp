@@ -242,12 +242,18 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
+                  {/* What actually happened at the end of the bind flow: the
+                      documents and the payment go to the binding team, who
+                      review before the policy is issued. Saying "bound" here
+                      promised something that has not happened yet. */}
                   <h1 className="text-xl font-bold mb-1" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
-                    {carrier ? 'Your application has been bound' : 'Your application has been submitted'}
+                    {carrier ? 'Submitted to the binding team' : 'Your application has been submitted'}
                   </h1>
                   <p className="text-xs text-gray-400 leading-relaxed">
                     {carrier
-                      ? <>Your policy with <span className="font-semibold">{carrier}</span> is bound. A receipt and policy documents will arrive by email shortly.</>
+                      ? <>All documents and payment have been submitted to our Binding team. If we need
+                          any additional information, we'll reach out. Expected SLA is{' '}
+                          <span className="font-semibold">4 hours</span> during business operating hours.</>
                       : 'Your application has been received and is being processed.'
                     }
                   </p>
@@ -283,7 +289,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                 {[
                   { label: 'Quote Number', value: quoteId,     gradient: true },
                   { label: 'Generated',    value: generatedAt },
-                  { label: 'Status',       value: 'Bound',     pill: true },
+                  { label: 'Status',       value: 'Submitted', pill: true },
                 ].map((item, i) => (
                   <div
                     key={item.label}
@@ -338,13 +344,17 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                   }}
                 >
                   <div className="flex-1 min-w-0">
+                    {/* The prototype's policy line: number, then carrier,
+                        premium a year and the date it starts. */}
                     <p className="text-sm font-bold" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
-                      Policy bound with {carrier}
+                      Policy <span className="font-mono">{quoteId}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {carrier} · {money(premium)} / yr · effective {pageZero.effectiveDate || '—'}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
                       Class <span className="font-mono">{pageZero.mainClass || '—'} · {state}</span>
                       {uw.experienceMod && <> · E-Mod {uw.experienceMod}</>}
-                      {' · '}Annual premium {money(premium)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -387,7 +397,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Carrier"   value={carrier} isDark={isDark} />
                     <Field label="Quote #"   value={quoteId} isDark={isDark} />
                     <Field label="Premium"   value={money(premium)} isDark={isDark} />
-                    <Field label="Status"    value="Bound" isDark={isDark} />
+                    <Field label="Status"    value="Submitted" isDark={isDark} />
                   </SectionCard>
               </div>
             </div>
