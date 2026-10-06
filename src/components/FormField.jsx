@@ -556,20 +556,25 @@ export function RadioGroup({ label, required, options = [], value, onChange, cla
 // Checkbox
 export function Checkbox({ label, checked, onChange, className = '' }) {
   return (
-    <label className={`flex items-center gap-2.5 cursor-pointer group ${className}`}>
-      <div
-        className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all ${
-          checked ? 'border-[#A614C3]' : 'border-gray-300 group-hover:border-[#5C2ED4]/40 field-fill'
-        }`}
-        style={checked ? { background: 'linear-gradient(88.09deg, #5C2ED4 0%, #A614C3 100%)' } : {}}
-        onClick={() => onChange && onChange(!checked)}
+    <label
+      onClick={() => onChange && onChange(!checked)}
+      className={`flex items-center gap-2.5 cursor-pointer select-none ${className}`}
+    >
+      {/* Checked is carried by the gradient alone — a stroke on top of it
+          reads as a second state. Matches CBIC's checkbox. */}
+      <span
+        className={`w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0 transition-all ${checked ? '' : 'field-fill'}`}
+        style={{
+          ...(checked ? { background: 'linear-gradient(88.09deg, #5C2ED4 0%, #A614C3 100%)' } : {}),
+          border: checked ? 'none' : '1.5px solid var(--line-strong)',
+        }}
       >
         {checked && (
-          <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 10 10">
-            <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg className="w-3 h-3" fill="none" stroke="white" strokeWidth="3.2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         )}
-      </div>
+      </span>
       <span className="text-xs text-gray-600">{label}</span>
     </label>
   )
