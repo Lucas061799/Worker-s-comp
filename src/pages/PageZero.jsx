@@ -251,10 +251,11 @@ export default function PageZero({ onStart, isDark = false }) {
                   />
                 </div>
 
-                {/* The prototype hides this box outright for non-contracting
-                    classes. We hold it in place and disable it instead, so the
-                    form does not reflow as the class changes — the ⓘ already
-                    explains why we ask. */}
+                {/* The prototype shows this box only for contracting classes.
+                    We keep it on the page for every class instead: the number
+                    is optional either way, the ⓘ says why we ask, and a field
+                    that appears, greys out or vanishes as the class changes
+                    was the more confusing of the two. */}
                 <div>
                   <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
                     Contractor License Number
@@ -266,12 +267,11 @@ export default function PageZero({ onStart, isDark = false }) {
                   {/* Digits only, capped at 8 — CSLB numbers run to eight
                       but are often shorter. */}
                   <Input
-                    value={picked?.contractor ? license : ''}
+                    value={license}
                     onChange={setLicense}
                     placeholder="e.g. 1042113"
                     digits
                     maxLength={8}
-                    disabled={!picked?.contractor}
                   />
                 </div>
               </div>
