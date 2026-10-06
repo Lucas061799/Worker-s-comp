@@ -251,9 +251,10 @@ export default function PageZero({ onStart, isDark = false }) {
                   />
                 </div>
 
-                {/* Kept on the page rather than appearing and vanishing with
-                    the class: it only applies to contracting classes, so it
-                    says so and disables itself instead of disappearing. */}
+                {/* The prototype hides this box outright for non-contracting
+                    classes. We hold it in place and disable it instead, so the
+                    form does not reflow as the class changes — the ⓘ already
+                    explains why we ask. */}
                 <div>
                   <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
                     Contractor License Number
@@ -271,7 +272,6 @@ export default function PageZero({ onStart, isDark = false }) {
                     digits
                     maxLength={8}
                     disabled={!picked?.contractor}
-                    help={!picked?.contractor ? 'Only asked for contracting class codes.' : undefined}
                   />
                 </div>
               </div>
