@@ -20,7 +20,7 @@ const EXPERIENCE_OPTIONS = Array.from({ length: 11 }, (_, i) =>
 function PillField({ label, required, value, onChange, children }) {
   return (
     <div>
-      <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+      <label className="block text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
         {label}{required && <span className="text-red-400 ml-0.5">*</span>}
       </label>
       <YesNo value={value} onChange={onChange} name={label} />

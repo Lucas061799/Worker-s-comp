@@ -18,14 +18,12 @@ const COVERAGE_STATUS = [
 
 const PRIOR_YEARS = ['1', '2', '3', '4+']
 
-/* The description carries weight in underwriting, so the counter nudges
-   for a real sentence rather than a two-word trade name. */
 /* Label above a pill answer — the shape Business info uses for its
    mailing-address and additional-locations questions. */
 function PillField({ label, required, children }) {
   return (
     <div>
-      <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+      <label className="block text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
         {label}{required && <span className="text-red-400 ml-0.5">*</span>}
       </label>
       {children}
@@ -33,8 +31,6 @@ function PillField({ label, required, children }) {
   )
 }
 
-const MIN_WORDS = 10
-const countWords = (text) => (text || '').trim().split(/\s+/).filter(Boolean).length
 
 export default function CoverageHistory({ formData, updateFormData }) {
   const data = formData.history || {}
@@ -46,12 +42,12 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   // Only a risk with a current or recently-lapsed policy has these.
   const hasPriorPolicy = status === 'inforce' || status === 'lapse'
-  const words = countWords(data.operations)
 
   const setClaims = (val) => {
     // Answering No clears the count, which is what hides the Loss history step.
     patch(val === 'yes' ? { claimsPast4: 'yes' } : { claimsPast4: 'no', claimCount: 0 })
   }
+
 
   return (
     <div className="w-full space-y-6">
@@ -116,37 +112,34 @@ export default function CoverageHistory({ formData, updateFormData }) {
             required
             value={data.operations}
             onChange={val => patch({ operations: val })}
-            placeholder="Describe what the business actually does day to day — the work performed, where, and for whom."
+            placeholder="Briefly describe what the business does day to day (at least 10 words)…"
             rows={3}
           />
-          <p className="text-[11px] -mt-3" style={{ color: words >= MIN_WORDS ? '#9CA3AF' : '#A614C3' }}>
-            {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
-          </p>
         </div>
       </FieldGroup>
 
       <FieldGroup label="Claims">
-        {/* The count belongs beside the question it depends on, not under
-            it. items-end keeps the pills and the field on one baseline
-            however many lines the question wraps to. */}
-        <FormGrid className="items-end">
-          <PillField
-            label="Has the business had any claims or work-related injuries in the past 4 years?"
-            required
-          >
-            <YesNo value={claimsPast4} onChange={setClaims} name="Claims in past 4 years" />
-          </PillField>
+        {/* The question gets the whole line — it needs 516px of the 679 here,
+            so sharing the row with anything wrapped it onto two. */}
+        <PillField
+          label="Has the business had any claims or work-related injuries in the past 4 years?"
+          required
+        >
+          <YesNo value={claimsPast4} onChange={setClaims} name="Claims in past 4 years" />
+        </PillField>
 
-          {claimsPast4 === 'yes' ? (
-            <Input
-              label="How many claims?"
-              required
-              value={claimCount ? String(claimCount) : ''}
-              onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
-              placeholder="0"
-            />
-          ) : <div />}
-        </FormGrid>
+        {claimsPast4 === 'yes' && (
+          <Input
+            label="How many claims?"
+            required
+            className="w-36 mt-5"
+            value={claimCount ? String(claimCount) : ''}
+            onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
+            placeholder="0"
+            digits
+            maxLength={3}
+          />
+        )}
       </FieldGroup>
 
       {/* Four or more claims goes to an underwriter rather than through
