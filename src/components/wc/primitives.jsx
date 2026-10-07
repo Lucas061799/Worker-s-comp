@@ -600,7 +600,12 @@ export function StepNav({ onBack, onContinue, canContinue = true, hint, continue
             Back
           </button>
         ) : <span />}
-        <PrimaryButton onClick={onContinue} disabled={!canContinue}>{continueLabel}</PrimaryButton>
+        {/* A screen can advance by something other than this footer — the
+            payment one does, through its own Pay button — so Continue is
+            optional and the row keeps Back on the left. */}
+        {onContinue
+          ? <PrimaryButton onClick={onContinue} disabled={!canContinue}>{continueLabel}</PrimaryButton>
+          : <span />}
       </div>
     </div>
   )

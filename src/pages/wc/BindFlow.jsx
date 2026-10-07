@@ -4,6 +4,7 @@ import {
   Modal,
   ModalButton,
   FieldGroup,
+  PrimaryButton,
   SectionLabel,
   InfoLine,
   AlertGlyph,
@@ -134,11 +135,16 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
 
   const grandTotal = fees?.total ?? premium
   const chosen = PLANS.find(p => p.id === plan) || PLANS[0]
-  const down = Math.round(premium * chosen.downPct)
-  const perInstallment = chosen.installments
-    ? Math.round((grandTotal - down) / chosen.installments)
-    : 0
-  const dueToday = down + (fees?.service || 0) + (fees?.broker || 0)
+  /* Plans divide the grand total — fees included — not the premium, and what
+     is due today is that down payment on its own. Taking the share off the
+     premium and then adding the fees on top billed a different number. */
+  const amountsFor = (p) => {
+    const d = Math.round(grandTotal * p.downPct * 100) / 100
+    const remaining = Math.round((grandTotal - d) * 100) / 100
+    return { down: d, inst: p.installments ? Math.round((remaining / p.installments) * 100) / 100 : 0 }
+  }
+  const { down, inst: perInstallment } = amountsFor(chosen)
+  const dueToday = down
 
   const subjectivities = SUBJECTIVITIES_BY_CARRIER[carrier?.id] ?? []
   const allDocsIn = required.every(d => docs[d])
@@ -209,8 +215,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           <div className="space-y-2.5">
             {PLANS.map(p => {
               const on = p.id === plan
-              const d = Math.round(premium * p.downPct)
-              const each = p.installments ? Math.round((grandTotal - d) / p.installments) : 0
+              const { down: d, inst: each } = amountsFor(p)
               return (
                 <button key={p.id} type="button" onClick={() => setPlan(p.id)}
                   /* A card on the group's soft panel, so it takes the control
@@ -255,30 +260,37 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
         <Stepper at={2} />
 
         <FieldGroup label="Policy premium &amp; fees">
-          <div className="rounded-xl p-4" style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
-            {[
-              ["Workers' Comp Premium", money(premium)],
-              ['BTIS Service Fee', money2(fees?.service || 0)],
-              ['Broker Fee', money2(fees?.broker || 0)],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between gap-4 py-1">
-                <span className="text-xs text-gray-500">{k}</span>
-                <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
-              </div>
-            ))}
-            <div className="mt-2 pt-2 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-              <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-              <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
+          {/* The rows sit straight in the group. They used to be wrapped in a
+              second panel inside it, which is a panel on a panel. */}
+          {[
+            ["Workers' Comp Premium", money2(premium)],
+            ['BTIS Service Fee', money2(fees?.service || 0)],
+            ['Broker Fee', money2(fees?.broker || 0)],
+          ].map(([k, v]) => (
+            <div key={k} className="flex items-center justify-between gap-4 py-1">
+              <span className="text-xs text-gray-500">{k}</span>
+              <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
             </div>
+          ))}
+          <div className="mt-2 pt-2 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
+            <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
+            <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
           </div>
-          <InfoLine className="mt-3.5">
+          {/* A quiet line, as in the prototype — not a panel with an icon. */}
+          <p className="text-[11.5px] text-gray-400 mt-3">
             Read-only — to change these amounts, go back to the quote.
-          </InfoLine>
+          </p>
         </FieldGroup>
 
         <FieldGroup label="Amount due today">
-          <p className="text-2xl font-bold mb-4" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
-          <FormGrid>
+          <p className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
+          <p className="text-[12px] text-gray-500 mt-1">
+            Selected plan: {chosen.name}
+            {chosen.installments
+              ? ` — ${chosen.installments} × ${money2(perInstallment)} to follow.`
+              : ' (paid in full today).'}
+          </p>
+          <FormGrid className="mt-4">
             <Input label="Card number" required value={card.number}
               onChange={v => setCard(c => ({ ...c, number: v }))}
               placeholder="4242 4242 4242 4242" digits maxLength={16}
@@ -288,15 +300,27 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               placeholder="MM / YY" maxLength={7}
               error={showErrors && !cardOk} />
           </FormGrid>
+          {/* The payment is taken here, beside its own status, rather than from
+              the footer — this screen advances on being paid. */}
+          <div className="flex items-center gap-3 mt-4 flex-wrap">
+            <PrimaryButton
+              onClick={() => { if (!cardOk) { setShowErrors(true); return } setAuthorising(true) }}
+              disabled={!cardOk}
+            >
+              Pay {money2(dueToday)}
+            </PrimaryButton>
+            <span className={`im-chip ${paid ? 'im-chip-good' : 'im-chip-muted'}`}>
+              {paid ? 'Paid' : 'Not yet paid'}
+            </span>
+          </div>
+          {!cardOk && (
+            <p className="text-[12px] text-gray-400 mt-2.5">
+              Card details are needed to take the down payment.
+            </p>
+          )}
         </FieldGroup>
 
-        <StepNav
-          onBack={back}
-          onContinue={() => { if (!cardOk) { setShowErrors(true); return } setAuthorising(true) }}
-          continueLabel={`Pay ${money2(dueToday)}`}
-          canContinue={cardOk}
-          hint={cardOk ? undefined : 'Card details are needed to take the down payment.'}
-        />
+        <StepNav onBack={back} />
 
         {authorising && (
           <Modal
