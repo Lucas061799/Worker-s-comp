@@ -311,10 +311,16 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   {/* The Checkbox primitive's own look, so this toggle
                       matches every other checkbox in the app. */}
                   <div
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition ${
-                      isChecked ? 'border-[#A614C3]' : 'border-gray-300 group-hover:border-[#5C2ED4]/40'
-                    }`}
-                    style={isChecked ? { background: BRAND_GRADIENT } : { background: 'white' }}
+                    /* Checked is the gradient alone — the magenta ring on top
+                       of it read as a second state stacked on the first. Same
+                       treatment as the shared Checkbox: no border when filled,
+                       and the control fill rather than a hardcoded white,
+                       which stayed white on navy. */
+                    className={`w-5 h-5 rounded-[5px] flex items-center justify-center shrink-0 transition ${isChecked ? '' : 'field-fill'}`}
+                    style={{
+                      ...(isChecked ? { background: BRAND_GRADIENT } : {}),
+                      border: isChecked ? 'none' : '1.5px solid var(--line-strong)',
+                    }}
                   >
                     {isChecked && (
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 10 10">
