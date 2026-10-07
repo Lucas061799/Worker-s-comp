@@ -213,8 +213,13 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               const each = p.installments ? Math.round((grandTotal - d) / p.installments) : 0
               return (
                 <button key={p.id} type="button" onClick={() => setPlan(p.id)}
-                  className={`w-full text-left rounded-xl px-4 py-3.5 flex items-center gap-3 transition ${on ? 'im-edge-brand' : ''}`}
-                  style={{ border: `1.5px solid ${on ? '' : 'var(--line)'}`, background: on ? 'var(--surface-soft)' : 'transparent' }}>
+                  /* A card on the group's soft panel, so it takes the control
+                     fill — white in light, a lifted translucent white in dark.
+                     The chosen one used --surface-soft and the rest were
+                     transparent, which is the panel's own colour either way:
+                     four rows that were not surfaces at all, only edges. */
+                  className={`w-full text-left rounded-xl px-4 py-3.5 flex items-center gap-3 transition field-fill ${on ? 'im-edge-brand' : ''}`}
+                  style={{ border: `1.5px solid ${on ? '' : 'var(--line)'}` }}>
                   <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${on ? 'yn-ring' : 'yn-off-ring'}`}>
                     {on && <span className="w-1.5 h-1.5 rounded-full yn-dot" />}
                   </span>
