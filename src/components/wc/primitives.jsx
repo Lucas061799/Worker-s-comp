@@ -49,13 +49,27 @@ export function StepHeader({ title, subtitle }) {
 }
 
 /* A carrier's logo on a square white tile. */
+/* Stands in for a carrier mark nobody has supplied yet. The tiles were wearing
+   whichever logo happened to be in the assets folder — AmTrust showed
+   Coterie's — and another company's mark on a carrier's card is worse than no
+   mark at all. Same grey glyph the cross-sell block uses for its unchosen
+   product. Drop the real artwork in here when it arrives. */
 export function CarrierLogo({ carrier, size = 40, className = '' }) {
   return (
     <div
       className={`im-carrier-tile rounded-xl flex items-center justify-center shrink-0 ${className}`}
       style={{ width: size, height: size, padding: Math.round(size * 0.08) }}
+      title={carrier?.name}
     >
-      <img src={carrier.logo} alt="" className="max-w-full max-h-full object-contain select-none" />
+      <svg
+        width={Math.round(size * 0.46)} height={Math.round(size * 0.46)}
+        viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <circle cx="8.5" cy="9.5" r="1.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 20" />
+      </svg>
     </div>
   )
 }

@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Tag, CarrierLogo, Modal, ModalButton } from '../../components/wc/primitives'
-import logoCna          from '../../assets/carrier-cna.png'
-import logoCoterie      from '../../assets/carrier-coterie.png'
-import logoHiscox       from '../../assets/carrier-hiscox.png'
-import logoGreatAmerican from '../../assets/carrier-greatamerican.png'
-import logoUsli         from '../../assets/carrier-usli.png'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -17,7 +12,6 @@ const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 export const CARRIERS = [
   {
     id: 'amtrust',    name: 'AmTrust',
-    logo: logoCoterie,
     sub: 'Agency bill only · +2% promo',
     tagline: 'Instant on eligible classes',
     promo: true,
@@ -29,7 +23,6 @@ export const CARRIERS = [
   },
   {
     id: 'clearspring', name: 'Berkshire Hathaway GUARD',
-    logo: logoUsli,
     sub: 'Agency or direct bill',
     tagline: 'Same-day turnaround, held inside BTIS',
     sla: 'Same-day',
@@ -40,7 +33,6 @@ export const CARRIERS = [
   },
   {
     id: 'cna',        name: 'CNA',
-    logo: logoCna,
     sub: 'Agency bill · premium finance available',
     tagline: 'BTIS handles endorsements and billing end-to-end',
     reco: true,
@@ -52,7 +44,6 @@ export const CARRIERS = [
   },
   {
     id: 'greatamerican', name: 'Great American',
-    logo: logoGreatAmerican,
     sub: 'Agency or direct bill',
     tagline: 'Same-day turnaround, held inside BTIS',
     sla: 'Same-day',
@@ -63,7 +54,6 @@ export const CARRIERS = [
   },
   {
     id: 'pie',        name: 'Pie',
-    logo: logoHiscox,
     sub: 'Direct bill only',
     tagline: 'Carrier-controlled turnaround',
     sla: '1 business day',
@@ -74,7 +64,6 @@ export const CARRIERS = [
   },
   {
     id: 'employers',  name: 'Employers',
-    logo: logoHiscox,
     sub: 'Direct bill only',
     tagline: 'Strong small-business appetite',
     sla: '1-2 business days',
@@ -85,7 +74,6 @@ export const CARRIERS = [
   },
   {
     id: 'icwzenith',  name: 'ICW / Zenith',
-    logo: logoCoterie,
     sub: 'Direct bill only',
     tagline: 'Carrier-controlled turnaround',
     sla: '2 business days',
@@ -275,16 +263,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
               )}
 
               <div className="flex items-center gap-4 px-5 py-4">
-                {/* Same white tile the right rail uses, so the dark-mode
-                    logos keep the background they were drawn against. */}
-                <div className="im-carrier-tile w-12 h-12 p-1 rounded-xl flex items-center justify-center shrink-0">
-                  <img
-                    src={c.logo}
-                    alt={c.name}
-                    className="max-w-full max-h-full select-none pointer-events-none"
-                    style={{ objectFit: 'contain' }}
-                  />
-                </div>
+                <CarrierLogo carrier={c} size={48} />
 
                 {/* Name + tagline */}
                 <div className="flex-1 min-w-0">
