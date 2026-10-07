@@ -229,7 +229,7 @@ function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
    see it. */
 const REFERRAL_THRESHOLD = 20000
 
-export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false }) {
+export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false, onSelectionChange }) {
   const checked = formData.carrierSelection?.checked || {}
   const [selected, setSelected] = useState(null)
   const [expanded, setExpanded] = useState(null)
@@ -270,7 +270,13 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
             expanded={expanded === r.id}
             onToggle={() => setExpanded(prev => (prev === r.id ? null : r.id))}
             selected={selected === r.id}
-            onSelect={() => setSelected(prev => (prev === r.id ? null : r.id))}
+            /* The rail mirrors this, so the choice is announced rather than
+               kept to this screen. */
+            onSelect={() => setSelected(prev => {
+              const next = prev === r.id ? null : r.id
+              onSelectionChange && onSelectionChange(next)
+              return next
+            })}
           />
         ))}
       </div>

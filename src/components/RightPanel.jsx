@@ -31,7 +31,7 @@ function computeProgress(formData) {
   return { pct: Math.round((done / 7) * 100), flags }
 }
 
-export default function RightPanel({ formData = {}, isDark = false, indicationReady = false, onDownloadSummary }) {
+export default function RightPanel({ formData = {}, isDark = false, indicationReady = false, onDownloadSummary, selectedCarrierId = null }) {
   const pz = formData.pageZero || {}
   const state = pz.state || 'CA'
   const stateCov = formData.coverage?.[state] || {}
@@ -56,6 +56,10 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
        than landing wherever its unused factor happens to put it. */
     return list.sort((a, b) => (!!a.noquote - !!b.noquote) || a.premium - b.premium)
   }, [formData, selected])
+
+  /* Whichever was chosen on the indication leads; the others keep the list. */
+  const featured = quotes.find(q => q.id === selectedCarrierId) || null
+  const rest = featured ? quotes.filter(q => q.id !== featured.id) : quotes
 
   return (
     <aside
@@ -105,7 +109,47 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
               Add payroll on State coverages to see live prices.
             </p>
           )}
-          {readyToQuote && quotes.map(q => (
+          {/* The chosen market is promoted out of the list and shown large, as
+              Builder's Risk does on its compare stage — the rail should answer
+              "which one did I pick" at a glance rather than make the agent
+              hunt for it among six identical rows. */}
+          {readyToQuote && featured && (
+            <div
+              className="rounded-2xl px-4 py-5 mb-3 flex flex-col items-center text-center relative"
+              style={{
+                background: isDark ? 'rgba(255,255,255,0.04)' : 'white',
+                border: `1.5px solid ${isDark ? 'rgba(124,58,237,0.55)' : '#7C3AED'}`,
+                boxShadow: '0 4px 20px rgba(92,46,212,0.10)',
+              }}
+            >
+              <span
+                className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider text-white"
+                style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 6px rgba(92,46,212,0.25)' }}
+              >
+                SELECTED
+              </span>
+              <CarrierLogo carrier={featured} size={52} />
+              <p className="text-sm font-bold mt-2.5" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
+                {featured.name}
+              </p>
+              {featured.reco && (
+                <p className="text-[9px] font-semibold mt-0.5"><BrandText>BTIS Serviced</BrandText></p>
+              )}
+              {showPrices && !featured.noquote && (
+                <div className="mt-3">
+                  <span className="text-2xl font-bold" style={{
+                    background: BRAND_GRADIENT,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}>{money(featured.premium)}</span>
+                  <p className="text-[10px] text-gray-400 mt-0.5">Annual premium</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {readyToQuote && rest.map(q => (
             <div
               key={q.id}
               className="rounded-xl px-3 py-3 flex items-center gap-3"

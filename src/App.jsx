@@ -85,6 +85,8 @@ function App() {
   // null → not referring · 'form' → filling it in · 'submitted' → sent
   const [referralStage, setReferralStage] = useState(null)
   const [binding, setBinding] = useState(false)
+  // Which market is chosen on the indication, so the rail can feature it.
+  const [indicationPick, setIndicationPick] = useState(null)
   /* A step the agent asked for while a referral is out, held until they
      confirm they want to reopen the submission. */
   const [pendingStep, setPendingStep] = useState(null)
@@ -263,6 +265,7 @@ function App() {
     setSubclassDone(false)
     setReferralStage(null)
     setBinding(false)
+    setIndicationPick(null)
     try { localStorage.removeItem(SAVE_KEY) } catch { /* nothing to clear */ }
   }
 
@@ -587,6 +590,7 @@ owner_involved: 'yes',
                       onPickCarrier={handlePickCarrier}
                       referralInPlay={referralInPlay}
                       onRefer={() => setReferralStage('form')}
+                      onSelectionChange={setIndicationPick}
                     />
                   )}
                   {!rating && !showingIndication && !referralStage && currentKey === 'carriers' && (
@@ -665,6 +669,7 @@ owner_involved: 'yes',
             formData={formData}
             isDark={darkMode}
             indicationReady={indicationReady}
+            selectedCarrierId={indicationPick}
             onDownloadSummary={() => setShowSummary(true)}
           />
         </div>
