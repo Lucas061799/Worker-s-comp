@@ -69,7 +69,7 @@ export default function Loading({ onDone, onSkip }) {
 
         {/* While you wait — the canonical info panel, not a gradient slab. */}
         <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
             <AlertGlyph />
           </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">
