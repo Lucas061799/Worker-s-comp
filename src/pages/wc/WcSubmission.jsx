@@ -105,12 +105,43 @@ function Field({ label, value, isDark = false }) {
   )
 }
 
+/* Some of the record is a list — the classes scheduled, the officers, the
+   claims. One row per entry, under a label of its own, rather than a
+   label/value pair that can only hold the first of them. */
+function ListField({ label, rows, isDark = false }) {
+  if (!rows || !rows.length) return null
+  return (
+    <div className="py-1.5" style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid #F3F4F6' }}>
+      <span className="text-[10px] block mb-1" style={{ color: '#9CA3AF' }}>{label}</span>
+      {rows.map((row, i) => (
+        <p key={i} className="text-[10px] font-semibold leading-relaxed" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
+          {row}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+const ENTITY_LABELS = { corp: 'Corporation', llc: 'LLC', sole: 'Sole proprietor', partner: 'Partnership' }
+
+const STATUS_LABELS = {
+  inforce: 'Coverage in force', lapse: 'Lapse', newventure: 'New venture', noprior: 'No prior',
+}
+
+/* The form stores the answers a control gives it — 'yes', 'no'. A record
+   is read, not parsed, so it prints them the way they are spoken. */
+const yesNo = (v) => (v === 'yes' ? 'Yes' : v === 'no' ? 'No' : v || null)
+
 const ICONS = {
   briefcase: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></>,
   pin:       <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></>,
   shield:    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
   check:     <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
   card:      <><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></>,
+  user:      <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
+  clock:     <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+  alert:     <><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></>,
+  list:      <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></>,
 }
 
 export default function WcSubmission({ formData, summary, onBack, isDark = false, onToggleDark, demoJumps, demoActive }) {
@@ -142,6 +173,22 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
     ?? premiumForCarrier(formData, bind.selectedCarrierId || 'cna')
 
   const money = (n) => (n == null ? '—' : '$' + Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 }))
+  /* Down payments and totals carry cents; a plan that bills $2,620.50 should
+     not print as $2,620.5. */
+  const money2 = (n) => (n == null ? '—' : '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+
+  /* Everything else the flow collected. The receipt was showing four
+     cards' worth of an eight-screen application, so a bound policy's
+     record left out the loss history, the schedule it was rated on, the
+     officers, the subcontractors and how it is being paid. */
+  const history   = formData.history || {}
+  const cov       = formData.coverage || {}
+  const locations = formData.locations?.list || []
+  const classes   = stateCov.classes || []
+  const officers  = cov.officers || []
+  const losses    = (history.losses || []).filter(l => l.date || l.amount || l.description)
+  const contact   = [business.firstName, business.lastName].filter(Boolean).join(' ')
+  const brokerFee = Number(bind.brokerFee) || 0
 
   /* 09/01/2026 — the form stores an ISO date, the receipt prints one. */
   const effectiveDate = (() => {
@@ -373,11 +420,19 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                 style={{ borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #F3F4F6' }}
               >
                   <SectionCard title="Business" isDark={isDark} icon={ICONS.briefcase}>
-                    <Field label="Legal name"      value={business.name} isDark={isDark} />
-                    <Field label="Entity type"     value={business.entityType} isDark={isDark} />
-                    <Field label="FEIN"            value={business.fein} isDark={isDark} />
+                    <Field label="Legal name"       value={business.name} isDark={isDark} />
+                    <Field label="DBA"              value={business.dbaName} isDark={isDark} />
+                    <Field label="Entity type"      value={ENTITY_LABELS[business.entityType] || business.entityType} isDark={isDark} />
+                    <Field label="FEIN"             value={business.fein} isDark={isDark} />
                     <Field label="Year established" value={business.yearEstablished} isDark={isDark} />
-                    <Field label="Effective date"  value={effectiveDate} isDark={isDark} />
+                    <Field label="Industry experience" value={business.industryExperience} isDark={isDark} />
+                    <Field label="Website"          value={business.website} isDark={isDark} />
+                  </SectionCard>
+
+                  <SectionCard title="Contact" isDark={isDark} icon={ICONS.user}>
+                    <Field label="Name"  value={contact} isDark={isDark} />
+                    <Field label="Phone" value={business.phone} isDark={isDark} />
+                    <Field label="Email" value={business.email} isDark={isDark} />
                   </SectionCard>
 
                   <SectionCard title="Address" isDark={isDark} icon={ICONS.pin}>
@@ -385,21 +440,74 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="City"    value={business.city} isDark={isDark} />
                     <Field label="State"   value={business.state || state} isDark={isDark} />
                     <Field label="Zip"     value={business.zip} isDark={isDark} />
+                    <Field label="Mailing address"
+                      value={business.mailSame === false ? business.mailAddress : 'Same as physical'} isDark={isDark} />
+                    <ListField label="Additional locations" isDark={isDark}
+                      rows={locations.map(l => [l.address, l.suite, l.city, l.state, l.zip].filter(Boolean).join(', '))} />
+                  </SectionCard>
+
+                  <SectionCard title="Coverage history" isDark={isDark} icon={ICONS.clock}>
+                    <Field label="Current status"   value={STATUS_LABELS[history.coverageStatus] || history.coverageStatus} isDark={isDark} />
+                    <Field label="Reason for lapse" value={history.lapseReason} isDark={isDark} />
+                    <Field label="Prior years"      value={history.priorYears} isDark={isDark} />
+                    <Field label="Current carrier"  value={history.currentCarrier} isDark={isDark} />
+                    <Field label="Current premium"  value={history.currentPremium} isDark={isDark} />
+                    <Field label="Operations"       value={history.operations} isDark={isDark} />
+                  </SectionCard>
+
+                  <SectionCard title="Loss history" isDark={isDark} icon={ICONS.alert}>
+                    <Field label="Claims in past 4 years"
+                      value={history.claimsPast4 === 'yes' || history.claimCount ? `Yes — ${history.claimCount || losses.length}` : 'None reported'}
+                      isDark={isDark} />
+                    <ListField label="Claims" isDark={isDark}
+                      rows={losses.map(l => [l.date, l.type, l.amount, l.description].filter(Boolean).join(' · '))} />
+                  </SectionCard>
+
+                  <SectionCard title="Classes & payroll" isDark={isDark} icon={ICONS.list}>
+                    <ListField label={`Scheduled in ${state}`} isDark={isDark}
+                      rows={classes.map(c => {
+                        const heads = [c.ftEmployees && `${c.ftEmployees} FT`, c.ptEmployees && `${c.ptEmployees} PT`]
+                          .filter(Boolean).join(' / ')
+                        return [`${c.code || '—'} — ${c.description || '—'}`, c.payroll, heads].filter(Boolean).join(' · ')
+                      })} />
+                    <Field label="Total payroll" value={totalPayroll ? money(totalPayroll) : null} isDark={isDark} />
+                    <ListField label="Sub-class descriptors" isDark={isDark}
+                      rows={Object.values(formData.subclass || {}).filter(Boolean)} />
                   </SectionCard>
 
                   <SectionCard title="Coverage" isDark={isDark} icon={ICONS.shield}>
-                    <Field label="Primary class" value={pageZero.mainClass ? `${pageZero.mainClass} — ${pageZero.classDescription}` : null} isDark={isDark} />
-                    <Field label="Total payroll" value={totalPayroll ? money(totalPayroll) : null} isDark={isDark} />
-                    <Field label="Experience mod" value={uw.experienceMod} isDark={isDark} />
-                    <Field label="Officers" value={`${((formData.coverage || {}).officers || []).length} listed`} isDark={isDark} />
-                    <Field label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} isDark={isDark} />
+                    <Field label="Employer's liability" value={cov.elLimits} isDark={isDark} />
+                    <Field label="Experience mod"
+                      value={uw.experienceMod && `${uw.experienceMod}${uw.experienceModSource ? ` (${uw.experienceModSource})` : ''}`}
+                      isDark={isDark} />
+                    <ListField label="Officers & owners" isDark={isDark}
+                      rows={officers.filter(o => o.name).map(o =>
+                        [o.name, o.title, o.status === 'exclude' ? 'Excluded' : 'Included'].filter(Boolean).join(' · '))} />
+                    <Field label="Uses subcontractors" value={yesNo(stateCov.usesSubs)} isDark={isDark} />
+                    <Field label="% subcontracted"     value={stateCov.subPercent ? `${stateCov.subPercent}%` : null} isDark={isDark} />
+                    <Field label="Sub certificates"    value={yesNo(stateCov.subCertificates)} isDark={isDark} />
+                    <Field label="Blanket waiver"      value={stateCov.blanketWaiver ? 'Yes' : 'No'} isDark={isDark} />
+                  </SectionCard>
+
+                  <SectionCard title="Underwriting" isDark={isDark} icon={ICONS.check}>
+                    <Field label="Written safety program" value={yesNo(uw.safety_program)} isDark={isDark} />
+                    <Field label="Safety meetings"        value={yesNo(uw.safety_meetings)} isDark={isDark} />
+                    <Field label="Return-to-work program" value={yesNo(uw.return_to_work)} isDark={isDark} />
+                    <Field label="Turnover rate"          value={uw.turnover_rate} isDark={isDark} />
                   </SectionCard>
 
                   <SectionCard title="Bind" isDark={isDark} icon={ICONS.card}>
-                    <Field label="Carrier"   value={carrier} isDark={isDark} />
-                    <Field label="Quote #"   value={quoteId} isDark={isDark} />
-                    <Field label="Premium"   value={money(premium)} isDark={isDark} />
-                    <Field label="Status"    value="Submitted" isDark={isDark} />
+                    <Field label="Carrier"        value={carrier} isDark={isDark} />
+                    <Field label="Quote #"        value={quoteId} isDark={isDark} />
+                    <Field label="Premium"        value={money(premium)} isDark={isDark} />
+                    <Field label="BTIS service fee" value={money(250)} isDark={isDark} />
+                    <Field label="Broker fee"     value={brokerFee ? money(brokerFee) : null} isDark={isDark} />
+                    <Field label="Grand total"    value={summary?.grandTotal ? money(summary.grandTotal) : null} isDark={isDark} />
+                    <Field label="Payment plan"
+                      value={summary?.plan && `${summary.plan}${summary.down ? ` — ${money2(summary.down)} down` : ''}`}
+                      isDark={isDark} />
+                    <Field label="Status"         value="Submitted" isDark={isDark} />
+                    <ListField label="Subjectivities" isDark={isDark} rows={summary?.subjectivities || []} />
                   </SectionCard>
               </div>
             </div>
