@@ -86,7 +86,7 @@ function Stepper({ at }) {
   )
 }
 
-function DocBox({ title, required, uploaded, onToggle, children }) {
+function DocBox({ title, required, uploaded, onToggle }) {
   return (
     <div className="rounded-xl p-4" style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
       <div className="flex items-center justify-between gap-3 mb-2.5">
@@ -120,7 +120,6 @@ function DocBox({ title, required, uploaded, onToggle, children }) {
           <span className="text-gradient">Drag &amp; drop files here, or click to upload</span>
         </button>
       )}
-      {children}
     </div>
   )
 }
@@ -175,25 +174,24 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               {required.map(d => (
                 <DocBox key={d} title={d} required={d === 'Signed loss runs'}
                   uploaded={!!docs[d]}
-                  onToggle={() => setDocs(prev => ({ ...prev, [d]: !prev[d] }))}>
-                  {/* The forms' alternative path, where the prototype puts
-                      it: inside the box it belongs to, as the undertaking
-                      it is rather than a note about one. */}
-                  {d === INCL_EXCL && (
-                    <Checkbox
-                      className="mt-3"
-                      align="start"
-                      checked={inclAck}
-                      onChange={setInclAck}
-                      label={<>
-                        I will email <b className="font-semibold text-navy">wcbinds@btisinc.com</b> or
-                        upload within 72 hours of binding — otherwise I acknowledge the policy will be
-                        endorsed to remove the exclusion/inclusion.
-                      </>}
-                    />
-                  )}
-                </DocBox>
+                  onToggle={() => setDocs(prev => ({ ...prev, [d]: !prev[d] }))} />
               ))}
+
+              {/* The forms' second path stands outside their box: it is an
+                  undertaking the agent gives, not another thing in the
+                  folder. */}
+              {required.includes(INCL_EXCL) && (
+                <Checkbox
+                  align="start"
+                  checked={inclAck}
+                  onChange={setInclAck}
+                  label={<>
+                    I will email <b className="font-semibold text-navy">wcbinds@btisinc.com</b> or
+                    upload within 72 hours of binding — otherwise I acknowledge the policy will be
+                    endorsed to remove the exclusion/inclusion.
+                  </>}
+                />
+              )}
             </div>
           ) : (
             <InfoPanel
