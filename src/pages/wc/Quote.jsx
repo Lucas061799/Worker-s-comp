@@ -77,7 +77,10 @@ function ClientPresentModal({ total, carrier, effectiveDate, businessName, onClo
       </div>
 
       <div
-        className="mt-6 pt-5 flex flex-wrap items-end justify-between gap-4"
+        /* Centred on each other, not bottom-aligned: the number's box is
+           36px and the button's is 44, so matching their bottoms left the
+           digits sitting 4px below the button's label. */
+        className="mt-6 pt-5 flex flex-wrap items-center justify-between gap-4"
         style={{ borderTop: '1px solid var(--line-soft)' }}
       >
         <p className="text-4xl font-bold leading-none">
