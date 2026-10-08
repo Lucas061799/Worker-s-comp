@@ -383,7 +383,10 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           {subjectivities.map((line, i) => (
             <div key={i} className="rounded-xl px-4 py-3 flex items-start gap-2.5"
               style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
-              <span className="text-[11px] font-bold shrink-0 mt-0.5" style={{ color: '#A614C3' }}>{i + 1}</span>
+              {/* A dot, not a rank — these are conditions, and numbering
+                  them implied an order they do not have. Offset to the
+                  centre of the first line rather than the top of it. */}
+              <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-[7px]" style={{ background: '#A614C3' }} />
               <span className="text-[12.5px] leading-relaxed" style={{ color: 'var(--ink-2)' }}>{line}</span>
             </div>
           ))}
