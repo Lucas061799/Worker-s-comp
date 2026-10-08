@@ -33,6 +33,9 @@ function PillField({ label, required, children }) {
 }
 
 
+const MIN_WORDS = 10
+const countWords = (text) => (text || '').trim().split(/\s+/).filter(Boolean).length
+
 export default function CoverageHistory({ formData, updateFormData }) {
   const data = formData.history || {}
   const status = data.coverageStatus || 'inforce'
@@ -40,6 +43,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
   const claimCount = data.claimCount ?? 0
 
   const patch = (partial) => updateFormData('history', partial)
+  const words = countWords(data.operations)
 
   // Only a risk with a current or recently-lapsed policy has these.
   const hasPriorPolicy = status === 'inforce' || status === 'lapse'
@@ -126,14 +130,23 @@ export default function CoverageHistory({ formData, updateFormData }) {
             </FormGrid>
           )}
 
-          <Textarea
-            label="Description of operations"
-            required
-            value={data.operations}
-            onChange={val => patch({ operations: val })}
-            placeholder="Briefly describe what the business does day to day (at least 10 words)…"
-            rows={3}
-          />
+          {/* The count lives inside the field's own wrapper, so the group's
+              space-y-5 pushes the pair rather than opening a gap between the
+              box and the line that belongs to it. */}
+          <div>
+            <Textarea
+              label="Description of operations"
+              required
+              value={data.operations}
+              onChange={val => patch({ operations: val })}
+              placeholder="Briefly describe what the business does day to day (at least 10 words)…"
+              rows={3}
+            />
+            <p className="text-[11px] mt-1.5"
+              style={{ color: words >= MIN_WORDS ? '#9CA3AF' : '#A614C3' }}>
+              {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
+            </p>
+          </div>
         </div>
       </FieldGroup>
 
