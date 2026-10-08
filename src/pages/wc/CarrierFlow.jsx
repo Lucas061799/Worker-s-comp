@@ -4,8 +4,6 @@ import {
   RowGroup as FieldGroup,
   AnswerRow as GroupRow,
   YesNo as Seg,
-  AlertGlyph,
-  InfoPanel,
 } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
@@ -28,15 +26,6 @@ export default function CarrierFlow({ formData, updateFormData, onContinueToQuot
 
   return (
     <div className="w-full space-y-6">
-      {/* Auto-resolve note — the canonical info panel. */}
-      <InfoPanel
-        lead="Descriptor selected automatically."
-      >
-        Class {pz.mainClass || '5183'} — {pz.classDescription || 'Plumbing NOC'} is the only
-        descriptor for this class, so we skipped that page. When a class has multiple descriptors
-        (mowing vs. tree pruning, say), you'll choose here instead.
-      </InfoPanel>
-
       {/* Carried over from the application, but live — reading the answer
           and fixing it are the same gesture, so nobody has to leave the
           page to correct one. Edits write back to the source section. */}
