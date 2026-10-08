@@ -6,7 +6,6 @@ import {
   FieldGroup,
   PrimaryButton,
   SectionLabel,
-  InfoLine,
   StepNav,
   InfoPanel,
 } from '../../components/wc/primitives'
@@ -250,10 +249,6 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               )
             })}
           </div>
-
-          <InfoLine className="mt-5">
-            Plan terms are illustrative — the split differs by carrier and billing setup.
-          </InfoLine>
         </FieldGroup>
 
         <StepNav onBack={back} onContinue={() => setStep(2)} />
