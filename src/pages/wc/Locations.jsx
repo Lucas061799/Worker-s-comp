@@ -61,25 +61,31 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
         </p>
 
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--line)' }}>
-          <div className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.3fr)_56px_72px_36px] gap-2 px-3.5 py-2.5"
+          {/* ZIP is the last column and sits flush to the end of it. The
+              remove control used to hold a column of its own after ZIP, which
+              left the table trailing off into an empty strip. It floats on the
+              row's right edge instead, with the padding reserved for it. */}
+          <div className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.2fr)_56px_minmax(72px,auto)] gap-3 pl-3.5 pr-10 py-2.5"
             style={{ background: 'var(--fill-subtle)', borderBottom: '1px solid var(--line)' }}>
-            {['Loc #', 'Street address', 'City', 'State', 'ZIP', ''].map((h, i) => (
-              <SectionLabel key={i} className="!mb-0 !text-[10px]">{h}</SectionLabel>
+            {['Loc #', 'Street address', 'City', 'State', 'ZIP'].map((h, i) => (
+              <SectionLabel key={i} className={`!mb-0 !text-[10px] ${i === 4 ? 'text-right' : ''}`}>{h}</SectionLabel>
             ))}
           </div>
 
           {rows.map((loc, i) => (
             <div key={i}
-              className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.3fr)_56px_72px_36px] gap-2 items-center px-3.5 py-3 text-[12.5px]"
+              className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.2fr)_56px_minmax(72px,auto)] gap-3 pl-3.5 pr-10 relative items-center py-3 text-[12.5px]"
               style={{ borderTop: i ? '1px solid var(--line-soft)' : 'none', color: 'var(--ink-2)' }}>
               <span className="font-semibold">{i + 1}</span>
               <span className="truncate">{[loc.address, loc.suite].filter(Boolean).join(', ') || '—'}</span>
               <span className="truncate">{loc.city || '—'}</span>
               <span>{loc.state || '—'}</span>
-              <span>{loc.zip || '—'}</span>
-              <span className="flex justify-end">
-                {!loc.primary && <RemoveButton onClick={() => remove(i - 1)} label="Remove location" />}
-              </span>
+              <span className="text-right">{loc.zip || '—'}</span>
+              {!loc.primary && (
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                  <RemoveButton onClick={() => remove(i - 1)} label="Remove location" />
+                </span>
+              )}
             </div>
           ))}
         </div>
