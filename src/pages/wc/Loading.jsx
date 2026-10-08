@@ -59,7 +59,7 @@ export default function Loading({ plan = RATING, children, onDone, onSkip }) {
         <h2 className="text-lg font-bold text-navy mb-1">{heading}</h2>
         <p className="text-[12.5px] text-gray-500 leading-relaxed mb-5">{lead}</p>
 
-        <div className="h-1.5 rounded-full overflow-hidden mb-6" style={{ background: '#F3F4F6' }}>
+        <div className="im-progress-track h-1.5 rounded-full overflow-hidden mb-6">
           <div className="h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%`, background: BRAND_GRADIENT }} />
         </div>

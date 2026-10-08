@@ -274,6 +274,10 @@ input, select, textarea, button {
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
    step actually running, so dark takes the subtle fill and a muted ink. */
 .im-step-pending { background: var(--fill-subtle); color: #9CA3AF; }
+
+/* The unfilled part of a progress bar. Same story as the pending chip:
+   #F3F4F6 is a quiet rail on white and a lit one on navy. */
+.im-progress-track { background: var(--fill-subtle); }
 [data-dark="true"] .im-step-pending { color: #8B8FA8 !important; }
 
 .im-panel-icon {
@@ -284,6 +288,10 @@ input, select, textarea, button {
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
    step actually running, so dark takes the subtle fill and a muted ink. */
 .im-step-pending { background: var(--fill-subtle); color: #9CA3AF; }
+
+/* The unfilled part of a progress bar. Same story as the pending chip:
+   #F3F4F6 is a quiet rail on white and a lit one on navy. */
+.im-progress-track { background: var(--fill-subtle); }
 [data-dark="true"] .im-step-pending { color: #8B8FA8 !important; }
 
 .im-panel-icon {
