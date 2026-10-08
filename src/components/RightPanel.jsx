@@ -35,7 +35,7 @@ function computeProgress(formData) {
    back on is a single edit rather than a hunt through the rail. */
 const SUMMARY_DOWNLOADABLE = false
 
-export default function RightPanel({ formData = {}, isDark = false, indicationReady = false, onDownloadSummary, selectedCarrierId = null }) {
+export default function RightPanel({ formData = {}, isDark = false, indicationReady = false, onDownloadSummary, selectedCarrierId = null, onPickCarrier = null }) {
   const pz = formData.pageZero || {}
   const state = pz.state || 'CA'
   const stateCov = formData.coverage?.[state] || {}
@@ -51,6 +51,10 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
   const hasPayroll   = totalPayroll > 0
   const showPrices   = readyToQuote && hasPayroll
 
+  /* Past the indication the rail is the only place left to change market,
+     so the rows become controls there — and only there, since on the
+     indication itself the page already owns that choice. */
+  const canSwitch = !!onPickCarrier
   const selected = formData.carrierSelection?.checked || {}
   const quotes = useMemo(() => {
     const list = CARRIERS
@@ -155,9 +159,14 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
           )}
 
           {readyToQuote && rest.map(q => (
-            <div
+            <button
               key={q.id}
-              className="rounded-xl px-3 py-3 flex items-center gap-3"
+              type="button"
+              disabled={!canSwitch || q.noquote}
+              onClick={canSwitch && !q.noquote ? () => onPickCarrier(q.id) : undefined}
+              title={canSwitch && !q.noquote ? `Switch to ${q.name}` : undefined}
+              className={`w-full text-left rounded-xl px-3 py-3 flex items-center gap-3 transition ${
+                canSwitch && !q.noquote ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
               style={{
                 background: isDark ? 'rgba(255,255,255,0.04)' : 'white',
                 border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#E5E7EB'}`,
@@ -188,7 +197,7 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
               ) : (
                 <PriceTicker isDark={isDark} />
               )}
-            </div>
+            </button>
           ))}
           {!readyToQuote && Array.from({ length: 3 }).map((_, i) => (
             <div

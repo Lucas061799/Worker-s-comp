@@ -94,6 +94,10 @@ function App() {
   /* A step the agent asked for while a referral is out, held until they
      confirm they want to reopen the submission. */
   const [pendingStep, setPendingStep] = useState(null)
+  /* A market the agent asked for from the rail after one was already
+     chosen. Switching throws away the carrier's own questions, so it is
+     confirmed rather than done on the click. */
+  const [pendingCarrier, setPendingCarrier] = useState(null)
 
   const [submitted, setSubmitted] = useState(false)
   const [bindSummary, setBindSummary] = useState(null)
@@ -238,6 +242,32 @@ function App() {
     setActiveStep(7) // carrier flow — sub-class first, then the questions
   }
 
+  /* The descriptors and the carrier questions both belong to the market
+     that was chosen, so a switch clears them and starts that step again.
+     CarrierFlow holds its answers in its own state, so dropping back to
+     the sub-class screen unmounts it and the answers go with it. */
+  const switchCarrier = useCallback((id) => {
+    const c = CARRIERS.find(x => x.id === id)
+    if (!c) return
+    setFormData(prev => {
+      /* The answers were given to the market being left, so they go with
+         it — and the nav keys its "done" tick off carrierQuestions, which
+         would otherwise show the step complete on the new carrier. */
+      const { carrierQuestions, packageId, addonsConfirmed, ...bind } = prev.bind || {}
+      return {
+        ...prev,
+        bind: { ...bind, selectedCarrier: c.name, selectedCarrierId: c.id, premium: premiumForCarrier(prev, c.id) },
+        subclass: {},
+      }
+    })
+    setIndicationPick(c.id)
+    setSubclassDone(false)
+    setShowingIndication(false)
+    setFinalizing(false)
+    setBinding(false)
+    setActiveStep(7)
+  }, [])
+
   const handleContinueToQuote = () => setFinalizing(true)
   const handleFinalPriceReady = useCallback(() => {
     setFinalizing(false)
@@ -275,6 +305,7 @@ function App() {
     setReferralStage(null)
     setBinding(false)
     setIndicationPick(null)
+    setPendingCarrier(null)
     try { localStorage.removeItem(SAVE_KEY) } catch { /* nothing to clear */ }
   }
 
@@ -689,6 +720,15 @@ owner_involved: 'yes',
             isDark={darkMode}
             indicationReady={indicationReady}
             selectedCarrierId={indicationPick}
+            /* Only past the indication, and only while there is still a
+               carrier step to redo — once it is bound there is nothing to
+               switch. */
+            onPickCarrier={
+              indicationReady && !showingIndication && !referralStage && !binding && !submitted
+                && (currentKey === 'carrierflow' || currentKey === 'quote')
+                ? setPendingCarrier
+                : null
+            }
             onDownloadSummary={() => setShowSummary(true)}
           />
         </div>
@@ -720,6 +760,32 @@ owner_involved: 'yes',
           </p>
         </Modal>
       )}
+
+      {pendingCarrier && (() => {
+        const next = CARRIERS.find(c => c.id === pendingCarrier)
+        return (
+          <Modal
+            title={`Switch to ${next?.name || 'this market'}?`}
+            width={480}
+            onDismiss={() => setPendingCarrier(null)}
+            footer={
+              <>
+                <ModalButton variant="ghost" onClick={() => setPendingCarrier(null)}>Cancel</ModalButton>
+                <ModalButton onClick={() => { const id = pendingCarrier; setPendingCarrier(null); switchCarrier(id) }}>
+                  Yes, switch carrier
+                </ModalButton>
+              </>
+            }
+          >
+            <p className="text-[14px] text-gray-600 leading-relaxed">
+              The sub-class descriptors and the carrier questions belong to{' '}
+              <b className="text-navy">{selectedCarrier?.name || 'the current market'}</b>, so switching
+              clears your answers and asks <b className="text-navy">{next?.name}</b>'s instead.
+              Nothing else on the submission changes.
+            </p>
+          </Modal>
+        )
+      })()}
     </div>
   )
 }

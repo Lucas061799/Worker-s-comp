@@ -495,6 +495,13 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Safety meetings"        value={yesNo(uw.safety_meetings)} isDark={isDark} />
                     <Field label="Return-to-work program" value={yesNo(uw.return_to_work)} isDark={isDark} />
                     <Field label="Turnover rate"          value={uw.turnover_rate} isDark={isDark} />
+                    {/* The carrier's own questions — CarrierFlow writes them
+                        onto the submission when the agent continues. */}
+                    <Field label="Work on public infrastructure"
+                      value={yesNo(bind.carrierQuestions?.publicInfrastructure)} isDark={isDark} />
+                    <Field label="Max trench depth"
+                      value={bind.carrierQuestions?.trenchDepth ? `${bind.carrierQuestions.trenchDepth} ft` : null}
+                      isDark={isDark} />
                   </SectionCard>
 
                   <SectionCard title="Bind" isDark={isDark} icon={ICONS.card}>
