@@ -554,16 +554,20 @@ export function RadioGroup({ label, required, options = [], value, onChange, cla
 }
 
 // Checkbox
-export function Checkbox({ label, checked, onChange, className = '' }) {
+export function Checkbox({ label, checked, onChange, align = 'center', className = '' }) {
+  /* A one-line label centres on its box; a label that wraps has to start
+     at the top of it, or the box floats against the middle of a
+     paragraph. */
+  const start = align === 'start'
   return (
     <label
       onClick={() => onChange && onChange(!checked)}
-      className={`flex items-center gap-2.5 cursor-pointer select-none ${className}`}
+      className={`flex gap-2.5 cursor-pointer select-none ${start ? 'items-start' : 'items-center'} ${className}`}
     >
       {/* Checked is carried by the gradient alone — a stroke on top of it
           reads as a second state. Matches CBIC's checkbox. */}
       <span
-        className={`w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0 transition-all ${checked ? '' : 'field-fill'}`}
+        className={`w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0 transition-all ${start ? 'mt-px' : ''} ${checked ? '' : 'field-fill'}`}
         style={{
           ...(checked ? { background: 'linear-gradient(88.09deg, #5C2ED4 0%, #A614C3 100%)' } : {}),
           border: checked ? 'none' : '1.5px solid var(--line-strong)',
@@ -575,7 +579,7 @@ export function Checkbox({ label, checked, onChange, className = '' }) {
           </svg>
         )}
       </span>
-      <span className="text-xs text-gray-600">{label}</span>
+      <span className={`text-xs text-gray-600 ${start ? 'leading-relaxed' : ''}`}>{label}</span>
     </label>
   )
 }

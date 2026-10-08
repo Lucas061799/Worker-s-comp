@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Input, FormGrid } from '../../components/FormField'
+import { Input, FormGrid, Checkbox } from '../../components/FormField'
 import {
   Modal,
   ModalButton,
@@ -7,7 +7,6 @@ import {
   PrimaryButton,
   SectionLabel,
   InfoLine,
-  AlertGlyph,
   StepNav,
   InfoPanel,
 } from '../../components/wc/primitives'
@@ -24,8 +23,10 @@ const PLANS = [
   { id: 'annual', name: 'Annual',  downPct: 1,    installments: 0 },
 ]
 
-/* Documents differ by carrier. Loss runs are taken as already received — this
-   is a mockup, and the agent is not the one chasing them here. */
+/* Documents differ by carrier, and none of them start satisfied: binding is
+   where the agent actually supplies them. */
+const INCL_EXCL = 'Inclusion/exclusion forms'
+
 const DOCS_BY_CARRIER = {
   amtrust:       ['Signed loss runs', 'Inclusion/exclusion forms'],
   clearspring:   ['Inclusion/exclusion forms'],
@@ -85,14 +86,14 @@ function Stepper({ at }) {
   )
 }
 
-function DocBox({ title, required, uploaded, onToggle }) {
+function DocBox({ title, required, uploaded, onToggle, children }) {
   return (
     <div className="rounded-xl p-4" style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
       <div className="flex items-center justify-between gap-3 mb-2.5">
         <SectionLabel className="!mb-0">
           {title}{required && <span className="text-red-400 ml-0.5">*</span>}
         </SectionLabel>
-        {uploaded && <span className="im-chip im-chip-good">On file</span>}
+        {uploaded && <span className="im-chip im-chip-good">Received</span>}
       </div>
       {uploaded ? (
         <div className="flex items-center gap-2.5 rounded-lg px-3 py-2.5"
@@ -119,6 +120,7 @@ function DocBox({ title, required, uploaded, onToggle }) {
           <span className="text-gradient">Drag &amp; drop files here, or click to upload</span>
         </button>
       )}
+      {children}
     </div>
   )
 }
@@ -126,7 +128,10 @@ function DocBox({ title, required, uploaded, onToggle }) {
 export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound }) {
   const [step, setStep] = useState(0)
   const required = DOCS_BY_CARRIER[carrier?.id] ?? []
-  const [docs, setDocs] = useState(() => Object.fromEntries(required.map(d => [d, true])))
+  const [docs, setDocs] = useState({})
+  /* The inclusion/exclusion forms have a second way out: send them within
+     72 hours and accept the endorsement if they don't arrive. */
+  const [inclAck, setInclAck] = useState(false)
   const [plan, setPlan] = useState(PLANS[0].id)
   const [card, setCard] = useState({ number: '', exp: '' })
   const [paid, setPaid] = useState(false)
@@ -148,7 +153,8 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   const dueToday = down
 
   const subjectivities = SUBJECTIVITIES_BY_CARRIER[carrier?.id] ?? []
-  const allDocsIn = required.every(d => docs[d])
+  const allDocsIn = required.every(d =>
+    docs[d] || (d === INCL_EXCL && inclAck))
 
   const back = () => (step === 0 ? onBack() : setStep(s => s - 1))
 
@@ -169,18 +175,25 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               {required.map(d => (
                 <DocBox key={d} title={d} required={d === 'Signed loss runs'}
                   uploaded={!!docs[d]}
-                  onToggle={() => setDocs(prev => ({ ...prev, [d]: !prev[d] }))} />
+                  onToggle={() => setDocs(prev => ({ ...prev, [d]: !prev[d] }))}>
+                  {/* The forms' alternative path, where the prototype puts
+                      it: inside the box it belongs to, as the undertaking
+                      it is rather than a note about one. */}
+                  {d === INCL_EXCL && (
+                    <Checkbox
+                      className="mt-3"
+                      align="start"
+                      checked={inclAck}
+                      onChange={setInclAck}
+                      label={<>
+                        I will email <b className="font-semibold text-navy">wcbinds@btisinc.com</b> or
+                        upload within 72 hours of binding — otherwise I acknowledge the policy will be
+                        endorsed to remove the exclusion/inclusion.
+                      </>}
+                    />
+                  )}
+                </DocBox>
               ))}
-              <div className="im-info-panel rounded-xl px-4 py-3 flex items-center gap-2.5">
-                <span className="im-panel-icon w-5 h-5 rounded-full flex items-center justify-center shrink-0">
-                  <AlertGlyph className="w-3 h-3" />
-                </span>
-                <span className="text-[12px] text-gray-500 leading-relaxed">
-                  Inclusion/exclusion forms can be emailed to{' '}
-                  <b className="font-semibold text-navy">wcbinds@btisinc.com</b> within 72 hours of
-                  binding instead — otherwise the policy is endorsed to remove the exclusion.
-                </span>
-              </div>
             </div>
           ) : (
             <InfoPanel
@@ -194,8 +207,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           )}
         </FieldGroup>
 
-        <StepNav onBack={back} onContinue={() => setStep(1)} canContinue={allDocsIn}
-          hint={allDocsIn ? undefined : 'Every required document has to be accounted for before binding.'} />
+        <StepNav onBack={back} onContinue={() => setStep(1)} canContinue={allDocsIn} />
       </div>
     )
   }
