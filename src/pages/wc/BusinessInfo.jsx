@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Input, Select, Checkbox, FormGrid } from '../../components/FormField'
 import AddressAutocomplete from '../../components/AddressAutocomplete'
 import { FieldGroup, NotePanel, YesNo } from '../../components/wc/primitives'
@@ -39,24 +39,19 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
   const set = (key) => (val) => updateFormData('business', { [key]: val })
   const err = (key) => showErrors && (data[key] === undefined || data[key] === null || data[key] === '')
 
-  /* The bureau lookup still fires off the FEIN, but the mod itself is a
-     Coverages field now — that's where the agent confirms it. */
-  const [emodStatus, setEmodStatus] = useState('idle')
+  /* The bureau lookup still fires off the FEIN and pre-fills the mod; State
+     coverages is where it surfaces, and where the agent confirms it. Nothing
+     is said about it here. */
   const firedRef = useRef(false)
 
   useEffect(() => {
     const digits = (data.fein || '').replace(/\D/g, '')
-    if (digits.length < 9 || firedRef.current) return
+    if (digits.length < 9 || firedRef.current || !isCA) return
     firedRef.current = true
-    if (isCA) {
-      setEmodStatus('fetching')
-      const t = setTimeout(() => {
-        updateFormData('underwriting', { experienceMod: '0.87', experienceModSource: 'WCIRB' })
-        setEmodStatus('ready')
-      }, 900)
-      return () => clearTimeout(t)
-    }
-    setEmodStatus('manual')
+    const t = setTimeout(() => {
+      updateFormData('underwriting', { experienceMod: '0.87', experienceModSource: 'WCIRB' })
+    }, 900)
+    return () => clearTimeout(t)
   }, [data.fein, isCA, updateFormData])
 
   return (
@@ -91,15 +86,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
                 placeholder="94-0000000"
                 error={err('fein')}
               />
-              {isCA && (
-                <p className="text-xs text-gray-500 mt-1.5">
-                  {emodStatus === 'fetching'
-                    ? 'Checking WCIRB for an experience mod…'
-                    : emodStatus === 'ready'
-                      ? "Experience mod found — you'll confirm it on State coverages."
-                      : 'In California we use this to pull the experience mod automatically.'}
-                </p>
-              )}
             </div>
           </FormGrid>
 
