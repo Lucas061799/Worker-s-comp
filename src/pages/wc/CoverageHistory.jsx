@@ -49,8 +49,13 @@ export default function CoverageHistory({ formData, updateFormData }) {
   const hasPriorPolicy = status === 'inforce' || status === 'lapse'
 
   const setClaims = (val) => {
-    // Answering No clears the count, which is what hides the Loss history step.
-    patch(val === 'yes' ? { claimsPast4: 'yes' } : { claimsPast4: 'no', claimCount: 0 })
+    /* Yes starts the count at one, as the prototype's field does: the Loss
+       history step turns on a count of 1–3, so leaving it at zero meant
+       answering Yes did nothing until a number was typed. No clears it, which
+       is what takes the step away again. */
+    patch(val === 'yes'
+      ? { claimsPast4: 'yes', ...(data.claimCount ? {} : { claimCount: 1 }) }
+      : { claimsPast4: 'no', claimCount: 0 })
   }
 
 
