@@ -49,10 +49,6 @@ export default function Sidebar({
 
   const productName  = "Workers' Compensation"
   const submissionId = 'WC-2026-048291'
-  /* The prototype's top bar carries the producer beside the quote number. Our
-     quote number lives here, so the producer joins it rather than opening a
-     second identity strip somewhere else. */
-  const producer     = 'J. Alvarez · CA lic. active · Appointed'
 
   return (
     <aside
@@ -66,9 +62,6 @@ export default function Sidebar({
       <div className="px-5 pt-5 pb-3 relative z-10">
         <h2 className="text-base font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : undefined }}>{productName}</h2>
         <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>{submissionId}</p>
-        <p className="text-[11px] mt-1 leading-snug" style={{ color: '#9CA3AF' }}>
-          Producer: {producer}
-        </p>
         <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
       </div>
 
