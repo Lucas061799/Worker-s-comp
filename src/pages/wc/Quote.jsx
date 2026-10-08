@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag, Modal, ModalButton } from '../../components/wc/primitives'
 import { CARRIERS } from './CarrierSelection'
+import { feesFor } from './Indication'
+
+const money2 = (n) =>
+  `$${Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
 function SummaryRow({ label, value, last }) {
   return (
@@ -59,7 +63,7 @@ function ClientPresentModal({ price, carrier, effectiveDate, businessName, onClo
   )
 }
 
-export default function Quote({ formData, updateFormData, onBound, onBack }) {
+export default function Quote({ formData, updateFormData, onBound, onBack, onRefer }) {
   const pz = formData.pageZero || {}
   const biz = formData.business || {}
   const bindData = formData.bind || {}
@@ -73,6 +77,8 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
   const carrier = bindData.selectedCarrier || 'CNA'
   const carrierMeta = CARRIERS.find(c => c.name === carrier)
   const price = bindData.premium || 5240
+  const brokerFee = bindData.brokerFee ?? ''
+  const fees = feesFor(price, Number(brokerFee) || 0)
 
   const [presenting, setPresenting] = useState(false)
   const [emailToast, setEmailToast] = useState(false)
@@ -92,9 +98,9 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
   return (
     <div className="w-full space-y-6">
       {/* Eligibility banner — reuses the shared Banner primitive */}
-      <Banner>
-        <b className="text-gray-900">Bind-online eligible.</b>{' '}
-        Nothing here refers to underwriting — if a risk will refer, you'll always see that <i>before</i> you submit.
+      <Banner icon="check">
+        <b className="text-gray-900">Good news!</b>{' '}
+        This policy is eligible for Bind Online without underwriting review.
       </Banner>
 
       {/* Quote summary — Inland's bind card: the carrier and price on one
@@ -122,6 +128,35 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
           <SummaryRow label="Annual payroll" value={`$${payroll.toLocaleString()}`} />
           <SummaryRow label="Experience mod" value={emod} />
           <SummaryRow label="Effective date" value={pz.effectiveDate || '08/01/2026'} last />
+        </div>
+
+        <div className="mt-5 pt-5" style={{ borderTop: '1px solid #F3F4F6' }}>
+          <SummaryRow label="Workers' comp premium" value={money2(price)} />
+          <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
+          <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+            <span className="text-xs text-gray-500">Broker fee</span>
+            {/* The agent's own fee, set here and carried into billing — the
+                only number on this page they can move. */}
+            <span className="relative inline-flex items-center">
+              <span className="absolute left-3 text-xs text-gray-400 pointer-events-none">$</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={brokerFee}
+                onChange={e => updateFormData('bind', { brokerFee: e.target.value.replace(/[^0-9]/g, '') })}
+                placeholder="0"
+                aria-label="Broker fee"
+                className="field-fill w-28 h-9 pl-6 pr-3 rounded-lg text-xs font-semibold text-right"
+                style={{ border: '1px solid #E5E7EB', color: '#1F2937' }}
+              />
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4 pt-3">
+            <span className="text-[13px] font-semibold text-gray-700">Grand total</span>
+            <span className="text-[15px] font-bold">
+              <BrandText>{money2(fees.total)}</BrandText>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -157,6 +192,24 @@ export default function Quote({ formData, updateFormData, onBound, onBack }) {
           Email quote
         </button>
       </div>
+
+      {onRefer && (
+        <div className="rounded-xl p-4 flex flex-wrap items-center justify-between gap-3"
+          style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
+          <div className="min-w-0">
+            <p className="text-[13px] font-semibold text-gray-700">Didn't find the right quote?</p>
+            <p className="text-[12px] text-gray-500">Refer this submission to an underwriter for manual review.</p>
+          </div>
+          <button
+            type="button"
+            onClick={onRefer}
+            className="h-9 px-4 inline-flex items-center justify-center rounded-lg text-xs font-semibold shrink-0"
+            style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+          >
+            Refer to underwriter
+          </button>
+        </div>
+      )}
 
       {presenting && (
         <ClientPresentModal

@@ -15,7 +15,7 @@ import LossDetail from './pages/wc/LossDetail'
 import StateCoverages from './pages/wc/StateCoverages'
 import UnderwritingQuestions from './pages/wc/UnderwritingQuestions'
 import CarrierSelection, { CARRIERS } from './pages/wc/CarrierSelection'
-import Loading from './pages/wc/Loading'
+import Loading, { RATING, FINALIZING, RatingPromo } from './pages/wc/Loading'
 import Locations from './pages/wc/Locations'
 import SubClassCode from './pages/wc/SubClassCode'
 import Referral, { ReferralSubmitted } from './pages/wc/Referral'
@@ -72,6 +72,10 @@ function App() {
      would strand a resumed agent on a page the nav no longer lists. */
   const [indicationReady, setIndicationReady] = useState(() => !!restored?.indicationReady)   // results computed → gate unlocked
   const [showingIndication, setShowingIndication] = useState(false) // currently on the Indication screen
+  /* The second carrier call. Rating prices the markets; this one turns the
+     chosen indication into the bindable number, once the carrier's own
+     questions have been answered. */
+  const [finalizing, setFinalizing] = useState(false)
 
   /* Whether a referral is already in play. The prototype's uwStatus carries a
      good deal more, but the markets callout only asks this much: it hides once
@@ -221,11 +225,11 @@ function App() {
     }, 50)
   }
 
-  const handleRatingDone = () => {
+  const handleRatingDone = useCallback(() => {
     setRating(false)
     setIndicationReady(true)
     setShowingIndication(true)
-  }
+  }, [])
 
   const handlePickCarrier = (result) => {
     updateFormData('bind', { selectedCarrier: result.name, selectedCarrierId: result.id, premium: result.price })
@@ -234,7 +238,11 @@ function App() {
     setActiveStep(7) // carrier flow — sub-class first, then the questions
   }
 
-  const handleContinueToQuote = () => setActiveStep(8)
+  const handleContinueToQuote = () => setFinalizing(true)
+  const handleFinalPriceReady = useCallback(() => {
+    setFinalizing(false)
+    setActiveStep(8)
+  }, [])
 
   const handleBound = (summary) => {
     setBindSummary(summary)
@@ -258,6 +266,7 @@ function App() {
     setRating(false)
     setIndicationReady(false)
     setShowingIndication(false)
+    setFinalizing(false)
     setSubmitted(false)
     setBindSummary(null)
     setAttemptedQuote(false)
@@ -356,6 +365,7 @@ owner_involved: 'yes',
     seedDemoData()
     setActiveStep(stepId)
     setShowingIndication(false)
+    setFinalizing(false)
     setSubmitted(false)
   }
 
@@ -427,7 +437,9 @@ owner_involved: 'yes',
     ? 'indication'
     : rating
       ? 'loading'
-      : (steps.find(s => s.id === activeStep)?.key || 'business')
+      : finalizing
+        ? 'finalizing'
+        : (steps.find(s => s.id === activeStep)?.key || 'business')
 
   const inAppPhase = APP_KEYS.includes(currentKey)
 
@@ -454,6 +466,7 @@ owner_involved: 'yes',
     questions:   'Credit opportunity',
     carriers:    'Select markets to approach',
     loading:     'Rating',
+    finalizing:  'Final price',
     indication:  'Price indication',
     subclass:    'Sub-class code',
     carrierflow: 'Carrier questions',
@@ -582,9 +595,14 @@ owner_involved: 'yes',
                 </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
-                    <Loading onDone={handleRatingDone} onSkip={handleRatingDone} />
+                    <Loading plan={RATING} onDone={handleRatingDone} onSkip={handleRatingDone}>
+                      <RatingPromo />
+                    </Loading>
                   )}
-                  {!rating && !referralStage && showingIndication && (
+                  {finalizing && (
+                    <Loading plan={FINALIZING} onDone={handleFinalPriceReady} onSkip={handleFinalPriceReady} />
+                  )}
+                  {!rating && !finalizing && !referralStage && showingIndication && (
                     <Indication
                       formData={formData}
                       onPickCarrier={handlePickCarrier}
@@ -593,7 +611,7 @@ owner_involved: 'yes',
                       onSelectionChange={setIndicationPick}
                     />
                   )}
-                  {!rating && !showingIndication && !referralStage && currentKey === 'carriers' && (
+                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carriers' && (
                     <CarrierSelection
                       formData={formData}
                       updateFormData={updateFormData}
@@ -601,7 +619,7 @@ owner_involved: 'yes',
                       onBack={() => goToStep(5)}
                     />
                   )}
-                  {!rating && referralStage === 'form' && (
+                  {!rating && !finalizing && referralStage === 'form' && (
                     <Referral
                       formData={formData}
                       updateFormData={updateFormData}
@@ -611,13 +629,13 @@ owner_involved: 'yes',
                       onSubmit={() => { setReferralStage('submitted'); setReferralInPlay(true) }}
                     />
                   )}
-                  {!rating && referralStage === 'submitted' && (
+                  {!rating && !finalizing && referralStage === 'submitted' && (
                     <ReferralSubmitted
                       quoteNumber="WC-2026-048291"
                       onBackToQuote={() => setReferralStage(null)}
                     />
                   )}
-                  {!rating && !showingIndication && !referralStage && currentKey === 'carrierflow' && !subclassDone && (
+                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carrierflow' && !subclassDone && (
                     <SubClassCode
                       formData={formData}
                       updateFormData={updateFormData}
@@ -626,7 +644,7 @@ owner_involved: 'yes',
                       onContinue={() => setSubclassDone(true)}
                     />
                   )}
-                  {!rating && !showingIndication && !referralStage && currentKey === 'carrierflow' && subclassDone && (
+                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carrierflow' && subclassDone && (
                     <CarrierFlow
                       formData={formData}
                       updateFormData={updateFormData}
@@ -635,19 +653,20 @@ owner_involved: 'yes',
                       onBack={() => setSubclassDone(false)}
                     />
                   )}
-                  {!rating && !showingIndication && !referralStage && currentKey === 'quote' && !binding && (
+                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'quote' && !binding && (
                     <Quote
                       formData={formData}
                       updateFormData={updateFormData}
                       onBound={() => setBinding(true)}
                       onBack={() => setActiveStep(7)}
+                      onRefer={() => setReferralStage('form')}
                     />
                   )}
-                  {!rating && !showingIndication && !referralStage && currentKey === 'quote' && binding && (
+                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'quote' && binding && (
                     <BindFlow
                       carrier={selectedCarrier}
                       premium={selectedPremium}
-                      fees={feesFor(selectedPremium)}
+                      fees={feesFor(selectedPremium, Number(formData.bind?.brokerFee) || 0)}
                       quoteNumber="WC-2026-048291"
                       effectiveDate={formData.pageZero?.effectiveDate}
                       onBack={() => setBinding(false)}

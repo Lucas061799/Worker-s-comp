@@ -214,12 +214,24 @@ export function ModalButton({ children, onClick, variant = 'primary' }) {
 
 /* Brand-tinted banner — carrier context the agent needs before answering. */
 export function Banner({ children, icon = true }) {
+  /* `check` for a banner that confirms something went the agent's way;
+     the default circled "i" for one that simply states a fact. Both are
+     drawn in the brand gradient — the wash behind them carries the tone,
+     so a second colour would be the only thing on the page saying it. */
+  const check = icon === 'check'
   return (
     <div className="im-banner rounded-xl px-4 py-3.5 flex gap-3 items-start">
       {icon && (
         <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="url(#imBannerG)" strokeWidth="1.7" />
-          <path d="M12 11v5M12 8h.01" stroke="url(#imBannerG)" strokeWidth="1.9" strokeLinecap="round" />
+          {check ? (
+            <path d="M4 12.5l5 5 11-11" stroke="url(#imBannerG)" strokeWidth="2.4"
+              strokeLinecap="round" strokeLinejoin="round" />
+          ) : (
+            <>
+              <circle cx="12" cy="12" r="9" stroke="url(#imBannerG)" strokeWidth="1.7" />
+              <path d="M12 11v5M12 8h.01" stroke="url(#imBannerG)" strokeWidth="1.9" strokeLinecap="round" />
+            </>
+          )}
           <defs>
             <linearGradient id="imBannerG" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#5C2ED4" /><stop offset="100%" stopColor="#A614C3" />
