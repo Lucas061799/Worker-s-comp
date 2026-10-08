@@ -106,7 +106,7 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
           )}
           {readyToQuote && !hasPayroll && (
             <p className="text-[11px] text-gray-400 mb-3 leading-snug">
-              Add payroll on State coverages to see live prices.
+              Add payroll on Coverages to see live prices.
             </p>
           )}
           {/* The chosen market is promoted out of the list and shown large, as

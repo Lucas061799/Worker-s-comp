@@ -19,7 +19,7 @@ const STEP_LABELS = [
   'Business info',
   'Coverage history',
   'Loss history',
-  'State coverages',
+  'Coverages',
   'Credit opportunity',
   'Carrier selection',
   'Carrier questions',
