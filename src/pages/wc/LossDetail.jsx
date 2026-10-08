@@ -4,6 +4,7 @@ import {
   RemoveButton,
   AddAnother,
   InfoDot,
+  InfoLine,
 } from '../../components/wc/primitives'
 
 const LOSS_TYPES = ['Medical', 'Indemnity', 'Both']
@@ -84,11 +85,16 @@ export default function LossDetail({ formData, updateFormData }) {
           <Textarea
             value={data.correctiveAction}
             onChange={val => patch({ correctiveAction: val })}
-            placeholder="What has the business changed since these claims — training, equipment, procedures, supervision?"
+            placeholder="Describe the corrective action(s) taken across the claim(s) above"
             rows={3}
           />
         </div>
       </FieldGroup>
+
+      <InfoLine>
+        If there are 4 or more claims, please email currently valued loss runs to
+        comp@btisinc.com. Be sure to reference the quote number above.
+      </InfoLine>
     </div>
   )
 }
