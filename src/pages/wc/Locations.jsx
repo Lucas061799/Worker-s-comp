@@ -72,10 +72,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
             <div key={i}
               className="grid grid-cols-[48px_1fr_1fr_64px_84px_40px] gap-2 items-center px-3.5 py-3 text-[12.5px]"
               style={{ borderTop: i ? '1px solid var(--line-soft)' : 'none', color: 'var(--ink-2)' }}>
-              <span className="font-semibold">
-                {i + 1}
-                {loc.primary && <span className="block text-[10px] font-medium text-gray-400">Primary</span>}
-              </span>
+              <span className="font-semibold">{i + 1}</span>
               <span className="truncate">{[loc.address, loc.suite].filter(Boolean).join(', ') || '—'}</span>
               <span className="truncate">{loc.city || '—'}</span>
               <span>{loc.state || '—'}</span>
