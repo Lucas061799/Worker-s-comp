@@ -319,8 +319,11 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
       </div>
 
       {/* What checking a market actually commits the agent to — the prototype
-          puts it under the tiles rather than in the lead paragraph. */}
-      <p className="text-xs text-gray-400 leading-relaxed">
+          puts it under the tiles rather than in the lead paragraph. It belongs
+          to the grid, so it is spaced off that rather than left to the page's
+          own rhythm, which a negative margin could not undo: space-y's rule is
+          the more specific of the two. */}
+      <p className="text-xs text-gray-400 leading-relaxed" style={{ marginTop: '0.75rem' }}>
         Checked markets will be approached by BTIS and blocked for direct submission elsewhere.
       </p>
 
