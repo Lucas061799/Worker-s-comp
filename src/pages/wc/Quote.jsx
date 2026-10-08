@@ -33,22 +33,29 @@ function prettyDate(raw) {
 }
 
 /* The default plan the bind flow opens on, so the figure the client is
-   shown is the one they will be billed. */
+   shown is the one they will be billed. It is too long for half a sheet,
+   so it breaks where it reads — the down payment, then the instalments —
+   rather than wherever the column happens to run out. */
 const DOWN_PCT = 0.10
 const INSTALLMENTS = 11
-function paymentLine(total) {
+function paymentLines(total) {
   const down = Math.round(total * DOWN_PCT)
   const each = Math.round((total - down) / INSTALLMENTS)
-  return `12-Pay · $${down.toLocaleString()} (10%) down · ${INSTALLMENTS} × $${each.toLocaleString()}`
+  return [
+    `12-Pay · $${down.toLocaleString()} (10%) down`,
+    `${INSTALLMENTS} × $${each.toLocaleString()}`,
+  ]
 }
 
-function ProposalField({ label, children }) {
+function ProposalField({ label, lines }) {
   return (
     <div className="min-w-0">
       <SectionLabel className="!mb-1 !text-[10px] !pl-0">{label}</SectionLabel>
-      <p className="text-[13.5px] font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
-        {children}
-      </p>
+      {[].concat(lines).map((line, i) => (
+        <p key={i} className="text-[13.5px] font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
+          {line}
+        </p>
+      ))}
     </div>
   )
 }
@@ -56,28 +63,28 @@ function ProposalField({ label, children }) {
 /* The screen an agent turns toward the client: a proposal, not a dialog.
    It is the house sheet like every other modal — the facts left-aligned
    because that is how they are read, and the number last, since everything
-   above it is what the number is for. */
+   above it is what the number is for. The number shares its line with the
+   way out, so the sheet ends on something rather than on a corner of white
+   with a button parked in it. */
 function ClientPresentModal({ total, carrier, effectiveDate, businessName, onClose }) {
   return (
-    <Modal
-      title="Workers' Compensation proposal"
-      width={520}
-      onDismiss={onClose}
-      footerAlign="end"
-      footer={<ModalButton onClick={onClose}>Close presentation</ModalButton>}
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-        <ProposalField label="Prepared for">{businessName || 'Your client'}</ProposalField>
-        <ProposalField label="Carrier">{carrier}</ProposalField>
-        <ProposalField label="Effective">{prettyDate(effectiveDate)}</ProposalField>
-        <ProposalField label="Payment">{paymentLine(total)}</ProposalField>
+    <Modal title="Workers' Compensation proposal" width={520} onDismiss={onClose}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 items-start">
+        <ProposalField label="Prepared for" lines={businessName || 'Your client'} />
+        <ProposalField label="Carrier" lines={carrier} />
+        <ProposalField label="Effective" lines={prettyDate(effectiveDate)} />
+        <ProposalField label="Payment" lines={paymentLines(total)} />
       </div>
 
-      <div className="mt-6 pt-5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+      <div
+        className="mt-6 pt-5 flex flex-wrap items-end justify-between gap-4"
+        style={{ borderTop: '1px solid var(--line-soft)' }}
+      >
         <p className="text-4xl font-bold leading-none">
           <BrandText>${total.toLocaleString()}</BrandText>
           <span className="text-[15px] font-semibold text-gray-400 ml-1.5">/ yr</span>
         </p>
+        <ModalButton onClick={onClose}>Close presentation</ModalButton>
       </div>
     </Modal>
   )
