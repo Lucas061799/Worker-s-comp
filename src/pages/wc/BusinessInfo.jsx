@@ -124,23 +124,24 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
             </div>
           </FormGrid>
 
-          {/* Website leads the row; the DBA name joins it on the right only
-              when the box above is ticked. */}
+          {/* DBA name leads when the box above is ticked — it qualifies the
+              legal name, so it belongs next to it rather than after the
+              website. Website takes the row on its own otherwise. */}
           <FormGrid>
-            <Input
-              label="Website"
-              value={data.website}
-              onChange={set('website')}
-              placeholder="e.g. www.sierraridgeplumbing.com"
-            />
-            {data.hasDba ? (
+            {data.hasDba && (
               <Input
                 label="DBA name"
                 value={data.dbaName}
                 onChange={set('dbaName')}
                 placeholder="e.g. Sierra Ridge Plumbing & Rooter"
               />
-            ) : <div />}
+            )}
+            <Input
+              label="Website"
+              value={data.website}
+              onChange={set('website')}
+              placeholder="e.g. www.sierraridgeplumbing.com"
+            />
           </FormGrid>
         </div>
       </FieldGroup>
