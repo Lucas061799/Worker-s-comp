@@ -31,6 +31,10 @@ function computeProgress(formData) {
   return { pct: Math.round((done / 7) * 100), flags }
 }
 
+/* The application summary is not handed out yet. One flag so turning it
+   back on is a single edit rather than a hunt through the rail. */
+const SUMMARY_DOWNLOADABLE = false
+
 export default function RightPanel({ formData = {}, isDark = false, indicationReady = false, onDownloadSummary, selectedCarrierId = null }) {
   const pz = formData.pageZero || {}
   const state = pz.state || 'CA'
@@ -43,6 +47,7 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
   const { pct } = useMemo(() => computeProgress(formData), [formData])
 
   const readyToQuote = !!pz.mainClass
+  const canDownload  = SUMMARY_DOWNLOADABLE && readyToQuote
   const hasPayroll   = totalPayroll > 0
   const showPrices   = readyToQuote && hasPayroll
 
@@ -206,14 +211,20 @@ export default function RightPanel({ formData = {}, isDark = false, indicationRe
         <div className="my-5" style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` }} />
 
         {/* con-gl's rail CTA — gradient when there is enough on file to be
-            worth reading back, greyed out before that. */}
+            worth reading back, greyed out before that.
+
+            Held in the greyed state for now: the summary is not something
+            we hand out yet. Flip SUMMARY_DOWNLOADABLE to true and the
+            readyToQuote gate takes over again. */}
         <button
           type="button"
           onClick={onDownloadSummary}
-          disabled={!readyToQuote}
-          title={readyToQuote ? undefined : 'Pick a class code to build the summary'}
+          disabled={!canDownload}
+          title={canDownload ? undefined : SUMMARY_DOWNLOADABLE
+            ? 'Pick a class code to build the summary'
+            : 'Coming soon'}
           className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition disabled:cursor-not-allowed enabled:hover:opacity-90"
-          style={readyToQuote
+          style={canDownload
             ? { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.22)' }
             : isDark
               ? { background: 'rgba(255,255,255,0.04)', color: '#6B7280', border: '1px solid rgba(255,255,255,0.08)' }

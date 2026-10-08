@@ -197,11 +197,12 @@ function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
         <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid #E5E7EB' }}>
           <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
             <div className="flex items-start gap-3 mb-3">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(124,58,237,0.18)' }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5C2ED4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {/* The house disc, so the glyph takes its colour from the chip
+                  and follows it into dark mode. Stroked #5C2ED4 it stayed
+                  dark purple on navy and all but vanished — the dark shim
+                  rewrites inline `color`, not an svg `stroke`. */}
+              <div className="im-panel-icon w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="16" x2="12" y2="12" />
                   <line x1="12" y1="8" x2="12.01" y2="8" />

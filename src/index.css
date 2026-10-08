@@ -268,33 +268,24 @@ input, select, textarea, button {
 /* A modal sheet covers what is behind it, so it stays a solid — the
    translucent surfaces only work when something opaque is underneath.
    CBIC does the same, painting its preview shell with --surface-card. */
-/* Panel icons sit in a tinted disc, the way every other icon in the app
-   does, rather than floating as a bare glyph against the copy. */
+
 /* The step an interstitial has not reached yet. Light grey on white reads
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
    step actually running, so dark takes the subtle fill and a muted ink. */
 .im-step-pending { background: var(--fill-subtle); color: #9CA3AF; }
+[data-dark="true"] .im-step-pending { color: #8B8FA8 !important; }
 
 /* The unfilled part of a progress bar. Same story as the pending chip:
    #F3F4F6 is a quiet rail on white and a lit one on navy. */
 .im-progress-track { background: var(--fill-subtle); }
-[data-dark="true"] .im-step-pending { color: #8B8FA8 !important; }
 
+/* Panel icons sit in a tinted disc, the way every other icon in the app
+   does, rather than floating as a bare glyph against the copy. */
 .im-panel-icon {
   background: linear-gradient(88.09deg, rgba(92,46,212,0.14) 0%, rgba(166,20,195,0.14) 100%);
   color: #5C2ED4;
 }
-[data-dark="true"] /* The step an interstitial has not reached yet. Light grey on white reads
-   as "not yet"; the same grey on navy reads as a lit chip brighter than the
-   step actually running, so dark takes the subtle fill and a muted ink. */
-.im-step-pending { background: var(--fill-subtle); color: #9CA3AF; }
-
-/* The unfilled part of a progress bar. Same story as the pending chip:
-   #F3F4F6 is a quiet rail on white and a lit one on navy. */
-.im-progress-track { background: var(--fill-subtle); }
-[data-dark="true"] .im-step-pending { color: #8B8FA8 !important; }
-
-.im-panel-icon {
+[data-dark="true"] .im-panel-icon {
   background: rgba(167,139,250,0.22) !important;
   color: #E9D5FF !important;
 }
