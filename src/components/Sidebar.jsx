@@ -61,7 +61,11 @@ export default function Sidebar({
       {/* Title */}
       <div className="px-5 pt-5 pb-3 relative z-10">
         <h2 className="text-base font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : undefined }}>{productName}</h2>
-        <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>{submissionId}</p>
+        {/* Labelled, as CBIC's rail labels it — a bare code leaves the agent
+            guessing which number it is. */}
+        <p className="text-[11px] mt-0.5 whitespace-nowrap" style={{ color: '#9CA3AF' }}>
+          Submission Number: {submissionId}
+        </p>
         <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
       </div>
 
