@@ -122,10 +122,6 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
   }, [])
 
   const quoteId = useMemo(() => 'WC' + Math.floor(20000000 + Math.random() * 80000000), [])
-  const generatedAt = useMemo(
-    () => new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-    [],
-  )
 
   const pageZero = formData.pageZero || {}
   const business = formData.business || {}
@@ -146,6 +142,14 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
     ?? premiumForCarrier(formData, bind.selectedCarrierId || 'cna')
 
   const money = (n) => (n == null ? '—' : '$' + Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 }))
+
+  /* 09/01/2026 — the form stores an ISO date, the receipt prints one. */
+  const effectiveDate = (() => {
+    const raw = pageZero.effectiveDate
+    if (!raw) return '—'
+    const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw)
+    return iso ? `${iso[2]}/${iso[3]}/${iso[1]}` : raw
+  })()
 
   return (
     <div className="flex flex-col h-screen font-montserrat overflow-hidden" style={{ background: isDark ? '#131629' : 'white' }}>
@@ -288,7 +292,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
               >
                 {[
                   { label: 'Quote Number', value: quoteId,     gradient: true },
-                  { label: 'Generated',    value: generatedAt },
+                  { label: 'Effective Date', value: effectiveDate },
                   { label: 'Status',       value: 'Submitted', pill: true },
                 ].map((item, i) => (
                   <div
@@ -344,13 +348,11 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                   }}
                 >
                   <div className="flex-1 min-w-0">
-                    {/* The prototype's policy line: number, then carrier,
-                        premium a year and the date it starts. */}
+                    {/* What the strip above does not already say: who wrote
+                        it, and what it was rated on. The quote number, the
+                        premium and the effective date all live up there. */}
                     <p className="text-sm font-bold" style={{ color: isDark ? '#F9FAFB' : '#111827' }}>
-                      Policy <span className="font-mono">{quoteId}</span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {carrier} · {money(premium)} / yr · effective {pageZero.effectiveDate || '—'}
+                      Policy bound with {carrier}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
                       Class <span className="font-mono">{pageZero.mainClass || '—'} · {state}</span>
@@ -375,7 +377,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Entity type"     value={business.entityType} isDark={isDark} />
                     <Field label="FEIN"            value={business.fein} isDark={isDark} />
                     <Field label="Year established" value={business.yearEstablished} isDark={isDark} />
-                    <Field label="Effective date"  value={pageZero.effectiveDate} isDark={isDark} />
+                    <Field label="Effective date"  value={effectiveDate} isDark={isDark} />
                   </SectionCard>
 
                   <SectionCard title="Address" isDark={isDark} icon={ICONS.pin}>
