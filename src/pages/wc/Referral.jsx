@@ -3,7 +3,6 @@ import { Input, Textarea } from '../../components/FormField'
 import {
   FieldGroup,
   InfoDot,
-  InfoLine,
   AlertGlyph,
   StepNav,
   InfoPanel,
@@ -124,11 +123,13 @@ export default function Referral({
 
   return (
     <div className="w-full space-y-6">
-      <FieldGroup label="Refer to underwriter">
-        <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
-          One screen, one submit — no separate review step. An underwriter will follow up directly.
-        </p>
+      {/* The page's own subtitle, under the rule, where every other screen
+          puts it — and the group below no longer repeats the page title. */}
+      <p className="text-sm text-gray-500 -mt-2">
+        One screen, one submit — no separate review step. An underwriter will follow up directly.
+      </p>
 
+      <FieldGroup label="The request">
         <div className="space-y-5">
           <Input
             label="Target premium"
@@ -164,25 +165,31 @@ export default function Referral({
         </InfoPanel>
       )}
 
-      <FieldGroup label="Attachments">
-        <div className="flex items-center gap-1.5 mb-3">
-          <p className="text-[12.5px] text-gray-500">
-            A competitor quote, loss runs, or anything else that helps the underwriter.
-          </p>
-          <InfoDot
-            title="Attachments"
-            text="Anything that supports the request — a competitor quote, currently valued loss runs, or notes on how the risk is controlled."
-          />
-        </div>
-
+      {/* The prototype hangs this off the heading rather than spending a line
+          of the panel on it. */}
+      <FieldGroup
+        label={
+          <span className="inline-flex items-center gap-1.5">
+            Attachments
+            <InfoDot
+              title="Attachments"
+              text="Please provide a competitor quote, loss runs, or anything else that will help the underwriter with your request."
+            />
+          </span>
+        }
+      >
         <div className="space-y-2.5">
+          {/* The drop target leads and keeps its place; what has been attached
+              collects underneath it, so the control the agent reaches for does
+              not walk down the page as files pile up. One label whether or not
+              something is already attached, as the prototype has it. */}
+          <DropZone
+            label="Drag & drop files here, or click to upload"
+            onAdd={() => setFiles(fs => [...fs, { name: `attachment-${fs.length + 1}.pdf`, size: '480 KB' }])}
+          />
           {files.map((f, i) => (
             <FileRow key={f.name} file={f} onRemove={() => setFiles(fs => fs.filter((_, n) => n !== i))} />
           ))}
-          <DropZone
-            label={files.length ? 'Add another file' : 'Drag & drop files here, or click to upload'}
-            onAdd={() => setFiles(fs => [...fs, { name: `attachment-${fs.length + 1}.pdf`, size: '480 KB' }])}
-          />
         </div>
 
         {showErrors && missingFiles && (
@@ -192,16 +199,11 @@ export default function Referral({
         )}
       </FieldGroup>
 
-      <InfoLine>
-        Submitting goes straight to confirmation — there is no separate review step.
-      </InfoLine>
-
       <StepNav
         onBack={onBack}
         onContinue={submit}
         canContinue={canSubmit}
         continueLabel="Submit to underwriter"
-        hint={canSubmit ? undefined : 'Target premium and additional information are needed before referring.'}
       />
     </div>
   )

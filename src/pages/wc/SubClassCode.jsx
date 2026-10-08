@@ -1,5 +1,5 @@
 import { Select } from '../../components/FormField'
-import { FieldGroup, SectionLabel, InfoLine, StepNav } from '../../components/wc/primitives'
+import { FieldGroup, SectionLabel, StepNav } from '../../components/wc/primitives'
 
 /* The descriptor each carrier files against a class code. Taken from the
    prototype; a code with nothing filed falls back to a plain "-00 General". */
@@ -47,7 +47,7 @@ export default function SubClassCode({ formData, updateFormData, carrierName, on
 
   return (
     <div className="w-full space-y-6">
-      <FieldGroup label="Sub-class code">
+      <FieldGroup>
         <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
           Descriptor codes vary by carrier. Confirm the right sub-class descriptor for each
           class code on this submission before we ask the remaining {carrierName}-specific questions.
@@ -76,17 +76,12 @@ export default function SubClassCode({ formData, updateFormData, carrierName, on
             </div>
           ))}
         </div>
-
-        <InfoLine className="mt-5">
-          Asked once per class code — a code scheduled in more than one state keeps one descriptor.
-        </InfoLine>
       </FieldGroup>
 
       <StepNav
         onBack={onBack}
         onContinue={onContinue}
         canContinue={allChosen}
-        hint={allChosen ? undefined : 'Choose a descriptor for every class code to continue.'}
       />
     </div>
   )
