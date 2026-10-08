@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import {Tag, AlertGlyph, InfoPanel } from '../../components/wc/primitives'
+import { Tag, BrandText, AlertGlyph, InfoPanel } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -28,7 +28,7 @@ export default function Loading({ onDone, onSkip }) {
       <div className="rounded-2xl p-6 md:p-7" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
         <div className="flex items-center justify-between gap-3 mb-4">
           <Tag tone="brand">Rating in progress</Tag>
-          <span className="text-xs font-bold" style={{ color: '#5C2ED4' }}>{progress}%</span>
+          <BrandText className="text-xs font-bold">{progress}%</BrandText>
         </div>
 
         <h2 className="text-lg font-bold text-navy mb-1">Building your comparison</h2>

@@ -297,12 +297,18 @@ export function NotePanel({ title, children }) {
 
 /* Tag chip — SIC / NAICS / coverage family. */
 export function Tag({ children, tone = 'default' }) {
-  const styles = tone === 'brand'
-    ? { background: 'rgba(92,46,212,0.08)', border: '1px solid rgba(92,46,212,0.18)', color: '#5C2ED4' }
+  /* The brand tone wears the gradient, not a flat violet — the same
+     purple-to-magenta wash the radio pills take, with the text to match. */
+  const brand = tone === 'brand'
+  const styles = brand
+    ? {
+        background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)',
+        border: '1px solid rgba(92,46,212,0.18)',
+      }
     : { background: 'white', border: '1px solid #E5E7EB', color: '#6B7280' }
   return (
     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold" style={styles}>
-      {children}
+      {brand ? <BrandText>{children}</BrandText> : children}
     </span>
   )
 }

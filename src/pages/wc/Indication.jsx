@@ -296,11 +296,14 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
                 You can refer this submission to an underwriter for manual review.
               </p>
             </div>
+            {/* The brand outline this page already gives Select — a grey
+                button in a callout asking the agent to act read as disabled
+                beside it. */}
             <button
               type="button"
               onClick={onRefer}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 shrink-0 transition hover:opacity-80"
-              style={{ border: '1px solid var(--line)', background: 'transparent' }}
+              className="px-4 py-2 rounded-lg text-xs font-bold transition shrink-0 hover:opacity-80"
+              style={{ background: 'var(--surface-card)', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
             >
               Refer to Underwriter
             </button>
