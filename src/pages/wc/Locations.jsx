@@ -67,8 +67,8 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
               row's right edge instead, with the padding reserved for it. */}
           <div className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.2fr)_56px_minmax(72px,auto)] gap-3 pl-3.5 pr-10 py-2.5"
             style={{ background: 'var(--fill-subtle)', borderBottom: '1px solid var(--line)' }}>
-            {['Loc #', 'Street address', 'City', 'State', 'ZIP'].map((h, i) => (
-              <SectionLabel key={i} className={`!mb-0 !text-[10px] ${i === 4 ? 'text-right' : ''}`}>{h}</SectionLabel>
+            {['Loc #', 'Street address', 'City', 'State', 'ZIP'].map(h => (
+              <SectionLabel key={h} className="!mb-0 !text-[10px] !pl-0">{h}</SectionLabel>
             ))}
           </div>
 
@@ -80,7 +80,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
               <span className="truncate">{[loc.address, loc.suite].filter(Boolean).join(', ') || '—'}</span>
               <span className="truncate">{loc.city || '—'}</span>
               <span>{loc.state || '—'}</span>
-              <span className="text-right">{loc.zip || '—'}</span>
+              <span>{loc.zip || '—'}</span>
               {!loc.primary && (
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
                   <RemoveButton onClick={() => remove(i - 1)} label="Remove location" />
