@@ -67,13 +67,6 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
   const pz = formData.pageZero || {}
   const biz = formData.business || {}
   const bindData = formData.bind || {}
-  const state = pz.state || 'CA'
-  const stateData = formData.coverage?.[state] || {}
-  const payroll = (stateData.classes || []).reduce((s, c) => {
-    const n = parseInt(String(c.payroll || '').replace(/[^0-9]/g, ''), 10) || 0
-    return s + n
-  }, 0) || 480000
-  const emod = formData.underwriting?.experienceMod || '1.00'
   const carrier = bindData.selectedCarrier || 'CNA'
   const carrierMeta = CARRIERS.find(c => c.name === carrier)
   const price = bindData.premium || 5240
@@ -103,34 +96,19 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
         This policy is eligible for Bind Online without underwriting review.
       </Banner>
 
-      {/* Quote summary — Inland's bind card: the carrier and price on one
-          line, then the terms as label/value rows. */}
+      {/* Quote summary — the market it is with, and what it costs. The
+          risk's own details are on the pages behind this one; repeating
+          them here only pushed the total below the fold. */}
       <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-        <div className="flex items-center justify-between gap-4 pb-5" style={{ borderBottom: '1px solid #F3F4F6' }}>
-          <div className="flex items-center gap-3 min-w-0">
-            {carrierMeta && <CarrierLogo carrier={carrierMeta} size={44} />}
-            <div className="min-w-0">
-              <p className="text-[15px] font-bold text-gray-900 leading-tight">{carrier}</p>
-              <p className="text-[11.5px] text-gray-400">{carrierMeta?.sub}</p>
-            </div>
-          </div>
-          <div className="text-right shrink-0">
-            <p className="text-3xl font-bold leading-none">
-              <BrandText>${price.toLocaleString()}</BrandText>
-            </p>
-            <p className="text-[12px] text-gray-400 mt-1">per year</p>
+        <div className="flex items-center gap-3 min-w-0 pb-5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+          {carrierMeta && <CarrierLogo carrier={carrierMeta} size={44} />}
+          <div className="min-w-0">
+            <p className="text-[15px] font-bold text-gray-900 leading-tight">{carrier}</p>
+            <p className="text-[11.5px] text-gray-400">{carrierMeta?.sub}</p>
           </div>
         </div>
 
         <div className="pt-1">
-          <SummaryRow label="Named insured" value={biz.name || 'Sierra Ridge Plumbing Inc.'} />
-          <SummaryRow label="Class" value={`${pz.mainClass || '5183'} · ${state}`} />
-          <SummaryRow label="Annual payroll" value={`$${payroll.toLocaleString()}`} />
-          <SummaryRow label="Experience mod" value={emod} />
-          <SummaryRow label="Effective date" value={pz.effectiveDate || '08/01/2026'} last />
-        </div>
-
-        <div className="mt-5 pt-5" style={{ borderTop: '1px solid #F3F4F6' }}>
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
           <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
@@ -151,9 +129,9 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
               />
             </span>
           </div>
-          <div className="flex items-center justify-between gap-4 pt-3">
-            <span className="text-[13px] font-semibold text-gray-700">Grand total</span>
-            <span className="text-[15px] font-bold">
+          <div className="flex items-center justify-between gap-4 pt-4">
+            <span className="text-sm font-semibold text-gray-700">Grand total</span>
+            <span className="text-2xl font-bold leading-none">
               <BrandText>{money2(fees.total)}</BrandText>
             </span>
           </div>
