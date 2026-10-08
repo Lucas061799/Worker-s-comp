@@ -260,14 +260,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               onChange={set('industryExperience')}
               error={err('industryExperience')}
             />
-            {isContractor && (
-              <Input
-                label="Contractor license (CSLB)"
-                value={data.license}
-                onChange={set('license')}
-                placeholder="#0000000"
-              />
-            )}
           </FormGrid>
         </div>
       </FieldGroup>
