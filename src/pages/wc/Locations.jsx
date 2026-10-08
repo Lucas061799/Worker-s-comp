@@ -65,7 +65,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
               remove control used to hold a column of its own after ZIP, which
               left the table trailing off into an empty strip. It floats on the
               row's right edge instead, with the padding reserved for it. */}
-          <div className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.2fr)_56px_minmax(72px,auto)] gap-3 pl-3.5 pr-10 py-2.5"
+          <div className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1fr)_minmax(0,1fr)_72px] gap-3 pl-3.5 pr-10 py-2.5"
             style={{ background: 'var(--fill-subtle)', borderBottom: '1px solid var(--line)' }}>
             {['Loc #', 'Street address', 'City', 'State', 'ZIP'].map(h => (
               <SectionLabel key={h} className="!mb-0 !text-[10px] !pl-0">{h}</SectionLabel>
@@ -74,7 +74,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
 
           {rows.map((loc, i) => (
             <div key={i}
-              className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.2fr)_56px_minmax(72px,auto)] gap-3 pl-3.5 pr-10 relative items-center py-3 text-[12.5px]"
+              className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1fr)_minmax(0,1fr)_72px] gap-3 pl-3.5 pr-10 relative items-center py-3 text-[12.5px]"
               style={{ borderTop: i ? '1px solid var(--line-soft)' : 'none', color: 'var(--ink-2)' }}>
               <span className="font-semibold">{i + 1}</span>
               <span className="truncate">{[loc.address, loc.suite].filter(Boolean).join(', ') || '—'}</span>
