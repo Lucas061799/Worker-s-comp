@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Input, Select, Checkbox, FormGrid } from '../../components/FormField'
 import AddressAutocomplete from '../../components/AddressAutocomplete'
 import { FieldGroup, NotePanel, YesNo } from '../../components/wc/primitives'
@@ -39,23 +39,58 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
   const set = (key) => (val) => updateFormData('business', { [key]: val })
   const err = (key) => showErrors && (data[key] === undefined || data[key] === null || data[key] === '')
 
+  /* A contracting class started with a licence number means CSLB has already
+     been asked, and what it returns lands on this screen. The agent is told so
+     and asked to check it, rather than finding fields filled in with no
+     explanation. */
+  const cslbLicense = isContractor ? (pageZero.contractorLicense || '') : ''
+  const cslbFound = !!cslbLicense && !!data.cslbPrefilled
+
+  /* Gated on what it writes rather than a ref: a ref latched before a timer
+     that the cleanup cancels never fires at all under StrictMode's
+     mount/unmount/mount, because the second pass returns early. */
+  useEffect(() => {
+    if (!cslbLicense || data.cslbPrefilled) return
+    const t = setTimeout(() => {
+      updateFormData('business', {
+        cslbPrefilled: true,
+        ...(data.name ? {} : { name: 'Sierra Ridge Plumbing, Inc.' }),
+        ...(data.entityType ? {} : { entityType: 'corp' }),
+        ...(data.yearEstablished ? {} : { yearEstablished: '2014' }),
+      })
+    }, 700)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cslbLicense, data.cslbPrefilled])
+
   /* The bureau lookup still fires off the FEIN and pre-fills the mod; State
      coverages is where it surfaces, and where the agent confirms it. Nothing
      is said about it here. */
-  const firedRef = useRef(false)
-
   useEffect(() => {
     const digits = (data.fein || '').replace(/\D/g, '')
-    if (digits.length < 9 || firedRef.current || !isCA) return
-    firedRef.current = true
+    if (digits.length < 9 || !isCA || formData.underwriting?.experienceMod) return
     const t = setTimeout(() => {
       updateFormData('underwriting', { experienceMod: '0.87', experienceModSource: 'WCIRB' })
     }, 900)
     return () => clearTimeout(t)
-  }, [data.fein, isCA, updateFormData])
+  }, [data.fein, isCA, formData.underwriting?.experienceMod, updateFormData])
 
   return (
     <div className="w-full space-y-6">
+      {cslbFound && (
+        <div className="im-info-panel im-info-panel--good rounded-xl p-4 flex items-center gap-3">
+          <span className="im-panel-icon im-panel-icon--good w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </span>
+          <p className="text-[12.5px] text-gray-600 leading-relaxed">
+            <span className="font-bold text-navy">CSLB licence {cslbLicense} found.</span>{' '}
+            Fields on screen prefilled — please confirm before continuing.
+          </p>
+        </div>
+      )}
+
       <FieldGroup label="Company Information">
         <div className="space-y-5">
           {/* The DBA question qualifies the legal name, so it sits under it
