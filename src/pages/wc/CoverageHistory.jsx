@@ -4,6 +4,7 @@ import {
   Segmented,
   YesNo,
   InfoLine,
+  AlertGlyph,
 } from '../../components/wc/primitives'
 
 /* Where the risk stands today. Everything below the status question is
@@ -51,6 +52,24 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
+      {/* Clearance runs again when the agent leaves General Info, and a
+          matching submission on this insured surfaces here. The prototype
+          simulates a match every time so the banner is always visible —
+          wire this to the real check when there is one. */}
+      <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
+        <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+          <AlertGlyph />
+        </span>
+        <p className="text-[12.5px] text-gray-600 leading-relaxed">
+          <span className="font-bold text-navy">Heads up.</span>{' '}
+          We found another submission for this insured submitted within the past 30 days.
+          We operate on a jump-ball basis, so no Broker of Record (BOR) letter is required at
+          this time. We'll re-run this check again when bind is attempted to confirm there's no
+          duplicate submission — the first submission to bind coverage with the insured's
+          approval gets the business.
+        </p>
+      </div>
+
       {/* A form, not a question list: typed and chosen values carry their
           label above the field, the way Business info does. The compact
           label-left row is for Yes/No and segmented answers. */}
