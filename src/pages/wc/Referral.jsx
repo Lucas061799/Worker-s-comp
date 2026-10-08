@@ -6,6 +6,7 @@ import {
   InfoLine,
   AlertGlyph,
   StepNav,
+  InfoPanel,
 } from '../../components/wc/primitives'
 
 /* A file already on the submission. This is a mockup, so loss runs are taken
@@ -154,17 +155,13 @@ export default function Referral({
       </FieldGroup>
 
       {lossRunsRequired && (
-        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-            <AlertGlyph />
-          </span>
-          <p className="text-[12.5px] text-gray-600 leading-relaxed">
-            <span className="font-bold text-navy">Currently valued loss runs are required</span>{' '}
-            before an underwriter can review. Attach them below, or email them to{' '}
-            <b className="font-semibold text-navy">comp@btisinc.com</b>
-            and refer anyway — review can't finish until they arrive. Reference the quote number above.
-          </p>
-        </div>
+        <InfoPanel
+          lead="Currently valued loss runs are required"
+        >
+          before an underwriter can review. Attach them below, or email them to{' '}
+          <b className="font-semibold text-navy">comp@btisinc.com</b>
+          and refer anyway — review can't finish until they arrive. Reference the quote number above.
+        </InfoPanel>
       )}
 
       <FieldGroup label="Attachments">

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Input, Select, Checkbox, FormGrid } from '../../components/FormField'
 import AddressAutocomplete from '../../components/AddressAutocomplete'
-import { FieldGroup, NotePanel, YesNo } from '../../components/wc/primitives'
+import {FieldGroup, NotePanel, YesNo, InfoPanel } from '../../components/wc/primitives'
 
 const ENTITY_OPTIONS = [
   { value: 'corp',    label: 'Corporation' },
@@ -78,17 +78,14 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
   return (
     <div className="w-full space-y-6">
       {cslbFound && (
-        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          </span>
-          <p className="text-[12.5px] text-gray-600 leading-relaxed">
-            <span className="font-bold text-navy">CSLB licence {cslbLicense} found.</span>{' '}
-            Fields on screen prefilled — please confirm before continuing.
-          </p>
-        </div>
+        <InfoPanel
+          icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>}
+          lead={<>CSLB licence {cslbLicense} found.</>}
+        >
+          Fields on screen prefilled — please confirm before continuing.
+        </InfoPanel>
       )}
 
       <FieldGroup label="Company Information">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Tag, AlertGlyph } from '../../components/wc/primitives'
+import {Tag, AlertGlyph, InfoPanel } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -68,15 +68,11 @@ export default function Loading({ onDone, onSkip }) {
         </div>
 
         {/* While you wait — the canonical info panel, not a gradient slab. */}
-        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-            <AlertGlyph />
-          </span>
-          <p className="text-[12.5px] text-gray-600 leading-relaxed">
-            <span className="font-bold text-navy">Q3 promotion — +2% boosted commission on AmTrust binds.</span>{' '}
-            Applies to policies bound with AmTrust through BTIS this quarter.
-          </p>
-        </div>
+        <InfoPanel
+          lead="Q3 promotion — +2% boosted commission on AmTrust binds."
+        >
+          Applies to policies bound with AmTrust through BTIS this quarter.
+        </InfoPanel>
       </div>
 
       <div className="mt-4">

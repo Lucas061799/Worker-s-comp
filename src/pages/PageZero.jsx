@@ -6,7 +6,7 @@ import btisLogoDark from '../assets/btislogo-dark.png'
 import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
 import { Input, Select, DateInput } from '../components/FormField'
-import { InfoDot, AlertGlyph } from '../components/wc/primitives'
+import {InfoDot, AlertGlyph, InfoPanel } from '../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -303,32 +303,25 @@ export default function PageZero({ onStart, isDark = false }) {
                 </button>
 
                 {appetite === 'good' && (
-                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
-                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </span>
-                    <p className="text-[12.5px] text-gray-600 leading-relaxed">
-                      <span className="font-bold text-navy">Good news!</span>{' '}
-                      Based on class, state and payroll, we have at least 1 carrier available.
-                      Final approval is subject to full risk characteristics.
-                    </p>
-                  </div>
+                  <InfoPanel
+                    icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>}
+                    lead="Good news!"
+                    className="mt-3"
+                  >
+                    Based on class, state and payroll, we have at least 1 carrier available.
+                    Final approval is subject to full risk characteristics.
+                  </InfoPanel>
                 )}
 
                 {appetite === 'limited' && (
-                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
-                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <AlertGlyph />
-                    </span>
-                    <p className="text-[12.5px] text-gray-600 leading-relaxed">
-                      <span className="font-bold text-navy">
-                        Limited appetite for {picked?.code} in {state} at this payroll — likely referral.
-                      </span>{' '}
-                      You can continue; the start is recorded either way.
-                    </p>
-                  </div>
+                  <InfoPanel
+                    lead={<>Limited appetite for {picked?.code} in {state} at this payroll — likely referral.</>}
+                    className="mt-3"
+                  >
+                    You can continue; the start is recorded either way.
+                  </InfoPanel>
                 )}
 
                 {appetite === 'declined' && (

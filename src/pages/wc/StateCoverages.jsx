@@ -11,6 +11,7 @@ import {
   YesNo,
   InfoDot,
   AlertGlyph,
+  InfoPanel,
 } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
@@ -243,17 +244,12 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
       </RowGroup>
 
       <FieldGroup label="Officers & Owners">
-        <div className="im-info-panel rounded-xl p-4 mb-4 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-            <AlertGlyph />
-          </span>
-          <p className="text-[12.5px] text-gray-600 leading-relaxed flex-1">
-            <span className="font-bold text-navy">
-              {activeState} · {ENTITY_LABELS[entityType] || 'Corporation'}.
-            </span>{' '}
-            Officers are automatically included but may elect to be excluded.
-          </p>
-        </div>
+        <InfoPanel
+          lead={<>{activeState} · {ENTITY_LABELS[entityType] || 'Corporation'}.</>}
+          className="mb-4"
+        >
+          Officers are automatically included but may elect to be excluded.
+        </InfoPanel>
 
         <div className="space-y-3">
           {officers.map((row, idx) => (
@@ -409,16 +405,12 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
       </RowGroup>
 
       {stateData.usesSubs === 'yes' && (
-        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-            <AlertGlyph />
-          </span>
-          <p className="text-[12.5px] text-gray-600 leading-relaxed">
-            <span className="font-bold text-navy">Collect certificates of insurance from every subcontractor before work begins.</span>{' '}
-            Payroll paid to uninsured or uncertificated subs is added to your payroll at audit and
-            charged at the applicable class rate.
-          </p>
-        </div>
+        <InfoPanel
+          lead="Collect certificates of insurance from every subcontractor before work begins."
+        >
+          Payroll paid to uninsured or uncertificated subs is added to your payroll at audit and
+          charged at the applicable class rate.
+        </InfoPanel>
       )}
 
       <RowGroup label="Coverage options">

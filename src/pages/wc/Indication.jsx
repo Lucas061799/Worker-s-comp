@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
-import { BRAND_GRADIENT, InfoLine, Tag, AlertGlyph } from '../../components/wc/primitives'
+import {BRAND_GRADIENT, InfoLine, Tag, AlertGlyph, InfoPanel } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
    set so the prototype's reference risk prices out where its own figures do —
@@ -309,16 +309,13 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
       )}
 
       {referralInPlay && (
-        <div className="im-info-panel rounded-xl p-4 mt-3.5 flex items-start gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-            <AlertGlyph />
-          </span>
-          <p className="text-[12.5px] text-gray-600 leading-relaxed">
-            <span className="font-bold text-navy">Referred to an underwriter.</span>{' '}
-            We'll notify you by email once a decision is available — typically 1–2 business days.
-            Contact BTIS at 877.649.6682 for any changes.
-          </p>
-        </div>
+        <InfoPanel
+          lead="Referred to an underwriter."
+          className="mt-3.5"
+        >
+          We'll notify you by email once a decision is available — typically 1–2 business days.
+          Contact BTIS at 877.649.6682 for any changes.
+        </InfoPanel>
       )}
 
       <InfoLine className="mt-6">
