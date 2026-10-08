@@ -72,10 +72,11 @@ export default function Loading({ plan = RATING, children, onDone, onSkip }) {
             return (
               <div key={label} className="flex items-center gap-3">
                 <span
-                  className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0"
+                  className={`w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 ${
+                    done || active ? '' : 'im-step-pending'}`}
                   style={done || active
                     ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }
-                    : { background: '#F3F4F6', color: '#9CA3AF' }}
+                    : undefined}
                 >
                   {done ? '✓' : i + 1}
                 </span>
