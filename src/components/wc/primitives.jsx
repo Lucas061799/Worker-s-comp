@@ -222,22 +222,23 @@ export function Banner({ children, icon = true }) {
   return (
     <div className="im-banner rounded-xl px-4 py-3.5 flex gap-3 items-start">
       {icon && (
-        <svg className="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none">
-          {check ? (
-            <path d="M4 12.5l5 5 11-11" stroke="url(#imBannerG)" strokeWidth="2.4"
-              strokeLinecap="round" strokeLinejoin="round" />
-          ) : (
-            <>
-              <circle cx="12" cy="12" r="9" stroke="url(#imBannerG)" strokeWidth="1.7" />
-              <path d="M12 11v5M12 8h.01" stroke="url(#imBannerG)" strokeWidth="1.9" strokeLinecap="round" />
-            </>
-          )}
-          <defs>
-            <linearGradient id="imBannerG" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#5C2ED4" /><stop offset="100%" stopColor="#A614C3" />
-            </linearGradient>
-          </defs>
-        </svg>
+        /* The same washed disc the info panels put their mark in, so a
+           banner and a panel read as the same family. The glyph takes
+           currentColor from the disc, which is what carries it into
+           dark mode. */
+        <span className="im-panel-icon w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-px">
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            {check ? (
+              <path d="M4 12.5l5 5 11-11" strokeWidth="3"
+                strokeLinecap="round" strokeLinejoin="round" />
+            ) : (
+              <>
+                <circle cx="12" cy="12" r="9" strokeWidth="2" />
+                <path d="M12 11v5M12 8h.01" strokeWidth="2.4" strokeLinecap="round" />
+              </>
+            )}
+          </svg>
+        </span>
       )}
       <div className="text-[13px] leading-relaxed text-gray-600 flex-1 min-w-0">{children}</div>
     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Input } from '../../components/FormField'
 import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag, Modal, ModalButton } from '../../components/wc/primitives'
 import { CARRIERS } from './CarrierSelection'
 import { feesFor } from './Indication'
@@ -115,17 +116,18 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
             <span className="text-xs text-gray-500">Broker fee</span>
             {/* The agent's own fee, set here and carried into billing — the
                 only number on this page they can move. */}
-            <span className="relative inline-flex items-center">
-              <span className="absolute left-3 text-xs text-gray-400 pointer-events-none">$</span>
-              <input
-                type="text"
-                inputMode="numeric"
+            {/* The house Input, not a hand-rolled one — the raw element
+                missed focus:outline-none and wore Chrome's amber focus
+                ring, which read as a validation error. */}
+            <span className="relative inline-flex items-center w-32">
+              <span className="absolute left-3.5 text-sm text-gray-400 pointer-events-none z-10">$</span>
+              <Input
+                className="w-full"
+                align="right"
+                digits
                 value={brokerFee}
-                onChange={e => updateFormData('bind', { brokerFee: e.target.value.replace(/[^0-9]/g, '') })}
+                onChange={v => updateFormData('bind', { brokerFee: v })}
                 placeholder="0"
-                aria-label="Broker fee"
-                className="field-fill w-28 h-9 pl-6 pr-3 rounded-lg text-xs font-semibold text-right"
-                style={{ border: '1px solid #E5E7EB', color: '#1F2937' }}
               />
             </span>
           </div>
