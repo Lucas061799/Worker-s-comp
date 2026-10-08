@@ -185,7 +185,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
           </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">
             <span className="font-bold text-navy">{claimCount} claims reported.</span>{' '}
-            Please email currently valued loss runs to comp@btisinc.com, and upload them as a
+            Please email currently valued loss runs to <b className="font-semibold text-navy">comp@btisinc.com</b>, and upload them as a
             required document when this submission is referred to underwriting. Be sure to
             reference the quote number above.
           </p>

@@ -160,7 +160,8 @@ export default function Referral({
           </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">
             <span className="font-bold text-navy">Currently valued loss runs are required</span>{' '}
-            before an underwriter can review. Attach them below, or email them to comp@btisinc.com
+            before an underwriter can review. Attach them below, or email them to{' '}
+            <b className="font-semibold text-navy">comp@btisinc.com</b>
             and refer anyway — review can't finish until they arrive. Reference the quote number above.
           </p>
         </div>

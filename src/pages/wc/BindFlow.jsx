@@ -175,7 +175,8 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                   <AlertGlyph className="w-3 h-3" />
                 </span>
                 <span className="text-[12px] text-gray-500 leading-relaxed">
-                  Inclusion/exclusion forms can be emailed to wcbinds@btisinc.com within 72 hours of
+                  Inclusion/exclusion forms can be emailed to{' '}
+                  <b className="font-semibold text-navy">wcbinds@btisinc.com</b> within 72 hours of
                   binding instead — otherwise the policy is endorsed to remove the exclusion.
                 </span>
               </div>
