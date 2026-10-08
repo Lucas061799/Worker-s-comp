@@ -86,10 +86,13 @@ function Stepper({ at }) {
   )
 }
 
+/* A heading and a drop target. It used to wrap both in a card, which put
+   a box inside a box inside the group's own card — three borders deep for
+   one upload. The dashed target is the only frame it needs. */
 function DocBox({ title, required, uploaded, onToggle }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
-      <div className="flex items-center justify-between gap-3 mb-2.5">
+    <div>
+      <div className="flex items-center justify-between gap-3 mb-2">
         <SectionLabel className="!mb-0">
           {title}{required && <span className="text-red-400 ml-0.5">*</span>}
         </SectionLabel>
@@ -170,7 +173,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           </p>
 
           {required.length ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {required.map(d => (
                 <DocBox key={d} title={d} required={d === 'Signed loss runs'}
                   uploaded={!!docs[d]}
