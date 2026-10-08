@@ -200,7 +200,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
   const selected = CARRIERS.filter(c => checked[c.id])
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-6">
       <p className="text-sm text-gray-500 -mt-2">
         All markets are checked by default — get your price indication, or uncheck any
         you'd like to skip.
@@ -336,9 +336,6 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
               ← Back
             </button>
           )}
-          <p className="text-xs text-gray-500">
-            {selected.length} of {CARRIERS.length} markets selected
-          </p>
         </div>
         <button
           type="button"

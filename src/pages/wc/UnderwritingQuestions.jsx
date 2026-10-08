@@ -112,7 +112,7 @@ export default function UnderwritingQuestions({
   }
 
   return (
-    <div className="w-full space-y-5">
+    <div className="w-full space-y-6">
       <p className="text-sm text-gray-500 -mt-2">
         Please validate all credit questions for this risk to improve pricing.
       </p>
