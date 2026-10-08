@@ -202,8 +202,8 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
   return (
     <div className="w-full space-y-4">
       <p className="text-sm text-gray-500 -mt-2">
-        Submitting registers BTIS as your broker with each checked carrier — that market is then closed to a direct submission for this risk.
-        Uncheck any market you plan to approach directly.
+        All markets are checked by default — get your price indication, or uncheck any
+        you'd like to skip.
       </p>
 
       {/* gap-y is larger than gap-x: the ribbons straddle the top border,
@@ -317,6 +317,12 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
           )
         })}
       </div>
+
+      {/* What checking a market actually commits the agent to — the prototype
+          puts it under the tiles rather than in the lead paragraph. */}
+      <p className="text-xs text-gray-400 leading-relaxed">
+        Checked markets will be approached by BTIS and blocked for direct submission elsewhere.
+      </p>
 
       <div className="flex items-center justify-between gap-3 pt-3">
         <div className="flex items-center gap-4">
