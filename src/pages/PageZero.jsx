@@ -303,8 +303,8 @@ export default function PageZero({ onStart, isDark = false }) {
                 </button>
 
                 {appetite === 'good' && (
-                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-center gap-3">
-                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
+                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -318,8 +318,8 @@ export default function PageZero({ onStart, isDark = false }) {
                 )}
 
                 {appetite === 'limited' && (
-                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-center gap-3">
-                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+                  <div className="im-info-panel rounded-xl p-4 mt-3 flex items-start gap-3">
+                    <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
                       <AlertGlyph />
                     </span>
                     <p className="text-[12.5px] text-gray-600 leading-relaxed">
@@ -332,7 +332,7 @@ export default function PageZero({ onStart, isDark = false }) {
                 )}
 
                 {appetite === 'declined' && (
-                  <div className="im-info-panel im-info-panel--stop rounded-xl p-4 mt-3 flex items-center gap-3">
+                  <div className="im-info-panel im-info-panel--stop rounded-xl p-4 mt-3 flex items-start gap-3">
                     <span className="im-panel-icon im-panel-icon--stop w-7 h-7 rounded-full flex items-center justify-center shrink-0">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
                         <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />

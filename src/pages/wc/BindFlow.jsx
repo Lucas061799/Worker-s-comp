@@ -182,8 +182,8 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               </div>
             </div>
           ) : (
-            <div className="im-info-panel rounded-xl p-4 flex items-center gap-3">
-              <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+            <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
+              <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
@@ -361,8 +361,8 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
       <Stepper at={3} />
 
       {paid && (
-        <div className="im-info-panel rounded-xl p-4 flex items-center gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>

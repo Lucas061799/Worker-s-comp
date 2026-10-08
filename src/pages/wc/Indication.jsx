@@ -309,8 +309,8 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
       )}
 
       {referralInPlay && (
-        <div className="im-info-panel rounded-xl p-4 mt-3.5 flex items-center gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+        <div className="im-info-panel rounded-xl p-4 mt-3.5 flex items-start gap-3">
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
             <AlertGlyph />
           </span>
           <p className="text-[12.5px] text-gray-600 leading-relaxed">

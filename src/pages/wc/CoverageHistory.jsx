@@ -61,7 +61,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
           simulates a match every time so the banner is always visible —
           wire this to the real check when there is one. */}
       <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
-        <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+        <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1 mt-0.5">
           <AlertGlyph />
         </span>
         <p className="text-[12.5px] text-gray-600 leading-relaxed">
@@ -177,8 +177,8 @@ export default function CoverageHistory({ formData, updateFormData }) {
       {/* Four or more claims goes to an underwriter rather than through
           the self-service detail screen, so we ask for loss runs instead. */}
       {claimsPast4 === 'yes' && claimCount >= 4 && (
-        <div className="im-info-panel rounded-xl p-4 flex items-center gap-3">
-          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+        <div className="im-info-panel rounded-xl p-4 flex items-start gap-3">
+          <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0 -mt-1">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
