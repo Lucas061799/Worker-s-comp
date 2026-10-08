@@ -61,7 +61,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
         </p>
 
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--line)' }}>
-          <div className="grid grid-cols-[48px_1fr_1fr_64px_84px_40px] gap-2 px-3.5 py-2.5"
+          <div className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.3fr)_56px_72px_36px] gap-2 px-3.5 py-2.5"
             style={{ background: 'var(--fill-subtle)', borderBottom: '1px solid var(--line)' }}>
             {['Loc #', 'Street address', 'City', 'State', 'ZIP', ''].map((h, i) => (
               <SectionLabel key={i} className="!mb-0 !text-[10px]">{h}</SectionLabel>
@@ -70,7 +70,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
 
           {rows.map((loc, i) => (
             <div key={i}
-              className="grid grid-cols-[48px_1fr_1fr_64px_84px_40px] gap-2 items-center px-3.5 py-3 text-[12.5px]"
+              className="grid grid-cols-[44px_minmax(0,2.6fr)_minmax(0,1.3fr)_56px_72px_36px] gap-2 items-center px-3.5 py-3 text-[12.5px]"
               style={{ borderTop: i ? '1px solid var(--line-soft)' : 'none', color: 'var(--ink-2)' }}>
               <span className="font-semibold">{i + 1}</span>
               <span className="truncate">{[loc.address, loc.suite].filter(Boolean).join(', ') || '—'}</span>
