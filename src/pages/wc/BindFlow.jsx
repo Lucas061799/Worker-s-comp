@@ -92,12 +92,9 @@ function Stepper({ at }) {
 function DocBox({ title, required, uploaded, onToggle }) {
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <SectionLabel className="!mb-0">
-          {title}{required && <span className="text-red-400 ml-0.5">*</span>}
-        </SectionLabel>
-        {uploaded && <span className="im-chip im-chip-good">Received</span>}
-      </div>
+      <SectionLabel className="!mb-2">
+        {title}{required && <span className="text-red-400 ml-0.5">*</span>}
+      </SectionLabel>
       {uploaded ? (
         <div className="flex items-center gap-2.5 rounded-lg px-3 py-2.5"
           style={{ background: 'var(--fill-subtle)', border: '1px solid var(--line-soft)' }}>
