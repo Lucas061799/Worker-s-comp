@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Input } from '../../components/FormField'
-import { BRAND_GRADIENT, PrimaryButton, Banner, BrandText, CarrierLogo, Tag, Modal, ModalButton } from '../../components/wc/primitives'
+import { PrimaryButton, Banner, BrandText, CarrierLogo, SectionLabel, Modal, ModalButton } from '../../components/wc/primitives'
 import { CARRIERS } from './CarrierSelection'
 import { feesFor } from './Indication'
 
@@ -19,48 +19,67 @@ function SummaryRow({ label, value, last }) {
   )
 }
 
-/* The screen an agent turns toward the client. One number, the two facts
-   that qualify it, and a way out — anything more is the agent's view, not
-   the client's. */
-function ClientPresentModal({ price, carrier, effectiveDate, businessName, onClose }) {
+/* Sep 1, 2026 — the date on a document handed to a client, not the ISO
+   string the form stores. Accepts either shape and leaves anything it
+   doesn't recognise alone. */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+function prettyDate(raw) {
+  if (!raw) return '—'
+  const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(raw)
+  const us = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(raw)
+  const [y, m, d] = iso ? [iso[1], iso[2], iso[3]] : us ? [us[3], us[1], us[2]] : []
+  if (!y) return raw
+  return `${MONTHS[Number(m) - 1]} ${Number(d)}, ${y}`
+}
+
+/* The default plan the bind flow opens on, so the figure the client is
+   shown is the one they will be billed. */
+const DOWN_PCT = 0.10
+const INSTALLMENTS = 11
+function paymentLine(total) {
+  const down = Math.round(total * DOWN_PCT)
+  const each = Math.round((total - down) / INSTALLMENTS)
+  return `12-Pay · $${down.toLocaleString()} (10%) down · ${INSTALLMENTS} × $${each.toLocaleString()}`
+}
+
+function ProposalField({ label, children }) {
   return (
-    <div
-      className="bop-page fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ background: 'rgba(15,10,40,0.55)', backdropFilter: 'blur(4px)' }}
-      onClick={onClose}
-    >
-      <div
-        className="im-modal max-w-md w-full rounded-2xl px-8 py-10 text-center"
-        style={{ boxShadow: '0 32px 80px rgba(15,10,40,0.28)' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <p className="text-xs text-gray-400 mb-5">
-          Workers' Compensation for {businessName || 'your client'}
-        </p>
-
-        <p className="text-5xl font-bold leading-none mb-2">
-          <BrandText>${price.toLocaleString()}</BrandText>
-        </p>
-        <p className="text-sm text-gray-500 mb-8">
-          per year · ${Math.round(price / 12).toLocaleString()}/mo with premium finance
-        </p>
-
-        <p className="text-xs text-gray-500 pt-5" style={{ borderTop: '1px solid #F3F4F6' }}>
-          <span className="font-semibold text-gray-800">{carrier}</span>
-          <span className="mx-1.5 text-gray-300">·</span>
-          Effective {effectiveDate}
-        </p>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-8 h-10 px-6 inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-          style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
-        >
-          Close presentation
-        </button>
-      </div>
+    <div className="min-w-0">
+      <SectionLabel className="!mb-1 !text-[10px] !pl-0">{label}</SectionLabel>
+      <p className="text-[13.5px] font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
+        {children}
+      </p>
     </div>
+  )
+}
+
+/* The screen an agent turns toward the client: a proposal, not a dialog.
+   It is the house sheet like every other modal — the facts left-aligned
+   because that is how they are read, and the number last, since everything
+   above it is what the number is for. */
+function ClientPresentModal({ total, carrier, effectiveDate, businessName, onClose }) {
+  return (
+    <Modal
+      title="Workers' Compensation proposal"
+      width={520}
+      onDismiss={onClose}
+      footerAlign="end"
+      footer={<ModalButton onClick={onClose}>Close presentation</ModalButton>}
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+        <ProposalField label="Prepared for">{businessName || 'Your client'}</ProposalField>
+        <ProposalField label="Carrier">{carrier}</ProposalField>
+        <ProposalField label="Effective">{prettyDate(effectiveDate)}</ProposalField>
+        <ProposalField label="Payment">{paymentLine(total)}</ProposalField>
+      </div>
+
+      <div className="mt-6 pt-5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+        <p className="text-4xl font-bold leading-none">
+          <BrandText>${total.toLocaleString()}</BrandText>
+          <span className="text-[15px] font-semibold text-gray-400 ml-1.5">/ yr</span>
+        </p>
+      </div>
+    </Modal>
   )
 }
 
@@ -193,12 +212,10 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
 
       {presenting && (
         <ClientPresentModal
-          price={price}
+          total={fees.total}
           carrier={carrier}
           effectiveDate={pz.effectiveDate || '08/01/2026'}
           businessName={biz.name}
-          mainClass={pz.mainClass}
-          classDescription={pz.classDescription}
           onClose={() => setPresenting(false)}
         />
       )}
@@ -208,6 +225,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           title="Quote emailed"
           width={440}
           onDismiss={() => setEmailToast(false)}
+          footerAlign="end"
           footer={<ModalButton onClick={() => setEmailToast(false)}>OK</ModalButton>}
         >
           <p className="text-[14px] text-gray-600 leading-relaxed">

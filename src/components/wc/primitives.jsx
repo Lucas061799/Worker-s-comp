@@ -146,7 +146,7 @@ export function AnswerRow({ label, help, stacked = false, children }) {
    the app is one definition rather than a hand-rolled copy that drifts:
    a 17px tracked title over a hairline, 14px body, and a footer that puts
    the secondary left and the primary right. */
-export function Modal({ title, onDismiss, children, footer, width = 420 }) {
+export function Modal({ title, onDismiss, children, footer, footerAlign = 'between', width = 420 }) {
   return (
     <div
       className="bop-page fixed inset-0 z-[10000] flex items-center justify-center p-6"
@@ -180,9 +180,17 @@ export function Modal({ title, onDismiss, children, footer, width = 420 }) {
           </div>
         )}
         <div className="px-7 pb-7">{children}</div>
-        {/* wrap so a pair of long labels stacks rather than spilling past
-            the sheet's edge, whatever width the dialog is given */}
-        {footer && <div className="px-7 pb-7 flex flex-wrap items-center justify-between gap-3">{footer}</div>}
+        {/* Wrap so a pair of long labels stacks rather than spilling past
+            the sheet's edge, whatever width the dialog is given. A pair
+            spreads — the way out on the left, the way on on the right —
+            but a lone acknowledgement has nothing to sit opposite, so it
+            goes where the eye already is: `footerAlign="end"`. */}
+        {footer && (
+          <div className={`px-7 pb-7 flex flex-wrap items-center gap-3 ${
+            footerAlign === 'end' ? 'justify-end' : 'justify-between'}`}>
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   )
