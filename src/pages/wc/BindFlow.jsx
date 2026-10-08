@@ -55,6 +55,16 @@ function bindHelpFor(carrier) {
     : `Submit the documents below, pay the BTIS Service Fee, and we bind — ${name} invoices the insured directly for premium.`
 }
 
+/* What clicking Bind actually asserts. The prototype's wording, unchanged:
+   it is the record BTIS keeps in place of a signed proposal. */
+const BIND_CONFIRMATIONS = [
+  'I am the authorized representative/producer for the named insured and am authorized to submit this application and bind coverage on their behalf.',
+  'The information submitted in this application is true, accurate, and complete to the best of my knowledge.',
+  'I have reviewed the coverage, premium, effective date, exclusions, and any subjectivities shown above, and I am authorizing BTIS to bind and issue the policy on these terms.',
+  'I understand this electronic submission and confirmation, together with the attached quote, constitute my acceptance of these terms in place of a signed proposal, and that BTIS will retain this record as evidence of the transaction.',
+  'I agree to conduct this transaction electronically and understand that this electronic confirmation is legally equivalent to a physical signature.',
+]
+
 const SUBJECTIVITIES_BY_CARRIER = {
   amtrust: ['3 years of loss runs on file and reviewed.', 'Insured maintains a written safety program.'],
   clearspring: ['Signed ACORD 130 on file.', 'Insured does not perform any roofing or elevated work above 30ft.'],
@@ -136,6 +146,9 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   const [showErrors, setShowErrors] = useState(false)
   // The fee disclosure has to be acknowledged before the card is charged.
   const [authorising, setAuthorising] = useState(false)
+  /* Bind is the signature, so the terms it stands for are shown before it
+     is taken, not after. */
+  const [confirming, setConfirming] = useState(false)
 
   const grandTotal = fees?.total ?? premium
   const chosen = PLANS.find(p => p.id === plan) || PLANS[0]
@@ -393,19 +406,41 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
         </div>
       </FieldGroup>
 
-      <StepNav
-        onBack={back}
-        /* The summary screen renders `carrier` as text, so it gets the name;
-           the id rides alongside for anything that needs the record. */
-        onContinue={() => onBound({
-          carrier: carrier?.name,
-          carrierId: carrier?.id,
-          premium, grandTotal, quoteNumber, effectiveDate,
-          plan: chosen.name, down, perInstallment,
-          subjectivities,
-        })}
-        continueLabel="Bind"
-      />
+      <StepNav onBack={back} onContinue={() => setConfirming(true)} continueLabel="Bind" />
+
+      {confirming && (
+        <Modal
+          title="By clicking Bind, I confirm that:"
+          width={560}
+          onDismiss={() => setConfirming(false)}
+          footer={
+            <>
+              <ModalButton variant="ghost" onClick={() => setConfirming(false)}>Back</ModalButton>
+              {/* The summary screen renders `carrier` as text, so it gets the
+                  name; the id rides alongside for anything that needs the
+                  record. */}
+              <ModalButton onClick={() => onBound({
+                carrier: carrier?.name,
+                carrierId: carrier?.id,
+                premium, grandTotal, quoteNumber, effectiveDate,
+                plan: chosen.name, down, perInstallment,
+                subjectivities,
+              })}>
+                Bind
+              </ModalButton>
+            </>
+          }
+        >
+          <div className="space-y-3">
+            {BIND_CONFIRMATIONS.map((line, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-[8px]" style={{ background: '#A614C3' }} />
+                <span className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-2)' }}>{line}</span>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }
