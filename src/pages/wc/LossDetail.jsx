@@ -68,27 +68,26 @@ export default function LossDetail({ formData, updateFormData }) {
         <div className="mt-5">
           <AddAnother onClick={addLoss}>Add claim</AddAnother>
         </div>
-      </FieldGroup>
 
-      {/* One explanation covering the claims above, rather than a box per
-          row. Optional — the info dot says why it is worth filling in. */}
-      <FieldGroup
-        label={
-          <span className="inline-flex items-center gap-1.5">
+        {/* One explanation covering the claims above, rather than a box per
+            row — and it belongs with them rather than in a panel of its own,
+            since it is about these claims. Optional; the info dot says why it
+            is worth filling in. */}
+        <div className="mt-5 pt-5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+          <label className="flex items-center gap-1.5 text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
             Claims corrective action
             <InfoDot
               title="Claims corrective action"
               text="For best pricing available, please provide."
             />
-          </span>
-        }
-      >
-        <Textarea
-          value={data.correctiveAction}
-          onChange={val => patch({ correctiveAction: val })}
-          placeholder="What has the business changed since these claims — training, equipment, procedures, supervision?"
-          rows={3}
-        />
+          </label>
+          <Textarea
+            value={data.correctiveAction}
+            onChange={val => patch({ correctiveAction: val })}
+            placeholder="What has the business changed since these claims — training, equipment, procedures, supervision?"
+            rows={3}
+          />
+        </div>
       </FieldGroup>
     </div>
   )
