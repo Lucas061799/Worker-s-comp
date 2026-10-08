@@ -866,27 +866,6 @@ button.force-white-text,
 /* A limited appetite still lets the agent continue, so it stays in the brand
    panel. Only a hard decline — nothing to quote — earns its own family, and it
    borrows the red .im-chip-stop already carries for that meaning. */
-/* A lookup that came back. The emerald is the one .im-chip-good already uses
-   for a good outcome. */
-.im-info-panel--good {
-  background: rgba(16,185,129,0.07);
-  border-color: rgba(16,185,129,0.26);
-  color: #047857;
-}
-[data-dark="true"] .im-info-panel--good {
-  background: rgba(16,185,129,0.12) !important;
-  border-color: rgba(16,185,129,0.34) !important;
-  color: #6EE7B7 !important;
-}
-.im-panel-icon--good { background: rgba(16,185,129,0.14); color: #047857; }
-[data-dark="true"] .im-panel-icon--good {
-  background: rgba(16,185,129,0.24) !important; color: #6EE7B7 !important;
-}
-/* …and at the blanket `.border` shim's weight, as the others are. */
-[data-dark="true"] .bop-page .im-info-panel--good,
-[data-dark="true"] .im-info-panel--good { border-color: rgba(16,185,129,0.34) !important; }
-
-
 .im-info-panel--stop {
   background: rgba(239,68,68,0.07);
   border-color: rgba(239,68,68,0.26);
