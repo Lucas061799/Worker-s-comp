@@ -89,12 +89,12 @@ export default function LossDetail({ formData, updateFormData }) {
             rows={3}
           />
         </div>
-      </FieldGroup>
 
-      <InfoLine>
-        If there are 4 or more claims, please email currently valued loss runs to
-        comp@btisinc.com. Be sure to reference the quote number above.
-      </InfoLine>
+        <InfoLine className="mt-5">
+          If there are 4 or more claims, please email currently valued loss runs to
+          comp@btisinc.com. Be sure to reference the quote number above.
+        </InfoLine>
+      </FieldGroup>
     </div>
   )
 }
