@@ -81,7 +81,8 @@ function SectionCard({ title, icon, isDark = false, children }) {
           className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
           style={{ background: 'rgba(115,201,183,0.12)' }}
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="#73C9B7" strokeWidth={1.5} viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="#73C9B7" strokeWidth={1.5}
+            strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
             {icon}
           </svg>
         </div>
@@ -140,7 +141,7 @@ const ICONS = {
   card:      <><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></>,
   user:      <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
   clock:     <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
-  alert:     <><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></>,
+  alert:     <><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 10v4M12 17.5h.01" strokeWidth={2.2}/></>,
   list:      <><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></>,
 }
 
