@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Input, Select, FormGrid } from '../../components/FormField'
+import AddressAutocomplete from '../../components/AddressAutocomplete'
 import {
   FieldGroup,
   SectionLabel,
@@ -95,9 +96,25 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
             <SectionLabel>New location</SectionLabel>
             <div className="space-y-4">
               <FormGrid>
-                <Input label="Street address" required value={draft.address}
+                {/* The same lookup Business info uses for the physical
+                    address — typing a street here was never going to find
+                    one, and city, state and ZIP come back with it. */}
+                <AddressAutocomplete
+                  label="Street address"
+                  required
+                  value={draft.address}
                   onChange={v => setDraft(d => ({ ...d, address: v }))}
-                  placeholder="e.g. 1420 Prospect Rd" error={err('address')} />
+                  onSelect={({ address, city, state, zip }) =>
+                    setDraft(d => ({
+                      ...d,
+                      address: address || d.address,
+                      city: city || d.city,
+                      state: STATES.includes(state) ? state : d.state,
+                      zip: zip || d.zip,
+                    }))
+                  }
+                  error={err('address') ? 'This field is required' : ''}
+                />
                 <Input label="Suite / unit" value={draft.suite}
                   onChange={v => setDraft(d => ({ ...d, suite: v }))}
                   placeholder="Optional" />
