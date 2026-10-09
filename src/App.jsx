@@ -6,7 +6,7 @@ import btisLogoDark from './assets/btislogo-dark.png'
 import Sidebar from './components/Sidebar'
 import RightPanel from './components/RightPanel'
 import PrintSummary from './components/PrintSummary'
-import { StepHeader } from './components/wc/primitives'
+import { StepHeader, StepNav } from './components/wc/primitives'
 import PageZero from './pages/PageZero'
 import DemoBar from './components/DemoJump'
 import BusinessInfo from './pages/wc/BusinessInfo'
@@ -150,8 +150,6 @@ function App() {
       && (s.phase !== 2 || indicationReady))
     .sort((a, b) => a.num.localeCompare(b.num, undefined, { numeric: true }))
 
-  const sectionRefs = useRef({})
-  const isScrollingToRef = useRef(false)
 
   // Application-phase step keys — these all render in ONE scrolling
   // page. Clicking the sidebar scrolls to that section instead of
@@ -159,24 +157,15 @@ function App() {
   const APP_KEYS = ['business', 'history', 'losses', 'locations', 'coverages', 'questions']
 
   const goToStep = useCallback((stepId) => {
-    const step = BASE_STEPS.find(s => s.id === stepId)
     /* Editing while an underwriter has it is the one thing we stop and ask
        about — reworking the answers can send it back round. */
     if (referralInPlayRef.current) { setPendingStep(stepId); return }
-    const inAppPhase = step && APP_KEYS.includes(step.key)
     setActiveStep(stepId)
     setShowingIndication(false)
+    /* Every step is its own page now, so arriving at one means the top of
+       it — there is no longer a section further down to scroll to. */
     setTimeout(() => {
-      if (!scrollContainerRef.current) return
-      isScrollingToRef.current = true
-      if (inAppPhase) {
-        const el = sectionRefs.current[stepId]
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        else scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' })
-      } else {
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-      setTimeout(() => { isScrollingToRef.current = false }, 800)
+      scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     }, 50)
   }, [])
 
@@ -195,25 +184,6 @@ function App() {
     referralInPlayRef.current = false
     if (target != null) goToStep(target)
   }
-
-  // Scroll observer — while user is in the Application-phase scroll,
-  // update activeStep to whichever section is nearest the top.
-  const handleMainScroll = useCallback(() => {
-    if (isScrollingToRef.current) return
-    const container = scrollContainerRef.current
-    if (!container) return
-    const containerRect = container.getBoundingClientRect()
-    const threshold = containerRect.height * 0.35
-    let current = 1
-    BASE_STEPS.filter(s => APP_KEYS.includes(s.key)).forEach(step => {
-      const el = sectionRefs.current[step.id]
-      if (el) {
-        const top = el.getBoundingClientRect().top - containerRect.top
-        if (top <= threshold) current = step.id
-      }
-    })
-    setActiveStep(prev => prev !== current && current >= 1 && current <= 5 ? current : prev)
-  }, [])
 
   const goToIndication = () => {
     setShowingIndication(true)
@@ -507,22 +477,26 @@ owner_involved: 'yes',
     quote:       'Your quote',
   }
 
-  // App-phase sections — rendered stacked in one scroll page. Loss
-  // detail is conditionally included when the user reported claims > 0.
+  /* App-phase sections, one page each, in order. `ownNav` marks the two
+     that already draw their own footer; everything else gets the shared
+     StepNav below. `validate` is the hook for whatever has to run before
+     the agent leaves a page — returning false keeps them on it. Loss
+     detail and Locations are conditional on earlier answers. */
   const appSections = [
     { id: 1, key: 'business',  title: titles.business,  el: <BusinessInfo formData={formData} updateFormData={updateFormData} showErrors={attemptedQuote} /> },
     { id: 2, key: 'history',   title: titles.history,   el: <CoverageHistory formData={formData} updateFormData={updateFormData} /> },
     ...(hasLosses ? [{ id: 3, key: 'losses', title: titles.losses, el: <LossDetail formData={formData} updateFormData={updateFormData} /> }] : []),
-    ...(hasLocations ? [{ id: 9, key: 'locations', title: titles.locations, el: (
+    ...(hasLocations ? [{ id: 9, key: 'locations', title: titles.locations, ownNav: true, el: (
       <Locations formData={formData} updateFormData={updateFormData}
         onBack={() => goToStep(hasLosses ? 3 : 2)} onContinue={() => goToStep(4)} />
     ) }] : []),
     { id: 4, key: 'coverages', title: titles.coverages, el: <StateCoverages formData={formData} updateFormData={updateFormData} replaceFormSection={replaceFormSection} /> },
-    { id: 5, key: 'questions', title: titles.questions, el: (
+    { id: 5, key: 'questions', title: titles.questions, ownNav: true, el: (
       <UnderwritingQuestions
         formData={formData}
         updateFormData={updateFormData}
         showErrors={attemptedQuote}
+        onBack={() => goToStep(4)}
         onValidateAll={() => {
           if (formData.underwriting?.safety_program !== undefined) return true
           setAttemptedQuote(true)
@@ -533,6 +507,11 @@ owner_involved: 'yes',
       />
     ) },
   ]
+
+  const sectionIndex = appSections.findIndex(x => x.id === activeStep)
+  const currentSection = sectionIndex >= 0 ? appSections[sectionIndex] : appSections[0]
+  const prevSection = sectionIndex > 0 ? appSections[sectionIndex - 1] : null
+  const nextSection = sectionIndex >= 0 ? appSections[sectionIndex + 1] : null
 
   return (
     <div className="flex flex-col h-screen font-montserrat overflow-hidden"
@@ -590,27 +569,36 @@ owner_involved: 'yes',
 
         <main
           ref={scrollContainerRef}
-          onScroll={inAppPhase ? handleMainScroll : undefined}
           className="flex-1 overflow-y-auto custom-scroll relative"
           style={{ background: darkMode ? '#131629' : 'white' }}
         >
           <div className="mx-auto px-4 md:px-10 py-6 md:py-8 max-w-5xl 2xl:max-w-6xl">
-            {/* App-phase = all 5 sections stacked in one scroll */}
-            {inAppPhase && appSections.map(section => (
-              <section
-                key={section.id}
-                ref={el => { sectionRefs.current[section.id] = el }}
-                id={`section-${section.id}`}
-                className="bop-page mb-6"
-              >
+            {/* App phase = one section per page. It used to be all of them
+                stacked in a single scroll, with the step inferred from
+                scroll position — but work runs on Continue, and there is
+                no Continue to hang it on when the agent simply scrolls
+                past a section. */}
+            {inAppPhase && currentSection && (
+              <section key={currentSection.id} className="bop-page">
                 <div className="px-4 md:px-6">
-                  <StepHeader title={section.title} />
+                  <StepHeader title={currentSection.title} />
                 </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
-                  {section.el}
+                  {currentSection.el}
+                  {!currentSection.ownNav && (
+                    <div className="mt-6">
+                      <StepNav
+                        onBack={prevSection ? () => goToStep(prevSection.id) : undefined}
+                        onContinue={() => {
+                          if (currentSection.validate && !currentSection.validate()) return
+                          if (nextSection) goToStep(nextSection.id)
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </section>
-            ))}
+            )}
 
             {/* Non-app-phase = single full-page view */}
             {!inAppPhase && (
