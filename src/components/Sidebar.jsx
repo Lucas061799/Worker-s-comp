@@ -42,6 +42,7 @@ export default function Sidebar({
   onToggleDark,
   indicationReady = false,
   onGateClick,
+  onPageZeroClick,
   demoJumps,
   demoActive,
 }) {
@@ -72,6 +73,34 @@ export default function Sidebar({
       {/* Steps — flat list, matches con-gl. Phase-2 steps stay in the
           list but lock until the price indication has been produced. */}
       <nav className="flex-1 py-1 px-3 overflow-y-auto sidebar-nav relative z-10">
+        {/* The screen the submission started on — state, effective date,
+            class and the appetite answer. It is not one of the numbered
+            steps, so it carries a mark rather than a number and sits above
+            them with a rule under it. */}
+        {onPageZeroClick && (
+          <>
+            <button
+              type="button"
+              onClick={onPageZeroClick}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 hover:opacity-80 mb-0.5"
+              style={{ border: '1.5px solid transparent', background: 'transparent' }}
+            >
+              <span
+                className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                style={{ background: isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6', color: isDark ? '#8B8FA8' : '#9CA3AF' }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7" />
+                  <path strokeLinecap="round" d="M20 20l-3.5-3.5" />
+                </svg>
+              </span>
+              <span className="text-xs truncate" style={{ color: isDark ? '#8B8FA8' : '#9CA3AF' }}>
+                Appetite check
+              </span>
+            </button>
+            <div className="mx-3 mb-1.5" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
+          </>
+        )}
         {steps.map(step => {
           const isActive = step.id === activeStep
           const isDone = !!completion[step.key] && !isActive

@@ -39,17 +39,26 @@ const LIMITED_APPETITE = ['9079']
    swap this for the confirmed rules when they land. */
 const DECLINED_APPETITE = ['7228']
 
-export default function PageZero({ onStart, isDark = false }) {
-  const [state, setState] = useState('')
-  const [effectiveDate, setEffectiveDate] = useState('')
+/* Coming back to this screen from the rail, it has to open on the answers
+   already given rather than empty — the agent is here to change one of
+   them, not to re-enter all five. */
+export default function PageZero({ onStart, onCancel, initial, isDark = false }) {
+  const seed = initial || {}
+  const [state, setState] = useState(seed.state || '')
+  const [effectiveDate, setEffectiveDate] = useState(seed.effectiveDate || '')
   const [query, setQuery] = useState('')
-  const [picked, setPicked] = useState(null)
+  const [picked, setPicked] = useState(
+    seed.mainClass
+      ? (CLASSES.find(c => c.code === seed.mainClass)
+         || { code: seed.mainClass, desc: seed.classDescription || '', contractor: !!seed.isContractor })
+      : null,
+  )
   const [showSuggest, setShowSuggest] = useState(false)
-  const [payroll, setPayroll] = useState('')
-  const [license, setLicense] = useState('')
+  const [payroll, setPayroll] = useState(seed.estimatedPayroll || '')
+  const [license, setLicense] = useState(seed.contractorLicense || '')
   // null → not run yet. Changing the class resets it, because appetite is
   // answered for a specific class.
-  const [appetite, setAppetite] = useState(null)
+  const [appetite, setAppetite] = useState(seed.appetite || null)
   const [checking, setChecking] = useState(false)
 
   const suggestList = useMemo(() => {
@@ -147,6 +156,21 @@ export default function PageZero({ onStart, isDark = false }) {
                 <p className="text-sm md:text-base text-gray-500 leading-relaxed">
                   First, tell us a bit about the business.
                 </p>
+                {/* Only on a return visit — on the first run there is no
+                    application behind this to go back to. */}
+                {onCancel && (
+                  <button
+                    type="button"
+                    onClick={onCancel}
+                    className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold transition hover:opacity-80"
+                    style={{ color: '#5C2ED4' }}
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                    </svg>
+                    Back to the application
+                  </button>
+                )}
               </div>
 
               {/* Two columns, as CBIC's landing form is — a single column

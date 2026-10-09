@@ -284,10 +284,17 @@ function App() {
      carrierSelection.checked and prices off scheduled payroll, so a
      partial seed reads as "0 markets returned a price". */
   const seedDemoData = () => {
+    /* The whole of what the first screen captures, not just the parts the
+       later pages read — going back to it has to find the answers that
+       were given, including the appetite result and the payroll it was
+       run against. */
     updateFormData('pageZero', {
       productType: 'wc', state: 'CA', effectiveDate: '2026-04-01',
       mainClass: '5183', classDescription: 'Plumbing — shop & outside (≥ $31/hr)',
       isContractor: true,
+      estimatedPayroll: '$480,000',
+      contractorLicense: '1043928',
+      appetite: 'good',
     })
     updateFormData('business', {
       name: 'Sierra Ridge Plumbing Inc.',
@@ -409,6 +416,11 @@ owner_involved: 'yes',
       <>
         <PageZero
           isDark={darkMode}
+          /* On a revisit it opens on the answers already given, and can be
+             left without changing any of them. There is nothing behind it
+             on the first run, so neither applies then. */
+          initial={formData.pageZero}
+          onCancel={formData.pageZero ? () => setPageZeroDone(true) : undefined}
           onStart={(data) => {
             updateFormData('pageZero', data)
             setPageZeroDone(true)
@@ -562,6 +574,10 @@ owner_involved: 'yes',
             onToggleDark={() => setDarkMode(d => !d)}
             indicationReady={indicationReady}
             onGateClick={goToIndication}
+            /* The first screen is reachable again: the state, the date and
+               the class it captured are all still changeable, and nothing
+               else in the rail leads back to them. */
+            onPageZeroClick={() => { setPageZeroDone(false); setMobileSidebarOpen(false) }}
             demoJumps={demoJumps}
             demoActive={demoActive}
           />
