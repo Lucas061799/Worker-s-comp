@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Input, Select } from '../../components/FormField'
 import {
   FieldGroup,
@@ -16,7 +16,6 @@ import {
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
-const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC']
 
 /* Policy-level, so it sits above the state selector — everything from the
    state tabs down is per-state. */
@@ -55,30 +54,33 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
   const business = formData.business || {}
   const data = formData.coverage || {}
 
-  const [activeState, setActiveState] = useState(pz.state || 'CA')
-  const [addedStates, setAddedStates] = useState([])
-  const [addOpen, setAddOpen] = useState(false)
-
   const homeState = pz.state || 'CA'
-  const availableStates = US_STATES.filter(s => s !== homeState && !addedStates.includes(s))
+  const [pickedState, setPickedState] = useState(homeState)
 
-  const removeState = (st) => {
-    setAddedStates(prev => prev.filter(x => x !== st))
-    if (activeState === st) setActiveState(homeState)
-    // the state's own class/payroll/waiver data goes with it — a merge
-    // would quietly keep the key, so the section is replaced wholesale
+  /* The submission covers the states it has locations in, so the list is
+     read off Locations rather than built here — a state with no location
+     behind it had nothing to schedule payroll against. */
+  const states = [...new Set([
+    homeState,
+    ...(formData.locations?.list || []).map(l => l.state).filter(Boolean),
+  ])]
+
+  /* A location can be removed after its state was being edited here, which
+     would otherwise leave the page on a tab that no longer exists. */
+  const activeState = states.includes(pickedState) ? pickedState : homeState
+
+  /* Payroll scheduled against a state that has since lost its last location
+     would still be rated. Drop it when the state goes — `officers` and
+     `elLimits` live in this section too, so only two-letter keys are
+     considered. */
+  const orphans = Object.keys(data).filter(k => /^[A-Z]{2}$/.test(k) && !states.includes(k))
+  useEffect(() => {
+    if (!orphans.length) return
     const next = { ...data }
-    delete next[st]
+    orphans.forEach(k => delete next[k])
     ;(replaceFormSection || updateFormData)('coverage', next)
-  }
-
-  const commitAddState = (next) => {
-    if (next) {
-      setAddedStates([...addedStates, next])
-      setActiveState(next)
-    }
-    setAddOpen(false)
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orphans.join(',')])
 
   const entityType = business.entityType || 'corp'
 
@@ -144,84 +146,37 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
         </AnswerRow>
       </RowGroup>
 
-      {/* One chip per state. The home state came from page one and stays;
-          every state the agent added carries its own ✕, which is what the
-          enclosed track had no room for. Add opens a list below rather than
-          swapping itself into a field, so the row keeps its shape. */}
+      {/* One chip per state the submission has a location in. There is no
+          add control: a state arrives here by having a location added to it
+          on Locations, which is the only place the address behind it is
+          captured. */}
       <div>
         <SectionLabel>State</SectionLabel>
         <div className="flex items-center gap-2 flex-wrap" role="radiogroup" aria-label="Active state">
-          {[homeState, ...addedStates].map(st => {
+          {states.map(st => {
             const selected = activeState === st
-            const removable = st !== homeState
             return (
-              <span
+              <button
                 key={st}
-                className={`inline-flex items-center rounded-full transition-all ${selected ? '' : 'border'}`}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setPickedState(st)}
+                className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all ${selected ? 'force-white-text' : 'border'}`}
                 style={selected
-                  ? { background: BRAND_GRADIENT }
-                  : { background: 'var(--surface-card)', borderColor: 'var(--line)' }}
+                  ? { background: BRAND_GRADIENT, color: 'white' }
+                  : { background: 'var(--surface-card)', borderColor: 'var(--line)', color: 'var(--ink-2)' }}
               >
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setActiveState(st)}
-                  className={`py-1.5 text-[13px] font-semibold transition-all ${removable ? 'pl-4 pr-1.5' : 'px-4'} ${selected ? 'force-white-text' : ''}`}
-                  style={{ color: selected ? 'white' : 'var(--ink-2)' }}
-                >
-                  {st}
-                </button>
-                {removable && (
-                  <button
-                    type="button"
-                    onClick={() => removeState(st)}
-                    aria-label={`Remove ${st}`}
-                    className="pr-3 pl-0.5 py-1.5 transition hover:opacity-70"
-                    style={{ color: selected ? 'rgba(255,255,255,0.75)' : '#9CA3AF' }}
-                  >
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <path d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-              </span>
+                {st}
+              </button>
             )
           })}
-
-          <span className="relative inline-flex">
-            <button
-              type="button"
-              onClick={() => setAddOpen(v => !v)}
-              aria-expanded={addOpen}
-              className="px-4 py-1.5 rounded-full text-[13px] font-semibold border border-dashed transition hover:opacity-80"
-              style={{ background: 'var(--surface-card)', borderColor: 'rgba(166,20,195,0.35)', color: '#A614C3' }}
-            >
-              + Add state
-            </button>
-
-            {addOpen && (
-              <div
-                className="absolute left-0 top-full mt-1.5 rounded-xl overflow-hidden bop-select-dropdown z-40"
-                style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', boxShadow: '0 8px 24px rgba(15,10,40,0.16)', minWidth: 160 }}
-              >
-                <div className="overflow-y-auto" style={{ maxHeight: 220 }}>
-                  {availableStates.map(opt => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => commitAddState(opt)}
-                      className="w-full text-left px-3.5 py-2 text-sm transition hover:bg-gray-50"
-                      style={{ color: 'var(--ink-2)' }}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </span>
         </div>
+        <p className="text-[12px] text-gray-500 mt-2.5">
+          {states.length === 1
+            ? 'Add a location in another state on Locations and it will appear here.'
+            : 'States follow the locations on this submission — add or remove one on Locations.'}
+        </p>
       </div>
 
       <RowGroup label="Experience mod">
