@@ -701,7 +701,15 @@ owner_involved: 'yes',
         </main>
 
         {/* Right rail — Submission summary. Only on desktop; hidden on
-            narrow viewports where it would push the form content. */}
+            narrow viewports where it would push the form content.
+
+            It holds carriers and prices, and there are no prices until the
+            markets have been rated, so through the application it was six
+            placeholder rows of noise beside the form the agent is actually
+            filling in. It arrives with the indication and stays from there
+            on, which is where it earns its place: past the indication it is
+            the only way to change market. */}
+        {indicationReady && (
         <div className="hidden xl:block">
           <RightPanel
             formData={formData}
@@ -720,6 +728,7 @@ owner_involved: 'yes',
             onDownloadSummary={() => setShowSummary(true)}
           />
         </div>
+        )}
       </div>
 
       <PrintSummary
