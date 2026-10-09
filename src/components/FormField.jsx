@@ -400,7 +400,7 @@ export function Textarea({ label, required, placeholder, rows = 4, value, onChan
 }
 
 // Select / Dropdown — custom styled, no native <select>
-export function Select({ label, required, options = [], value, onChange, placeholder = 'Select...', className = '', error = false }) {
+export function Select({ label, required, options = [], value, onChange, placeholder = 'Select...', className = '', error = false, wideMenu = false }) {
   const [open, setOpen] = useState(false)
   const [dropdownStyle, setDropdownStyle] = useState({})
   const ref = useRef(null)
@@ -419,12 +419,22 @@ export function Select({ label, required, options = [], value, onChange, placeho
     const recalc = () => {
       if (!triggerRef.current) return
       const r = triggerRef.current.getBoundingClientRect()
+      /* A menu whose options say more than the trigger has room for — a
+         location's full street address, say — sizes to its content and
+         only uses the trigger as a floor, then pulls back in if that runs
+         it off the right edge. */
+      const base = { position: 'fixed', top: r.bottom + 4, zIndex: 9999 }
+      if (!wideMenu) {
+        setDropdownStyle({ ...base, left: r.left, width: r.width })
+        return
+      }
+      const max = Math.min(420, window.innerWidth - 24)
       setDropdownStyle({
-        position: 'fixed',
-        top: r.bottom + 4,
-        left: r.left,
-        width: r.width,
-        zIndex: 9999,
+        ...base,
+        left: Math.max(12, Math.min(r.left, window.innerWidth - 12 - max)),
+        minWidth: r.width,
+        maxWidth: max,
+        width: 'max-content',
       })
     }
     recalc()
@@ -434,7 +444,7 @@ export function Select({ label, required, options = [], value, onChange, placeho
       window.removeEventListener('scroll', recalc, true)
       window.removeEventListener('resize', recalc)
     }
-  }, [open])
+  }, [open, wideMenu])
 
   const optVal = (opt) => opt.value ?? opt
   const optLabel = (opt) => opt.label ?? opt
@@ -495,7 +505,7 @@ export function Select({ label, required, options = [], value, onChange, placeho
                   onMouseEnter={e => { if (!selected) e.currentTarget.style.background = '#F9FAFB' }}
                   onMouseLeave={e => { if (!selected) e.currentTarget.style.background = 'transparent' }}
                 >
-                  <span>{l}</span>
+                  <span className={wideMenu ? 'leading-snug' : 'truncate'}>{l}</span>
                   {selected && (
                     <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24">
                       <path d="M5 13l4 4L19 7" stroke="url(#selCheckG)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>

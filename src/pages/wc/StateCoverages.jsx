@@ -125,12 +125,29 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
   const anyIncluded = officers.some(o => o.status !== 'exclude')
   const anyExcluded = officers.some(o => o.status === 'exclude')
 
-  /* Locations the agent can assign a class row to. */
-  // Short labels — the column is narrow and the number is what identifies
-  // the location; the address itself lives on the Locations page.
-  const locationOptions = (business.locations?.length
-    ? business.locations.map((_, i) => `Location ${i + 1}`)
-    : ['Location 1'])
+  /* Locations the agent can assign a class row to. Numbered as the
+     Locations table numbers them — the physical address from General Info
+     is Location 1 — and carrying the street, because "Location 2" on its
+     own does not tell anyone which site they are scheduling payroll for.
+     Only the ones in the state being edited: the card is per state. */
+  const allLocations = [
+    {
+      n: 1,
+      state: business.state || homeState,
+      address: [business.address, business.city].filter(Boolean).join(', '),
+    },
+    ...(formData.locations?.list || []).map((l, i) => ({
+      n: i + 2,
+      state: l.state || homeState,
+      address: [[l.address, l.suite].filter(Boolean).join(', '), l.city].filter(Boolean).join(', '),
+    })),
+  ]
+  const inState = allLocations.filter(l => l.state === activeState)
+  const locationOptions = (inState.length ? inState : [allLocations[0]]).map(l => ({
+    value: `Location ${l.n}`,
+    /* The trigger truncates this; the menu shows it whole. */
+    label: l.address ? `Loc ${l.n} — ${l.address}` : `Loc ${l.n}`,
+  }))
 
   return (
     <div className="w-full space-y-6">
@@ -277,7 +294,13 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
               <Select
                 label={idx === 0 ? 'Location' : undefined}
                 options={locationOptions}
-                value={row.location || locationOptions[0]}
+                wideMenu
+                /* A row can be holding a location that belonged to another
+                   state before the tab changed; fall back rather than show
+                   the placeholder on a row that does have an answer. */
+                value={locationOptions.some(o => o.value === row.location)
+                  ? row.location
+                  : locationOptions[0]?.value}
                 onChange={val => updateClass(idx, { location: val })}
               />
               {/* Code and description are one field — type the trade to
