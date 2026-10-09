@@ -515,7 +515,6 @@ owner_involved: 'yes',
           return false
         }}
         onGetIndication={() => goToStep(6)}
-        onGoToStep={goToStep}
       />
     ) },
   ]

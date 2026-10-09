@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Select } from '../../components/FormField'
 import {
   BRAND_GRADIENT,
@@ -82,13 +82,11 @@ export default function UnderwritingQuestions({
   quotesReady = false,
   showErrors = false,
   onValidateAll,
-  onGoToStep,
 }) {
   const data = formData.underwriting || {}
   const set = (key) => (val) => updateFormData('underwriting', { [key]: val })
   const err = (key) => showErrors && (data[key] === undefined || data[key] === null || data[key] === '')
 
-  const [showPreview, setShowPreview] = useState(false)
 
   const allAnswered = ALL_KEYS.every(k => data[k] !== undefined && data[k] !== null && data[k] !== '')
 
@@ -138,9 +136,10 @@ export default function UnderwritingQuestions({
         </RowGroup>
       ))}
 
-      {/* Action row — Continue is left-aligned; clicking it opens the
-          Application Preview so the agent reviews the whole submission
-          before it goes to rating. Matches Commercial Auto's pattern. */}
+      {/* Action row. Continue used to open an Application Overview first,
+          but a real application holds far more than a dialog can show, and
+          a summary that leaves most of it out is not a review — the
+          receipt at the end prints the whole submission. */}
       {/* With a Back button the pair sits one at each edge; without one the
           primary anchors left rather than drifting to the right margin. */}
       <div className={`pt-2 flex items-center gap-3 ${onBack ? 'justify-between' : 'justify-start'}`}>
@@ -156,209 +155,18 @@ export default function UnderwritingQuestions({
         )}
         <button
           type="button"
-          onClick={() => {
-            if (onValidateAll && !onValidateAll()) return
-            setShowPreview(true)
-          }}
+          onClick={handleContinue}
           disabled={!allAnswered || quoting || quotesReady}
           className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90 disabled:cursor-not-allowed"
           style={allAnswered && !quoting && !quotesReady
             ? { background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
             : { background: 'var(--fill-disabled)', color: '#9CA3AF' }}
         >
-          {quoting ? 'Getting Quotes…' : quotesReady ? 'Quotes Ready ✓' : 'Preview & Continue'}
+          {quoting ? 'Getting Quotes…' : quotesReady ? 'Quotes Ready ✓' : 'Continue'}
           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </button>
-      </div>
-
-      {showPreview && (
-        <ApplicationPreviewModal
-          formData={formData}
-          onClose={() => setShowPreview(false)}
-          onSubmit={() => { setShowPreview(false); onGetIndication && onGetIndication() }}
-          onEdit={onGoToStep}
-        />
-      )}
-    </div>
-  )
-}
-
-function PreviewRow({ label, value }) {
-  return (
-    <div className="flex items-center justify-between py-1.5" style={{ borderBottom: '1px solid var(--line-soft)' }}>
-      <span className="text-xs text-gray-500">{label}</span>
-      <span className="text-xs font-semibold text-right" style={{ color: 'var(--ink)' }}>{value || '—'}</span>
-    </div>
-  )
-}
-
-const PREVIEW_ICONS = {
-  building: 'M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1',
-  doc:      'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-  clock:    'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-  credit:   'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z',
-  shield:   'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-  user:     'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-  money:    'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-}
-
-/* Same panel head the submission receipt and print summary use: teal
-   icon chip, bold navy title. */
-function PreviewEdit({ onClick, label }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={`Edit ${label}`}
-      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition hover:bg-gray-50"
-    >
-      <svg className="w-3.5 h-3.5" fill="none" stroke="#9CA3AF" strokeWidth="1.6" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-    </button>
-  )
-}
-
-function PreviewSection({ title, icon = 'shield', onEdit, children }) {
-  return (
-    <div className="rounded-xl p-4" style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
-      <div className="flex items-center gap-2 mb-3">
-        <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'rgba(115,201,183,0.12)' }}>
-          <svg className="w-3.5 h-3.5" fill="none" stroke="#73C9B7" strokeWidth="1.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d={PREVIEW_ICONS[icon] || PREVIEW_ICONS.shield} />
-          </svg>
-        </div>
-        <h3 className="text-xs font-bold flex-1" style={{ color: 'var(--ink)' }}>{title}</h3>
-        {onEdit && <PreviewEdit onClick={onEdit} label={title} />}
-      </div>
-      {children}
-    </div>
-  )
-}
-
-function ApplicationPreviewModal({ formData, onClose, onSubmit, onEdit }) {
-  const edit = (stepId) => onEdit ? () => { onClose(); onEdit(stepId) } : undefined
-  const pz  = formData.pageZero      || {}
-  const biz = formData.business      || {}
-  const hist= formData.history       || {}
-  const state = pz.state || 'CA'
-  const stateCov = (formData.coverage || {})[state] || {}
-  const uw  = formData.underwriting  || {}
-  const sel = formData.carrierSelection?.checked || {}
-  const selectedCount = Object.values(sel).filter(Boolean).length
-  const totalPayroll = (stateCov.classes || []).reduce((sum, c) => {
-    const n = parseInt(String(c.payroll || '').replace(/[^\d]/g, ''), 10)
-    return sum + (Number.isFinite(n) ? n : 0)
-  }, 0)
-
-  return (
-    <div
-      className="bop-page fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(15,10,40,0.6)', backdropFilter: 'blur(8px)' }}
-      onClick={onClose}
-    >
-      <div
-        className="im-sheet relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-        style={{ maxHeight: '92vh' }}
-        onClick={ev => ev.stopPropagation()}
-      >
-        <div className="shrink-0" style={{ background: 'var(--surface-card)', borderBottom: '1px solid var(--line-soft)' }}>
-          <div className="flex items-start gap-4 px-5 pt-4 pb-4">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: 'linear-gradient(88.09deg,rgba(92,46,212,0.12) 0%,rgba(166,20,195,0.12) 100%)' }}>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24">
-                <defs>
-                  <linearGradient id="wcPrevHdrG" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#5C2ED4"/>
-                    <stop offset="100%" stopColor="#A614C3"/>
-                  </linearGradient>
-                </defs>
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  stroke="url(#wcPrevHdrG)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <div className="flex-1">
-              <h1 className="text-xl font-bold leading-tight" style={{ color: 'var(--ink)' }}>Application Overview</h1>
-              <p className="text-xs mt-0.5 leading-relaxed" style={{ color: '#9CA3AF' }}>Review the submission before it goes to rating.</p>
-            </div>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all hover:bg-gray-50"
-              style={{ border: '1px solid var(--line)', background: 'var(--surface-card)' }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-                <path stroke="url(#wcPrevHdrG)" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto custom-scroll px-4 py-4" style={{ background: 'var(--surface-soft)' }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-            <PreviewSection title="Business" icon="building" onEdit={edit(1)}>
-              <PreviewRow label="Name" value={biz.name} />
-              <PreviewRow label="Entity" value={biz.entityType && ({corp:'Corporation',llc:'LLC',sole:'Sole proprietor',partner:'Partnership'})[biz.entityType]} />
-              <PreviewRow label="Primary state" value={pz.state} />
-              <PreviewRow label="Effective" value={pz.effectiveDate} />
-              <PreviewRow label="Year established" value={biz.yearEstablished} />
-            </PreviewSection>
-
-            <PreviewSection title="Class & payroll" icon="money" onEdit={edit(4)}>
-              <PreviewRow label="Primary class" value={pz.mainClass && `${pz.mainClass} — ${pz.classDescription}`} />
-              <PreviewRow label="Classes on file" value={(stateCov.classes || []).length} />
-              <PreviewRow label="Annual payroll" value={totalPayroll ? `$${totalPayroll.toLocaleString()}` : '—'} />
-              <PreviewRow label="Blanket waiver" value={stateCov.blanketWaiver ? 'Yes' : 'No'} />
-            </PreviewSection>
-
-            <PreviewSection title="Coverage history" icon="clock" onEdit={edit(2)}>
-              <PreviewRow label="Coverage status" value={hist.currentCarrier || hist.coverageStatus} />
-              <PreviewRow label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
-              <PreviewRow label="Experience mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || ''}`} />
-            </PreviewSection>
-
-            <PreviewSection title="Credit opportunity" icon="credit" onEdit={edit(5)}>
-              <PreviewRow label="Safety program" value={uw.safety_program === 'yes' ? 'Yes' : 'No'} />
-              <PreviewRow label="Safety meetings" value={uw.safety_meetings === 'yes' ? 'Yes' : 'No'} />
-              <PreviewRow label="Return to work program" value={uw.return_to_work === 'yes' ? 'Yes' : 'No'} />
-              <PreviewRow label="Turnover rate" value={uw.turnover_rate} />
-            </PreviewSection>
-
-            <PreviewSection title="Carriers" icon="shield" onEdit={edit(6)}>
-              <PreviewRow label="Markets selected" value={selectedCount ? `${selectedCount} of 6` : 'All'} />
-            </PreviewSection>
-
-            <PreviewSection title="Contact" icon="user" onEdit={edit(1)}>
-              <PreviewRow label="Phone" value={biz.phone} />
-              <PreviewRow label="Email" value={biz.email} />
-            </PreviewSection>
-          </div>
-        </div>
-
-        <div className="shrink-0 px-5 py-3.5 flex items-center justify-between gap-3"
-          style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-card)' }}>
-          <button
-            onClick={onClose}
-            /* Commercial Auto's secondary button: no fill, a 1px --line
-               stroke and gray-500 text (its #6B7280 in light, #9CA3AF in
-               dark). Transparent also means it never comes out darker than
-               the card it sits on. */
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 transition hover:opacity-80"
-            style={{ border: '1px solid var(--line)', background: 'transparent' }}
-          >
-            Back to Edit
-          </button>
-          <button
-            onClick={onSubmit}
-            className="px-7 py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90"
-            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.3)' }}
-          >
-            Get price indication →
-          </button>
-        </div>
       </div>
     </div>
   )
