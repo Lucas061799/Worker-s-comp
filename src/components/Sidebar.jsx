@@ -60,7 +60,7 @@ export default function Sidebar({
       }}
     >
       {/* Title */}
-      <div className="px-5 pt-5 pb-3 relative z-10">
+      <div className="px-5 pt-5 pb-1.5 relative z-10">
         <h2 className="text-base font-bold leading-tight" style={{ color: isDark ? '#F9FAFB' : undefined }}>{productName}</h2>
         {/* Labelled, as CBIC's rail labels it — a bare code leaves the agent
             guessing which number it is. */}
@@ -85,16 +85,21 @@ export default function Sidebar({
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 hover:opacity-80 mb-0.5"
               style={{ border: '1.5px solid transparent', background: 'transparent' }}
             >
+              {/* The chip and label of a step already answered, not of a
+                  locked one — grey on grey read as "you cannot click this",
+                  which is the opposite of why it is here. */}
               <span
                 className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
-                style={{ background: isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6', color: isDark ? '#8B8FA8' : '#9CA3AF' }}
+                style={isDark
+                  ? { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.7) 0%, rgba(166,20,195,0.7) 100%)', color: '#ffffff' }
+                  : { background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)', color: '#5C2ED4' }}
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <circle cx="11" cy="11" r="7" />
                   <path strokeLinecap="round" d="M20 20l-3.5-3.5" />
                 </svg>
               </span>
-              <span className="text-xs truncate" style={{ color: isDark ? '#8B8FA8' : '#9CA3AF' }}>
+              <span className="text-xs truncate font-medium" style={{ color: isDark ? '#D1D5DB' : '#4B5563' }}>
                 Appetite check
               </span>
             </button>

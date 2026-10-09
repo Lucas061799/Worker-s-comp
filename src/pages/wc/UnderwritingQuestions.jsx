@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import norbieface from '../../assets/norbieface.png'
+import { useEffect, useState } from 'react'
 import { Select } from '../../components/FormField'
 import {
   BRAND_GRADIENT,
-  BrandText,
   RowGroup,
   AnswerRow,
   YesNo,
   PrimaryButton,
-  Banner,
 } from '../../components/wc/primitives'
 
 /* The BTIS credit questionnaire, grouped by topic so the run of fifteen
@@ -91,20 +88,21 @@ export default function UnderwritingQuestions({
   const set = (key) => (val) => updateFormData('underwriting', { [key]: val })
   const err = (key) => showErrors && (data[key] === undefined || data[key] === null || data[key] === '')
 
-  const [quickFilled, setQuickFilled] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
 
   const allAnswered = ALL_KEYS.every(k => data[k] !== undefined && data[k] !== null && data[k] !== '')
 
-  const handleQuickFill = () => {
-    updateFormData('underwriting', RECOMMENDED)
-    setQuickFilled(true)
-  }
-
-  const handleReset = () => {
-    updateFormData('underwriting', Object.fromEntries(ALL_KEYS.map(k => [k, undefined])))
-    setQuickFilled(false)
-  }
+  /* The standard answer is the answer for most risks, so the page opens on
+     it and the agent corrects what differs — which is what the line above
+     asks them to do. Only blanks are filled, so coming back here never
+     overwrites an answer already given. */
+  useEffect(() => {
+    const blanks = Object.fromEntries(
+      Object.entries(RECOMMENDED).filter(([k]) => data[k] === undefined || data[k] === null || data[k] === ''),
+    )
+    if (Object.keys(blanks).length) updateFormData('underwriting', blanks)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleContinue = () => {
     if (onValidateAll && !onValidateAll()) return
@@ -116,55 +114,6 @@ export default function UnderwritingQuestions({
       <p className="text-sm text-gray-500 -mt-2">
         Please validate all credit questions for this risk to improve pricing.
       </p>
-
-      {/* Norbie quick-fill, as Commercial Auto offers it: available
-          whenever it has not been used, not only on an untouched form. */}
-      {!quickFilled && (
-        <Banner icon={false}>
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <img src={norbieface} alt="Norbie" className="w-8 h-8 rounded-full shrink-0" />
-              <div>
-                <p className="text-[13px] font-semibold leading-snug text-gray-800">
-                  Let Norbie pre-fill standard answers.
-                </p>
-                <p className="text-[11px] mt-0.5 text-gray-500">
-                  Apply <BrandText className="font-semibold">recommended answers</BrandText> instantly.
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="btn-gradient force-white-text inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold"
-              style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.22)' }}
-            >
-              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-              Quick-fill standard answers
-            </button>
-          </div>
-        </Banner>
-      )}
-
-      {quickFilled && (
-        <div
-          className="im-info-panel rounded-xl px-4 py-3 flex items-center justify-between gap-3"
-        >
-          <p className="text-xs font-medium" style={{ color: '#5C2ED4' }}>
-            Standard answers applied — review each one below and adjust anything that differs.
-          </p>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="text-[10px] underline shrink-0"
-            style={{ color: '#6B7280' }}
-          >
-            Reset all
-          </button>
-        </div>
-      )}
 
       {/* Four topic groups, asked as a compact list — question on the
           left, its answer on the right. */}
