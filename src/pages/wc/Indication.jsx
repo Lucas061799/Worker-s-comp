@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
   BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoLine, InfoPanel, Tag,
@@ -69,16 +69,16 @@ export function feesFor(premium, brokerFee = 0) {
    accordion, so every market and its price is on screen at once. What the
    accordion hid behind a chevron is behind the ⓘ instead: the servicing
    facts that are the same whoever is reading them. */
-function CarrierTile({ carrier, best, selected, onSelect }) {
+function CarrierTile({ carrier, best, onSelect }) {
   const quoted = !carrier.noquote
 
   return (
     <div
-      className={`rounded-2xl overflow-hidden flex flex-col transition ${selected ? 'im-edge-brand' : best ? 'im-edge-best' : ''}`}
+      className={`rounded-2xl overflow-hidden flex flex-col transition ${best ? 'im-edge-best' : ''}`}
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: `1.5px solid ${selected ? '#5C2ED4' : best ? '#7C3AED' : 'var(--line)'}`,
-        boxShadow: selected || best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
+        border: `1.5px solid ${best ? '#7C3AED' : 'var(--line)'}`,
+        boxShadow: best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
       }}
     >
       {/* The carrier BTIS writes itself gets a banner across the top rather
@@ -141,28 +141,27 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
               <span className="text-[11px] text-gray-400">/ yr indication</span>
             </p>
 
-            <div className="flex flex-wrap items-center gap-2 mt-3.5">
+            <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
               {best && <Tag tone="brand">Best value</Tag>}
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer'}
               </span>
             </div>
 
-            {/* mt-auto floors the button however tall the rest of the tile
-                runs, so a row of them ends on one line — and the padding is
-                on the wrapper, because an auto margin collapses to nothing
-                on the tile that happens to be the tallest, which left the
-                button against the chips. */}
+            {/* Two auto margins — here and above the chips — so a row stays
+                level and the height the recommended banner adds to one tile
+                is shared between its siblings' gaps instead of opening a
+                hole in one of them. The padding is on the wrapper because an
+                auto margin collapses to nothing on the tallest tile, which
+                left the button sitting on the chips. */}
             <div className="mt-auto pt-5">
               <button
                 type="button"
                 onClick={onSelect}
-                className="w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
-                style={selected
-                  ? { background: BRAND_GRADIENT, color: '#fff', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
-                  : { background: 'var(--surface-card)', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+                className="w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition hover:opacity-90"
+                style={{ background: BRAND_GRADIENT, color: '#fff', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
               >
-                {selected ? '✓ Selected' : 'Select'}
+                Select
               </button>
             </div>
           </>
@@ -184,7 +183,6 @@ const REFERRAL_THRESHOLD = 20000
 
 export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false, onSelectionChange }) {
   const checked = formData.carrierSelection?.checked || {}
-  const [selected, setSelected] = useState(null)
 
   const results = useMemo(() => {
     return CARRIERS
@@ -204,7 +202,6 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
   }, [formData, checked])
 
   const quoted = results.filter(r => !r.noquote)
-  const selectedCarrier = results.find(r => r.id === selected)
 
   const lowest = quoted.length ? Math.min(...quoted.map(r => r.price)) : null
   const showRefer = !referralInPlay && lowest !== null && lowest > REFERRAL_THRESHOLD
@@ -221,14 +218,14 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
             key={r.id}
             carrier={r}
             best={r.id === quoted[0]?.id}
-            selected={selected === r.id}
-            /* The rail mirrors this, so the choice is announced rather than
-               kept to this screen. */
-            onSelect={() => setSelected(prev => {
-              const next = prev === r.id ? null : r.id
-              onSelectionChange && onSelectionChange(next)
-              return next
-            })}
+            /* Select is the decision — it carries straight on to the
+               carrier's own questions, as the prototype's tiles do. The
+               rail is told first so it is already showing the right market
+               when the next screen arrives. */
+            onSelect={() => {
+              onSelectionChange && onSelectionChange(r.id)
+              onPickCarrier(r)
+            }}
           />
         ))}
       </div>
@@ -277,21 +274,6 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
         Indications on the payroll and mod on file — the carrier's own questions come next.
       </InfoLine>
 
-      {selectedCarrier && (
-        <div className="mt-6">
-          <button
-            type="button"
-            onClick={() => onPickCarrier(selectedCarrier)}
-            className="flex items-center gap-2 px-7 py-2.5 text-sm font-semibold text-white rounded-xl transition hover:opacity-90"
-            style={{ background: BRAND_GRADIENT, boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
-          >
-            Continue with {selectedCarrier.name}
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </button>
-        </div>
-      )}
     </div>
   )
 }
