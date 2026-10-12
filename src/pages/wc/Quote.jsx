@@ -143,7 +143,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-12 pt-1">
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 lg:gap-12 pt-1">
           <div className="w-full lg:w-[352px] shrink-0">
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
@@ -177,8 +177,13 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           {/* What the agent can do with this quote, beside it rather than
               under it — the bind leads, the two ways to hand it to the
               client follow. Stacked and of one width: in a row they wrapped
-              two-and-one at anything short of a very wide window. */}
-          <div className="flex flex-col gap-2.5 w-full lg:flex-1 lg:items-end">
+              two-and-one at anything short of a very wide window.
+
+              The column spans the figures beside it — its first button
+              drops the same 10px below the rule that the first fee row's
+              text does, its last ends level with the grand total, and the
+              three space themselves evenly between. */}
+          <div className="flex flex-col gap-2.5 w-full lg:flex-1 lg:items-end lg:gap-0 lg:justify-between lg:pt-2.5">
             <PrimaryButton onClick={handleBind} disabled={binding} className="w-full lg:w-[180px]">
               {binding ? 'Binding…' : 'Bind online'}
             </PrimaryButton>
