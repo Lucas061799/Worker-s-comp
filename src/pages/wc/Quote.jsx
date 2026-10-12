@@ -129,10 +129,12 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
       {/* Quote summary — the market it is with, and what it costs. The
           risk's own details are on the pages behind this one; repeating
           them here only pushed the total below the fold. */}
-      {/* The card is sized to what is in it. Full width, the labels sat a
-          page away from their figures; a narrow column inside a full-width
-          card just moved that empty strip to the right of the numbers. */}
-      <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #E5E7EB', maxWidth: 400 }}>
+      {/* Two columns, as the prototype has it: what it costs on the left,
+          what you can do about it on the right. Spreading the figures the
+          width of the card put 500px between a label and its number;
+          shrinking the card instead left the same emptiness beside it.
+          Giving the space a job solves both. */}
+      <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
         <div className="flex items-center gap-3 min-w-0 pb-5" style={{ borderBottom: '1px solid #F3F4F6' }}>
           {carrierMeta && <CarrierLogo carrier={carrierMeta} size={44} />}
           <div className="min-w-0">
@@ -141,7 +143,8 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           </div>
         </div>
 
-        <div className="pt-1">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12 pt-1">
+          <div className="w-full lg:w-[352px] shrink-0">
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
           <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
@@ -169,41 +172,49 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
               <BrandText>{money2(fees.total)}</BrandText>
             </span>
           </div>
+          </div>
+
+          {/* What the agent can do with this quote, beside it rather than
+              under it — the bind leads, the two ways to hand it to the
+              client follow. Stacked and of one width: in a row they wrapped
+              two-and-one at anything short of a very wide window. */}
+          <div className="flex flex-col gap-2.5 w-full lg:flex-1 lg:items-end">
+            <PrimaryButton onClick={handleBind} disabled={binding} className="w-full lg:w-[180px]">
+              {binding ? 'Binding…' : 'Bind online'}
+            </PrimaryButton>
+            <button
+              type="button"
+              onClick={() => setPresenting(true)}
+              className="h-10 px-6 w-full lg:w-[180px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+              style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+            >
+              Present quote
+            </button>
+            <button
+              type="button"
+              onClick={handleEmail}
+              className="h-10 px-6 w-full lg:w-[180px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+              style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+            >
+              Email quote
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-wrap items-center gap-3">
-        {onBack && (
+      {/* Page navigation, which is not one of the quote's own actions. */}
+      {onBack && (
+        <div>
           <button
             type="button"
             onClick={onBack}
-            className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold mr-auto"
-            style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+            className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+            style={{ background: 'transparent', color: '#6B7280', border: '1px solid var(--line)' }}
           >
             Back
           </button>
-        )}
-        <PrimaryButton onClick={handleBind} disabled={binding}>
-          {binding ? 'Binding…' : 'Bind online'}
-        </PrimaryButton>
-        <button
-          type="button"
-          onClick={() => setPresenting(true)}
-          className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-          style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
-        >
-          Present quote
-        </button>
-        <button
-          type="button"
-          onClick={handleEmail}
-          className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-          style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
-        >
-          Email quote
-        </button>
-      </div>
+        </div>
+      )}
 
       {onRefer && (
         <div className="rounded-xl p-4 flex flex-wrap items-center justify-between gap-3"

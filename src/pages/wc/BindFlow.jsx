@@ -276,14 +276,16 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
       <div className="w-full space-y-6">
         <Stepper at={2} />
 
-        <FieldGroup label="Policy premium &amp; fees" className="max-w-[400px]">
+        <FieldGroup label="Policy premium &amp; fees">
           {/* The rows sit straight in the group. They used to be wrapped in a
               second panel inside it, which is a panel on a panel.
 
-              The group is sized to what is in it, so the figures sit near
-              their labels without leaving a strip of empty card after the
-              numbers. */}
-          <div>
+              The figures keep a column of their own — spread the width of
+              the card a label sat 500px from its number — and the note
+              that was under them takes the space beside them, so nothing
+              is left standing in an empty strip. */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-10">
+            <div className="w-full sm:w-[352px] shrink-0">
             {[
               ["Workers' Comp Premium", money2(premium)],
               ['BTIS Service Fee', money2(fees?.service || 0)],
@@ -298,11 +300,13 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
               <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
             </div>
+            </div>
+
+            {/* A quiet line, as in the prototype — not a panel with an icon. */}
+            <p className="text-[11.5px] text-gray-400 leading-relaxed sm:flex-1">
+              Read-only — to change these amounts, go back to the quote.
+            </p>
           </div>
-          {/* A quiet line, as in the prototype — not a panel with an icon. */}
-          <p className="text-[11.5px] text-gray-400 mt-3">
-            Read-only — to change these amounts, go back to the quote.
-          </p>
         </FieldGroup>
 
         <FieldGroup label="Amount due today">
