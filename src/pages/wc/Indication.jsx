@@ -71,7 +71,6 @@ export function feesFor(premium, brokerFee = 0) {
    facts that are the same whoever is reading them. */
 function CarrierTile({ carrier, best, selected, onSelect }) {
   const quoted = !carrier.noquote
-  const fees = quoted ? feesFor(carrier.price) : null
 
   return (
     <div
@@ -129,11 +128,14 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
 
         {quoted ? (
           <>
-            <p className="text-2xl font-bold leading-none mt-2.5">
-              <BrandText>{money(carrier.price)}</BrandText>
-            </p>
-            <p className="text-[11px] text-gray-400 mt-1.5">
-              / yr indication · Total {money(fees.total)}
+            {/* The unit rides with the figure rather than taking a line of
+                its own. The fee total is on the quote, where it is the
+                number being paid — here it only competed with the price. */}
+            <p className="mt-2.5 flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-2xl font-bold leading-none">
+                <BrandText>{money(carrier.price)}</BrandText>
+              </span>
+              <span className="text-[11px] text-gray-400">/ yr indication</span>
             </p>
 
             <div className="flex flex-wrap items-center gap-2 mt-3.5">
