@@ -276,14 +276,14 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
       <div className="w-full space-y-6">
         <Stepper at={2} />
 
-        <FieldGroup label="Policy premium &amp; fees">
+        <FieldGroup label="Policy premium &amp; fees" className="max-w-[400px]">
           {/* The rows sit straight in the group. They used to be wrapped in a
               second panel inside it, which is a panel on a panel.
 
-              The figures keep their own column rather than spreading the
-              width of the card — a label 500px from its number is read by
-              crossing an empty page. */}
-          <div style={{ maxWidth: 340 }}>
+              The group is sized to what is in it, so the figures sit near
+              their labels without leaving a strip of empty card after the
+              numbers. */}
+          <div>
             {[
               ["Workers' Comp Premium", money2(premium)],
               ['BTIS Service Fee', money2(fees?.service || 0)],
