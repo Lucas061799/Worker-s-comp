@@ -143,7 +143,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12 pt-1">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-12 pt-1">
           <div className="w-full lg:w-[352px] shrink-0">
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
