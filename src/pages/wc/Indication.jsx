@@ -103,9 +103,16 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
       )}
 
       <div className="p-5 flex-1 flex flex-col">
-        <div className="flex items-center justify-between gap-2 mb-2.5">
-          <CarrierLogo carrier={carrier} size={40} />
-          <span className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          {/* The name sits beside its mark rather than under it — they are
+              one piece of identification, and it buys the tile a line. */}
+          <span className="flex items-center gap-2.5 min-w-0">
+            <CarrierLogo carrier={carrier} size={40} />
+            <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
+              {carrier.name}
+            </span>
+          </span>
+          <span className="flex items-center gap-1.5 shrink-0 self-start mt-1">
             {carrier.promo && quoted && <Tag tone="brand">Promo</Tag>}
             <InfoDot
               title={carrier.name}
@@ -122,16 +129,12 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
           </span>
         </div>
 
-        <p className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
-          {carrier.name}
-        </p>
-
         {quoted ? (
           <>
             {/* The unit rides with the figure rather than taking a line of
                 its own. The fee total is on the quote, where it is the
                 number being paid — here it only competed with the price. */}
-            <p className="mt-2.5 flex items-baseline gap-1.5 flex-wrap">
+            <p className="flex items-baseline gap-1.5 flex-wrap">
               <span className="text-2xl font-bold leading-none">
                 <BrandText>{money(carrier.price)}</BrandText>
               </span>
@@ -165,7 +168,7 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
           </>
         ) : (
           <>
-            <p className="text-[13px] font-semibold text-gray-500 mt-2.5">Carrier declined this risk</p>
+            <p className="text-[13px] font-semibold text-gray-500">Carrier declined this risk</p>
             <p className="text-[11.5px] text-gray-400 leading-relaxed mt-1.5">{carrier.noquote}.</p>
           </>
         )}
