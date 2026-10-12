@@ -278,20 +278,26 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
 
         <FieldGroup label="Policy premium &amp; fees">
           {/* The rows sit straight in the group. They used to be wrapped in a
-              second panel inside it, which is a panel on a panel. */}
-          {[
-            ["Workers' Comp Premium", money2(premium)],
-            ['BTIS Service Fee', money2(fees?.service || 0)],
-            ['Broker Fee', money2(fees?.broker || 0)],
-          ].map(([k, v]) => (
-            <div key={k} className="flex items-center justify-between gap-4 py-1">
-              <span className="text-xs text-gray-500">{k}</span>
-              <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+              second panel inside it, which is a panel on a panel.
+
+              The figures keep their own column rather than spreading the
+              width of the card — a label 500px from its number is read by
+              crossing an empty page. */}
+          <div style={{ maxWidth: 340 }}>
+            {[
+              ["Workers' Comp Premium", money2(premium)],
+              ['BTIS Service Fee', money2(fees?.service || 0)],
+              ['Broker Fee', money2(fees?.broker || 0)],
+            ].map(([k, v]) => (
+              <div key={k} className="flex items-center justify-between gap-4 py-1">
+                <span className="text-xs text-gray-500">{k}</span>
+                <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+              </div>
+            ))}
+            <div className="mt-2 pt-2 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
+              <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
+              <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
             </div>
-          ))}
-          <div className="mt-2 pt-2 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-            <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-            <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
           </div>
           {/* A quiet line, as in the prototype — not a panel with an icon. */}
           <p className="text-[11.5px] text-gray-400 mt-3">

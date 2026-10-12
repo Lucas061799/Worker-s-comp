@@ -138,7 +138,10 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           </div>
         </div>
 
-        <div className="pt-1">
+        {/* The figures keep their own column rather than spreading across
+            the card: at full width the labels sat 450-500px from their
+            numbers, so reading one line meant crossing an empty page. */}
+        <div className="pt-1" style={{ maxWidth: 340 }}>
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
           <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
