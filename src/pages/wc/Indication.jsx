@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
-import {BRAND_GRADIENT, InfoLine, Tag, AlertGlyph, InfoPanel } from '../../components/wc/primitives'
+import {
+  BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoLine, InfoPanel, Tag,
+} from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
    set so the prototype's reference risk prices out where its own figures do —
@@ -48,11 +50,6 @@ export function premiumForCarrier(formData, carrierId) {
 
 const money = (n) => '$' + Math.round(n).toLocaleString()
 
-function turnaroundFor(carrier) {
-  const m = (carrier.sla || '').match(/(\d+\D{1,2}\d+)\s*business days/i)
-  return m ? `${m[1]} business days` : carrier.sla
-}
-
 /* The prototype's breakdown exactly: premium, a flat BTIS service fee and
    the agent's own broker fee, totalled. It carries no tax and no stamping
    fee — the 2.35% and 0.2% lines that used to sit here were invented, and a
@@ -68,159 +65,104 @@ export function feesFor(premium, brokerFee = 0) {
   }
 }
 
-function FeeRow({ label, value, bold }) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-1">
-      <span className={`text-xs ${bold ? 'font-semibold text-gray-700' : 'text-gray-500'}`}>{label}</span>
-      <span className={`text-xs ${bold ? 'font-bold text-gray-900' : 'font-semibold text-gray-700'}`}>{value}</span>
-    </div>
-  )
-}
-
-/* GL-BOP's Compare row: a stacked list where each carrier expands to
-   show the fee breakdown, or why it did not quote. */
-function CarrierRow({ carrier, best, expanded, onToggle, selected, onSelect }) {
+/* One carrier, one tile — the prototype's grid rather than a stacked
+   accordion, so every market and its price is on screen at once. What the
+   accordion hid behind a chevron is behind the ⓘ instead: the servicing
+   facts that are the same whoever is reading them. */
+function CarrierTile({ carrier, best, selected, onSelect }) {
   const quoted = !carrier.noquote
   const fees = quoted ? feesFor(carrier.price) : null
 
   return (
     <div
-      className={`rounded-lg transition overflow-hidden ${
-        selected ? 'im-edge-brand' : best ? 'im-edge-best' : ''
-      }`}
+      className={`rounded-2xl overflow-hidden flex flex-col transition ${selected ? 'im-edge-brand' : best ? 'im-edge-best' : ''}`}
       style={{
-        background: quoted ? 'white' : '#FAFAFB',
-        border: `1.5px solid ${selected ? '#5C2ED4' : best ? '#7C3AED' : '#E5E7EB'}`,
+        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
+        border: `1.5px solid ${selected ? '#5C2ED4' : best ? '#7C3AED' : 'var(--line)'}`,
         boxShadow: selected || best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
       }}
     >
-      <div className="px-4 py-3.5 cursor-pointer" onClick={onToggle}>
-        <div className="flex items-center justify-between gap-3 mb-2.5">
-          <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
-            <span
-              className="rounded-full shrink-0"
-              style={{ width: 8, height: 8, background: BRAND_GRADIENT, opacity: quoted ? 1 : 0.4 }}
+      {/* The carrier BTIS writes itself gets a banner across the top rather
+          than a badge in the row, as the prototype has it. */}
+      {carrier.reco && quoted && (
+        <div
+          className="px-3 py-1.5 flex items-center justify-center gap-1.5"
+          style={{
+            background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)',
+            borderBottom: '1px solid var(--line-soft)',
+          }}
+        >
+          <span className="text-[10px] font-bold tracking-wide">
+            <BrandText>★ BTIS Recommended</BrandText>
+          </span>
+          <InfoDot
+            title="Why BTIS Recommended?"
+            label="Why BTIS Recommended?"
+            text="BTIS holds full authority with this carrier for all processing — quicker quoting, faster endorsement turnaround, and in-house billing that collects your broker fee at new business and at renewal."
+          />
+        </div>
+      )}
+
+      <div className="p-4 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-2 mb-2.5">
+          <CarrierLogo carrier={carrier} size={40} />
+          <span className="flex items-center gap-1.5 shrink-0">
+            {carrier.promo && quoted && <Tag tone="brand">Promo</Tag>}
+            <InfoDot
+              title={carrier.name}
+              label={`${carrier.name} servicing details`}
+              text={
+                <span className="block space-y-1.5">
+                  <span className="flex justify-between gap-4"><b className="font-semibold">Quote SLA</b>{carrier.sla}</span>
+                  <span className="flex justify-between gap-4"><b className="font-semibold">Endorsement SLA</b>{carrier.endorsementSla}</span>
+                  <span className="flex justify-between gap-4"><b className="font-semibold">Billing</b>{carrier.billing}</span>
+                  <span className="flex justify-between gap-4"><b className="font-semibold">Underwriting</b>{carrier.reco ? 'BTIS authority' : 'Carrier'}</span>
+                </span>
+              }
             />
-            <span className={`text-sm font-semibold truncate ${quoted ? 'text-gray-800' : 'text-gray-500'}`}>
-              {carrier.name}
-            </span>
-            {best && quoted && (
-              <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white whitespace-nowrap"
-                style={{ background: BRAND_GRADIENT }}
-              >
-                Best Value
-              </span>
-            )}
-            {carrier.reco && <Tag tone="brand">BTIS Serviced</Tag>}
-            {carrier.promo && <Tag tone="brand">+2% commission</Tag>}
-            {!quoted && (
-              <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
-                style={{ background: 'rgba(156,163,175,0.18)', color: '#6B7280', border: '1px solid rgba(156,163,175,0.35)' }}
-              >
-                Not a fit
-              </span>
-            )}
-          </div>
-          <svg
-            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"
-            style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
+          </span>
         </div>
 
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          {quoted ? (
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-xl font-bold text-gray-800">{money(carrier.price)}</span>
-                <span className="text-xs text-gray-400">/yr</span>
-              </div>
-              <div className="text-[11px] text-gray-400">
-                {money(carrier.price / 12)}/mo · Total {money(fees.total)}
-              </div>
-            </div>
-          ) : (
-            <span className="text-xs text-gray-500 flex-1 min-w-0">
-              {carrier.name} isn't quoting this risk today.
-              <span className="font-semibold ml-1" style={{ color: '#5C2ED4' }}>
-                {expanded ? 'Hide details' : 'See why →'}
-              </span>
-            </span>
-          )}
+        <p className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
+          {carrier.name}
+        </p>
 
-          {quoted && (
+        {quoted ? (
+          <>
+            <p className="text-2xl font-bold leading-none mt-2.5">
+              <BrandText>{money(carrier.price)}</BrandText>
+            </p>
+            <p className="text-[11px] text-gray-400 mt-1.5">
+              / yr indication · Total {money(fees.total)}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-1.5 mt-3">
+              {best && <Tag tone="brand">Best value</Tag>}
+              <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
+                {carrier.bind ? 'Instant bind' : 'Refer'}
+              </span>
+            </div>
+
+            {/* mt-auto so the button sits on the tile's floor however tall
+                the rest of it runs — the row of tiles ends on one line. */}
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onSelect() }}
-              className="px-4 py-2 rounded-lg text-xs font-bold transition shrink-0"
-              /* Only the chosen row fills. Promoting Best Value here too
-                 made the cheapest row look picked before it was. */
+              onClick={onSelect}
+              className="w-full mt-auto pt-0 h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
               style={selected
-                ? { background: BRAND_GRADIENT, color: '#fff' }
-                : { background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+                ? { background: BRAND_GRADIENT, color: '#fff', marginTop: 'auto', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
+                : { background: 'var(--surface-card)', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)', marginTop: 'auto' }}
             >
               {selected ? '✓ Selected' : 'Select'}
             </button>
-          )}
-        </div>
+          </>
+        ) : (
+          <>
+            <p className="text-[13px] font-semibold text-gray-500 mt-2.5">Carrier declined this risk</p>
+            <p className="text-[11.5px] text-gray-400 leading-relaxed mt-1.5">{carrier.noquote}.</p>
+          </>
+        )}
       </div>
-
-      {expanded && quoted && (
-        <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid #F3F4F6' }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="rounded-xl p-4" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2.5">Fee breakdown</div>
-              <FeeRow label="Workers' Comp Premium" value={money(carrier.price)} />
-              <FeeRow label="BTIS Service Fee" value={money(fees.service)} />
-              <FeeRow label="Broker Fee" value={money(fees.broker)} />
-              <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
-                <FeeRow label="Grand Total" value={money(fees.total)} bold />
-              </div>
-            </div>
-
-            <div className="rounded-xl p-4" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2.5">Servicing</div>
-              <FeeRow label="Handled by" value={carrier.reco ? 'BTIS' : 'Carrier'} />
-              <FeeRow label="Endorsements" value={turnaroundFor(carrier)} />
-              <FeeRow label="Billing" value={carrier.sub} />
-              <FeeRow label="Bind online" value={carrier.bind ? 'Yes' : 'No'} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {expanded && !quoted && (
-        <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid #E5E7EB' }}>
-          <div className="rounded-xl p-4" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-            <div className="flex items-start gap-3 mb-3">
-              {/* The house disc, so the glyph takes its colour from the chip
-                  and follows it into dark mode. Stroked #5C2ED4 it stayed
-                  dark purple on navy and all but vanished — the dark shim
-                  rewrites inline `color`, not an svg `stroke`. */}
-              <div className="im-panel-icon w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="16" x2="12" y2="12" />
-                  <line x1="12" y1="8" x2="12.01" y2="8" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-bold leading-snug text-gray-800">
-                  Why {carrier.name} didn't quote
-                </p>
-                <p className="text-[11px] leading-relaxed mt-0.5 text-gray-500">
-                  Knowing this carrier's appetite helps you place future clients faster.
-                </p>
-              </div>
-            </div>
-            <p className="text-[12px] text-gray-700">{carrier.noquote}.</p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -233,7 +175,6 @@ const REFERRAL_THRESHOLD = 20000
 export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false, onSelectionChange }) {
   const checked = formData.carrierSelection?.checked || {}
   const [selected, setSelected] = useState(null)
-  const [expanded, setExpanded] = useState(null)
 
   const results = useMemo(() => {
     return CARRIERS
@@ -247,7 +188,9 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
           noquote: meta.noquote,
         }
       })
-      .sort((a, b) => a.price - b.price)
+      /* A market that declined has no price to sort on, so it goes last
+         rather than landing wherever its unused factor puts it. */
+      .sort((a, b) => (!!a.noquote - !!b.noquote) || a.price - b.price)
   }, [formData, checked])
 
   const quoted = results.filter(r => !r.noquote)
@@ -262,14 +205,12 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
         {quoted.length} market{quoted.length === 1 ? '' : 's'} returned a price. Sorted by annual premium.
       </p>
 
-      <div className="mt-5 space-y-2.5">
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
         {results.map(r => (
-          <CarrierRow
+          <CarrierTile
             key={r.id}
             carrier={r}
             best={r.id === quoted[0]?.id}
-            expanded={expanded === r.id}
-            onToggle={() => setExpanded(prev => (prev === r.id ? null : r.id))}
             selected={selected === r.id}
             /* The rail mirrors this, so the choice is announced rather than
                kept to this screen. */
