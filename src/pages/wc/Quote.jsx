@@ -207,20 +207,6 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
         </div>
       </div>
 
-      {/* Page navigation, which is not one of the quote's own actions. */}
-      {onBack && (
-        <div>
-          <button
-            type="button"
-            onClick={onBack}
-            className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-            style={{ background: 'transparent', color: '#6B7280', border: '1px solid var(--line)' }}
-          >
-            Back
-          </button>
-        </div>
-      )}
-
       {onRefer && (
         <div className="rounded-xl p-4 flex flex-wrap items-center justify-between gap-3"
           style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
@@ -235,6 +221,20 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
             style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
           >
             Refer to underwriter
+          </button>
+        </div>
+      )}
+
+      {/* Page navigation, which is not one of the quote's own actions. */}
+      {onBack && (
+        <div>
+          <button
+            type="button"
+            onClick={onBack}
+            className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+            style={{ background: 'transparent', color: '#6B7280', border: '1px solid var(--line)' }}
+          >
+            Back
           </button>
         </div>
       )}

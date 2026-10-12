@@ -280,33 +280,38 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           {/* The rows sit straight in the group. They used to be wrapped in a
               second panel inside it, which is a panel on a panel.
 
-              The figures keep a column of their own — spread the width of
-              the card a label sat 500px from its number — and the note
-              that was under them takes the space beside them, so nothing
-              is left standing in an empty strip. */}
+              Itemised on the left, the sum on the right: spreading the list
+              the width of the card put a label 500px from its number, and
+              filling the gap with the read-only note left a grey sentence
+              floating in the middle of nothing. The total is the figure
+              that deserves the space. */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-10">
             <div className="w-full sm:w-[352px] shrink-0">
-            {[
-              ["Workers' Comp Premium", money2(premium)],
-              ['BTIS Service Fee', money2(fees?.service || 0)],
-              ['Broker Fee', money2(fees?.broker || 0)],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between gap-4 py-1">
-                <span className="text-xs text-gray-500">{k}</span>
-                <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
-              </div>
-            ))}
-            <div className="mt-2 pt-2 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-              <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-              <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
-            </div>
+              {[
+                ["Workers' Comp Premium", money2(premium)],
+                ['BTIS Service Fee', money2(fees?.service || 0)],
+                ['Broker Fee', money2(fees?.broker || 0)],
+              ].map(([k, v]) => (
+                <div key={k} className="flex items-center justify-between gap-4 py-1">
+                  <span className="text-xs text-gray-500">{k}</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+                </div>
+              ))}
             </div>
 
-            {/* A quiet line, as in the prototype — not a panel with an icon. */}
-            <p className="text-[11.5px] text-gray-400 leading-relaxed sm:flex-1">
-              Read-only — to change these amounts, go back to the quote.
-            </p>
+            {/* Stacked, the total needs a rule to separate it from the
+                items; beside them it does not. */}
+            <div className="sm:flex-1 sm:text-right pt-3 sm:pt-0 border-t sm:border-t-0"
+              style={{ borderColor: 'var(--line)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Grand total</p>
+              <p className="text-xl font-bold leading-none" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</p>
+            </div>
           </div>
+
+          {/* A quiet line, as in the prototype — not a panel with an icon. */}
+          <p className="text-[11.5px] text-gray-400 mt-4">
+            Read-only — to change these amounts, go back to the quote.
+          </p>
         </FieldGroup>
 
         <FieldGroup label="Amount due today">
