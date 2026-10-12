@@ -104,7 +104,7 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
       )}
 
       <div className="p-5 flex-1 flex flex-col">
-        <div className="flex items-start justify-between gap-2 mb-2.5">
+        <div className="flex items-center justify-between gap-2 mb-2.5">
           <CarrierLogo carrier={carrier} size={40} />
           <span className="flex items-center gap-1.5 shrink-0">
             {carrier.promo && quoted && <Tag tone="brand">Promo</Tag>}
