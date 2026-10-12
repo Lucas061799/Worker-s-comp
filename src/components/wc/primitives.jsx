@@ -91,7 +91,7 @@ export function FieldGroup({ label, children, className = '', fill = false }) {
   return (
     <div className={`${fill ? 'h-full flex flex-col' : ''} ${className}`}>
       {label && <SectionLabel>{label}</SectionLabel>}
-      <div className={`rounded-xl p-5 sm:p-6 ${fill ? 'flex-1' : ''}`}
+      <div className={`rounded-xl p-5 sm:p-6 ${fill ? 'flex-1 flex flex-col' : ''}`}
         style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         {children}
       </div>

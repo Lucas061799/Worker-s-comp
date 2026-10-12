@@ -289,21 +289,21 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               content here, and on the group's grey they had nothing to sit
               on. The read-only note stays on the grey beneath it, where a
               note belongs. */}
-          <div className="rounded-lg px-4 py-3.5"
+          <div className="rounded-lg px-5 py-4 flex-1 flex flex-col justify-center"
             style={{ background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }}>
             {[
               ["Workers' Comp Premium", money2(premium)],
               ['BTIS Service Fee', money2(fees?.service || 0)],
               ['Broker Fee', money2(fees?.broker || 0)],
             ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between gap-4 py-1">
-                <span className="text-xs text-gray-500">{k}</span>
-                <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+              <div key={k} className="flex items-center justify-between gap-4 py-1.5">
+                <span className="text-[13px] text-gray-500">{k}</span>
+                <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
               </div>
             ))}
-            <div className="mt-2 pt-2 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-              <span className="text-xs font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-              <span className="text-xs font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
+            <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
+              <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
+              <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
             </div>
           </div>
           {/* A quiet line, as in the prototype — not a panel with an icon. */}
