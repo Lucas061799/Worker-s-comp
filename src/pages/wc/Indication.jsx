@@ -103,7 +103,7 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
         </div>
       )}
 
-      <div className="p-4 flex-1 flex flex-col">
+      <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-2 mb-2.5">
           <CarrierLogo carrier={carrier} size={40} />
           <span className="flex items-center gap-1.5 shrink-0">
@@ -136,25 +136,30 @@ function CarrierTile({ carrier, best, selected, onSelect }) {
               / yr indication · Total {money(fees.total)}
             </p>
 
-            <div className="flex flex-wrap items-center gap-1.5 mt-3">
+            <div className="flex flex-wrap items-center gap-2 mt-3.5">
               {best && <Tag tone="brand">Best value</Tag>}
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer'}
               </span>
             </div>
 
-            {/* mt-auto so the button sits on the tile's floor however tall
-                the rest of it runs — the row of tiles ends on one line. */}
-            <button
-              type="button"
-              onClick={onSelect}
-              className="w-full mt-auto pt-0 h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
-              style={selected
-                ? { background: BRAND_GRADIENT, color: '#fff', marginTop: 'auto', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
-                : { background: 'var(--surface-card)', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)', marginTop: 'auto' }}
-            >
-              {selected ? '✓ Selected' : 'Select'}
-            </button>
+            {/* mt-auto floors the button however tall the rest of the tile
+                runs, so a row of them ends on one line — and the padding is
+                on the wrapper, because an auto margin collapses to nothing
+                on the tile that happens to be the tallest, which left the
+                button against the chips. */}
+            <div className="mt-auto pt-5">
+              <button
+                type="button"
+                onClick={onSelect}
+                className="w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
+                style={selected
+                  ? { background: BRAND_GRADIENT, color: '#fff', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
+                  : { background: 'var(--surface-card)', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+              >
+                {selected ? '✓ Selected' : 'Select'}
+              </button>
+            </div>
           </>
         ) : (
           <>
