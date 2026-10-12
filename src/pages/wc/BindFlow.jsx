@@ -279,19 +279,25 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
         {/* The prototype's shape: two bars, one above the other, each the
             width of the page. */}
         <FieldGroup label="Policy premium &amp; fees">
-          {[
-            ["Workers' Comp Premium", money2(premium)],
-            ['BTIS Service Fee', money2(fees?.service || 0)],
-            ['Broker Fee', money2(fees?.broker || 0)],
-          ].map(([k, v]) => (
-            <div key={k} className="flex items-center justify-between gap-4 py-1">
-              <span className="text-[13px] text-gray-500">{k}</span>
-              <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+          {/* The amounts on white, the note on the group's grey beneath —
+              the figures are the content of this bar and read as a block
+              rather than four lines on a background. */}
+          <div className="rounded-lg px-5 py-4"
+            style={{ background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }}>
+            {[
+              ["Workers' Comp Premium", money2(premium)],
+              ['BTIS Service Fee', money2(fees?.service || 0)],
+              ['Broker Fee', money2(fees?.broker || 0)],
+            ].map(([k, v]) => (
+              <div key={k} className="flex items-center justify-between gap-4 py-1">
+                <span className="text-[13px] text-gray-500">{k}</span>
+                <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+              </div>
+            ))}
+            <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
+              <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
+              <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
             </div>
-          ))}
-          <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-            <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-            <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
           </div>
           {/* A quiet line, as in the prototype — not a panel with an icon. */}
           <p className="text-[11.5px] text-gray-400 mt-3">
