@@ -276,35 +276,22 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
       <div className="w-full space-y-6">
         <Stepper at={2} />
 
-        {/* Two halves of the same thing, side by side — what the policy
-            costs, and what is being paid for it today. Each tried alone at
-            full width first: the fee list left a label 500px from its
-            number, and anything put in the gap to fill it (the read-only
-            note, then the total) floated in the middle of nowhere. The
-            list simply does not want a page of width; the payment beside
-            it does. */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <FieldGroup label="Policy premium &amp; fees" fill>
-          {/* The figures sit on their own white panel — the amounts are the
-              content here, and on the group's grey they had nothing to sit
-              on. The read-only note stays on the grey beneath it, where a
-              note belongs. */}
-          <div className="rounded-lg px-5 py-4 flex-1 flex flex-col justify-center"
-            style={{ background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }}>
-            {[
-              ["Workers' Comp Premium", money2(premium)],
-              ['BTIS Service Fee', money2(fees?.service || 0)],
-              ['Broker Fee', money2(fees?.broker || 0)],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between gap-4 py-1.5">
-                <span className="text-[13px] text-gray-500">{k}</span>
-                <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
-              </div>
-            ))}
-            <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-              <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-              <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
+        {/* The prototype's shape: two bars, one above the other, each the
+            width of the page. */}
+        <FieldGroup label="Policy premium &amp; fees">
+          {[
+            ["Workers' Comp Premium", money2(premium)],
+            ['BTIS Service Fee', money2(fees?.service || 0)],
+            ['Broker Fee', money2(fees?.broker || 0)],
+          ].map(([k, v]) => (
+            <div key={k} className="flex items-center justify-between gap-4 py-1">
+              <span className="text-[13px] text-gray-500">{k}</span>
+              <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
             </div>
+          ))}
+          <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
+            <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
+            <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
           </div>
           {/* A quiet line, as in the prototype — not a panel with an icon. */}
           <p className="text-[11.5px] text-gray-400 mt-3">
@@ -312,7 +299,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           </p>
         </FieldGroup>
 
-        <FieldGroup label="Amount due today" fill>
+        <FieldGroup label="Amount due today">
           <p className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
           <p className="text-[12px] text-gray-500 mt-1">
             Selected plan: {chosen.name}
@@ -320,7 +307,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               ? ` — ${chosen.installments} × ${money2(perInstallment)} to follow.`
               : ' (paid in full today).'}
           </p>
-          <FormGrid cols={1} className="mt-4">
+          <FormGrid className="mt-4">
             <Input label="Card number" required value={card.number}
               onChange={v => setCard(c => ({ ...c, number: v }))}
               placeholder="4242 4242 4242 4242" digits maxLength={16}
@@ -349,7 +336,6 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
             </p>
           )}
         </FieldGroup>
-        </div>
 
         <StepNav onBack={back} />
 

@@ -84,15 +84,11 @@ export function SectionLabel({ children, className = '' }) {
 }
 
 /* Labelled card holding a set of fields. */
-export function FieldGroup({ label, children, className = '', fill = false }) {
-  /* `fill` makes the card take the height it is given rather than the
-     height of its contents — for two groups side by side, so they end on
-     the same line however much is in each. */
+export function FieldGroup({ label, children, className = '' }) {
   return (
-    <div className={`${fill ? 'h-full flex flex-col' : ''} ${className}`}>
+    <div className={className}>
       {label && <SectionLabel>{label}</SectionLabel>}
-      <div className={`rounded-xl p-5 sm:p-6 ${fill ? 'flex-1 flex flex-col' : ''}`}
-        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+      <div className="rounded-xl p-5 sm:p-6" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         {children}
       </div>
     </div>
