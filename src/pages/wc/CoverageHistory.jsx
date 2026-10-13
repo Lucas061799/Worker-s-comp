@@ -61,7 +61,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 wc-ink-strong">
       {/* Clearance runs again when the agent leaves General Info, and a
           matching submission on this insured surfaces here. The prototype
           simulates a match every time so the banner is always visible —
@@ -144,8 +144,11 @@ export default function CoverageHistory({ formData, updateFormData }) {
               placeholder="Briefly describe what the business does day to day (at least 10 words)…"
               rows={3}
             />
+            {/* Satisfied, it is a count rather than a warning — grey, but
+                the same grey the rest of this screen's small print now
+                carries rather than a lighter one. */}
             <p className="text-[11px] mt-1.5"
-              style={{ color: words >= MIN_WORDS ? '#9CA3AF' : '#A614C3' }}>
+              style={{ color: words >= MIN_WORDS ? '#6B7280' : '#A614C3' }}>
               {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
             </p>
           </div>

@@ -269,6 +269,18 @@ input, select, textarea, button {
    translucent surfaces only work when something opaque is underneath.
    CBIC does the same, painting its preview shell with --surface-card. */
 
+/* ── A heavier reading of the form's type ─────────────────────────────
+   Trialled on one screen before it goes near the rest. The labels, the
+   group headings and the help lines were grey enough that a page of
+   answered fields read as a page of disabled ones. Nothing moves and no
+   size changes — only the ink. Put `wc-ink-strong` on a page's root to
+   try it; take it off to go back. */
+.wc-ink-strong label { color: #1F2937; }
+.wc-ink-strong .im-section-label { color: #6B7280; }
+.wc-ink-strong .im-info-panel p { color: #374151; }
+.wc-ink-strong .text-gray-400 { color: #6B7280; }
+.wc-ink-strong .text-gray-500 { color: #4B5563; }
+
 /* The step an interstitial has not reached yet. Light grey on white reads
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
    step actually running, so dark takes the subtle fill and a muted ink. */
@@ -1141,3 +1153,14 @@ html[data-dark="true"] body .print-btn-text {
   background-clip: unset !important;
 }
 
+/* The dark half of the heavier-ink trial. It sits at the end of the file
+   because the dark shim above rewrites every label, and the two carry the
+   same weight — last one wins. */
+[data-dark="true"] .wc-ink-strong label,
+/* The shim above reaches labels through .font-semibold, which outranks a
+   plain descendant selector — this matches it and comes later. */
+[data-dark="true"] .wc-ink-strong label.font-semibold { color: #F3F4F6 !important; }
+[data-dark="true"] .wc-ink-strong .im-section-label { color: #B6BACD !important; }
+[data-dark="true"] .wc-ink-strong .im-info-panel p { color: #E5E7EB !important; }
+[data-dark="true"] .wc-ink-strong .text-gray-400 { color: #B6BACD !important; }
+[data-dark="true"] .wc-ink-strong .text-gray-500 { color: #D1D5DB !important; }

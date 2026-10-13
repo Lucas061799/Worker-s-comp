@@ -77,7 +77,7 @@ export function CarrierLogo({ carrier, size = 40, className = '' }) {
 /* Uppercase label above a group of fields. */
 export function SectionLabel({ children, className = '' }) {
   return (
-    <div className={`text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5 ${className}`}>
+    <div className={`im-section-label text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5 ${className}`}>
       {children}
     </div>
   )
