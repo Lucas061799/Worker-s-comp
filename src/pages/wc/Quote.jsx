@@ -143,7 +143,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 lg:gap-0 pt-1">
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 lg:gap-0 pt-3">
           <div className="w-full lg:w-[440px] shrink-0 lg:pr-10">
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
@@ -166,7 +166,10 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
               />
             </span>
           </div>
-          <div className="flex items-center justify-between gap-4 pt-4">
+          {/* The same 10px above and below as every row above it — it was
+              16 on top and nothing underneath, so the total sat high in its
+              own line and flush against the bottom of the card. */}
+          <div className="flex items-center justify-between gap-4 py-2.5 mt-1.5">
             <span className="text-sm font-semibold text-gray-700">Grand total</span>
             <span className="text-2xl font-bold leading-none">
               <BrandText>{money2(fees.total)}</BrandText>
