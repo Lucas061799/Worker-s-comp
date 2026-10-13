@@ -275,13 +275,11 @@ input, select, textarea, button {
    answered fields read as a page of disabled ones. Nothing moves and no
    size changes — only the ink. Put `wc-ink-strong` on a page's root to
    try it; take it off to go back. */
-.wc-ink-strong label { color: #111827; font-weight: 700; }
-.wc-ink-strong .im-section-label { color: #4B5563; }
-.wc-ink-strong .im-info-panel p { color: #1F2937; }
-.wc-ink-strong .text-gray-400 { color: #4B5563; }
-.wc-ink-strong .text-gray-500 { color: #374151; }
-/* The question in a label-left row is a label in everything but markup. */
-.wc-ink-strong .text-gray-800 { color: #111827; font-weight: 600; }
+.wc-ink-strong label { color: #1F2937; }
+.wc-ink-strong .im-section-label { color: #6B7280; }
+.wc-ink-strong .im-info-panel p { color: #374151; }
+.wc-ink-strong .text-gray-400 { color: #6B7280; }
+.wc-ink-strong .text-gray-500 { color: #4B5563; }
 
 /* The step an interstitial has not reached yet. Light grey on white reads
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
@@ -1161,8 +1159,8 @@ html[data-dark="true"] body .print-btn-text {
 [data-dark="true"] .wc-ink-strong label,
 /* The shim above reaches labels through .font-semibold, which outranks a
    plain descendant selector — this matches it and comes later. */
-[data-dark="true"] .wc-ink-strong label.font-semibold { color: #FFFFFF !important; }
-[data-dark="true"] .wc-ink-strong .im-section-label { color: #CBCFE0 !important; }
-[data-dark="true"] .wc-ink-strong .im-info-panel p { color: #F3F4F6 !important; }
-[data-dark="true"] .wc-ink-strong .text-gray-400 { color: #CBCFE0 !important; }
-[data-dark="true"] .wc-ink-strong .text-gray-500 { color: #E5E7EB !important; }
+[data-dark="true"] .wc-ink-strong label.font-semibold { color: #F3F4F6 !important; }
+[data-dark="true"] .wc-ink-strong .im-section-label { color: #B6BACD !important; }
+[data-dark="true"] .wc-ink-strong .im-info-panel p { color: #E5E7EB !important; }
+[data-dark="true"] .wc-ink-strong .text-gray-400 { color: #B6BACD !important; }
+[data-dark="true"] .wc-ink-strong .text-gray-500 { color: #D1D5DB !important; }
