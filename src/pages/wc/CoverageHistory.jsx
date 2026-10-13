@@ -148,7 +148,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 the same grey the rest of this screen's small print now
                 carries rather than a lighter one. */}
             <p className="text-[11px] mt-1.5"
-              style={{ color: words >= MIN_WORDS ? '#6B7280' : '#A614C3' }}>
+              style={{ color: words >= MIN_WORDS ? '#4B5563' : '#A614C3' }}>
               {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
             </p>
           </div>
