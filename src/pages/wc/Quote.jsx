@@ -144,7 +144,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
         </div>
 
         <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 lg:gap-0 pt-1">
-          <div className="w-full lg:w-[352px] shrink-0 lg:pr-10">
+          <div className="w-full lg:w-[440px] shrink-0 lg:pr-10">
           <SummaryRow label="Workers' comp premium" value={money2(price)} />
           <SummaryRow label="BTIS service fee" value={money2(fees.service)} />
           <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: '1px solid #F3F4F6' }}>
@@ -187,16 +187,16 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
               what it costs and what to do about it, and the gap between
               them was wide enough to read as a mistake. */}
           <div
-            className="flex flex-col gap-2.5 w-full lg:flex-1 lg:items-end lg:gap-0 lg:justify-between lg:pt-2.5 lg:pl-10 lg:border-l"
+            className="flex flex-col gap-2.5 w-full lg:flex-1 lg:gap-0 lg:justify-between lg:pt-2.5 lg:pl-10 lg:border-l"
             style={{ borderColor: 'var(--line)' }}
           >
-            <PrimaryButton onClick={handleBind} disabled={binding} className="w-full lg:w-[180px]">
+            <PrimaryButton onClick={handleBind} disabled={binding} className="w-full">
               {binding ? 'Binding…' : 'Bind online'}
             </PrimaryButton>
             <button
               type="button"
               onClick={() => setPresenting(true)}
-              className="h-10 px-6 w-full lg:w-[180px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+              className="h-10 px-6 w-full inline-flex items-center justify-center rounded-xl text-sm font-semibold"
               style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
             >
               Present quote
@@ -204,7 +204,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
             <button
               type="button"
               onClick={handleEmail}
-              className="h-10 px-6 w-full lg:w-[180px] inline-flex items-center justify-center rounded-xl text-sm font-semibold"
+              className="h-10 px-6 w-full inline-flex items-center justify-center rounded-xl text-sm font-semibold"
               style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
             >
               Email quote
