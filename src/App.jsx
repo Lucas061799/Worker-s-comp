@@ -567,11 +567,12 @@ owner_involved: 'yes',
 
         <main
           ref={scrollContainerRef}
-          /* The one-screen surface/ink trial is hung on main rather than on
-             the page's own root, so the ground behind the card is part of
-             it. Drop the two class names to end the trial. */
-          className={`flex-1 overflow-y-auto custom-scroll relative${
-            currentKey === 'history' ? ' wc-ink-strong wc-surface-white' : ''}`}
+          /* Adopted from the one-screen trial: a grey ground with white
+             cards standing on it, fields that look typed-into rather than
+             filled in, and ink dark enough that an answered form does not
+             read as a disabled one. Both class names come off together to
+             go back. */
+          className="flex-1 overflow-y-auto custom-scroll relative wc-ink-strong wc-surface-white"
           style={{ background: darkMode ? '#131629' : 'white' }}
         >
           <div className="mx-auto px-4 md:px-10 py-6 md:py-8 max-w-5xl 2xl:max-w-6xl">
