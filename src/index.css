@@ -276,6 +276,10 @@ input, select, textarea, button {
    so the fill moves rather than disappears. Put `wc-surface-white` on a
    page's root alongside `wc-ink-strong`; take it off to go back. */
 main.wc-surface-white { background: var(--surface-soft) !important; }
+/* Transparent was fine on a white page; on the grey it reads as a hole
+   rather than a button, so it stands on the card colour like everything
+   else on that ground. */
+main.wc-surface-white .im-step-back { background: var(--surface-card) !important; }
 .wc-surface-white .im-field-card {
   background: var(--surface-card) !important;
   border-color: var(--line) !important;

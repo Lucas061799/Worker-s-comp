@@ -660,7 +660,7 @@ export function StepNav({ onBack, onContinue, canContinue = true, hint, continue
             /* The secondary button, as Commercial Auto draws it — no fill, a
                1px --line stroke, gray-500 text. A white fill went to the page
                colour in dark, under the surface it sits on. */
-            className="h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-medium text-gray-500 transition-all"
+            className="im-step-back h-10 px-6 min-w-[112px] inline-flex items-center justify-center rounded-xl text-sm font-medium text-gray-500 transition-all"
             style={{ background: 'transparent', border: '1px solid var(--line)' }}
           >
             Back
