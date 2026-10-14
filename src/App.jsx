@@ -567,7 +567,11 @@ owner_involved: 'yes',
 
         <main
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto custom-scroll relative"
+          /* The one-screen surface/ink trial is hung on main rather than on
+             the page's own root, so the ground behind the card is part of
+             it. Drop the two class names to end the trial. */
+          className={`flex-1 overflow-y-auto custom-scroll relative${
+            currentKey === 'history' ? ' wc-ink-strong wc-surface-white' : ''}`}
           style={{ background: darkMode ? '#131629' : 'white' }}
         >
           <div className="mx-auto px-4 md:px-10 py-6 md:py-8 max-w-5xl 2xl:max-w-6xl">

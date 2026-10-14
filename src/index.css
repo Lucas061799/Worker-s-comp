@@ -275,6 +275,7 @@ input, select, textarea, button {
    default. A white field on a white card has only its stroke to hold it,
    so the fill moves rather than disappears. Put `wc-surface-white` on a
    page's root alongside `wc-ink-strong`; take it off to go back. */
+main.wc-surface-white { background: var(--surface-soft) !important; }
 .wc-surface-white .im-field-card {
   background: var(--surface-card) !important;
   border-color: var(--line) !important;
@@ -1184,6 +1185,7 @@ html[data-dark="true"] body .print-btn-text {
    navy is what white-on-grey is on paper. */
 /* `div` because the shim it has to beat carries one too, and a tie goes
    to whichever comes last. */
+[data-dark="true"] main.wc-surface-white { background: var(--surface) !important; }
 [data-dark="true"] .wc-surface-white div.im-field-card {
   background: var(--surface-card) !important;
   border-color: var(--line) !important;
