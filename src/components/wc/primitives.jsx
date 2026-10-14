@@ -104,7 +104,10 @@ export function RowGroup({ label, children, className = '' }) {
   return (
     <div className={className}>
       {label && <SectionLabel>{label}</SectionLabel>}
-      <div className="rounded-xl px-5 sm:px-6 py-1 divide-y divide-[#F3F4F6]"
+      {/* Same card as FieldGroup's, so it takes the page's surface
+          treatment with it — a run of questions is a card standing on the
+          ground like any other. */}
+      <div className="im-field-card rounded-xl px-5 sm:px-6 py-1 divide-y divide-[#F3F4F6]"
         style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         {children}
       </div>
