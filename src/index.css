@@ -909,15 +909,30 @@ button.force-white-text,
    read fine on white and vanish on navy, so the dark values step up to
    the same lavender .im-banner uses. `color` drives the icon, which is
    drawn with currentColor. */
+/* The house teal, not the brand purple. These panels explain rather than
+   act, and in brand colours they competed with the things on the page
+   that do — the gradient buttons, the selected pills, the prices. `color`
+   drives the glyph, which is drawn with currentColor. */
 .im-info-panel {
-  background: rgba(92,46,212,0.05);
-  border: 1px solid rgba(92,46,212,0.18);
-  color: #5C2ED4;
+  background: rgba(115,201,183,0.12);
+  border: 1px solid rgba(115,201,183,0.38);
+  color: #0E8F7A;
 }
 [data-dark="true"] .im-info-panel {
-  background: rgba(167,139,250,0.12) !important;
-  border-color: rgba(167,139,250,0.32) !important;
-  color: #C4B5FD !important;
+  background: rgba(115,201,183,0.12) !important;
+  border-color: rgba(115,201,183,0.30) !important;
+  color: #7FD9C6 !important;
+}
+
+/* Only the disc inside a panel. The same class dresses the Banner's mark
+   and the indication's "why didn't quote" glyph, and those stay brand. */
+.im-info-panel .im-panel-icon {
+  background: rgba(115,201,183,0.22);
+  color: #0E8F7A;
+}
+[data-dark="true"] .im-info-panel .im-panel-icon {
+  background: rgba(115,201,183,0.22) !important;
+  color: #A7E8D9 !important;
 }
 
 /* A limited appetite still lets the agent continue, so it stays in the brand
