@@ -88,7 +88,7 @@ export function FieldGroup({ label, children, className = '' }) {
   return (
     <div className={className}>
       {label && <SectionLabel>{label}</SectionLabel>}
-      <div className="rounded-xl p-5 sm:p-6" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+      <div className="im-field-card rounded-xl p-5 sm:p-6" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         {children}
       </div>
     </div>

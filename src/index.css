@@ -269,6 +269,18 @@ input, select, textarea, button {
    translucent surfaces only work when something opaque is underneath.
    CBIC does the same, painting its preview shell with --surface-card. */
 
+/* ── White cards, recessed fields ─────────────────────────────────────
+   The second half of the one-screen trial: the group card takes the page
+   colour and the fields take the grey, which is the inverse of the house
+   default. A white field on a white card has only its stroke to hold it,
+   so the fill moves rather than disappears. Put `wc-surface-white` on a
+   page's root alongside `wc-ink-strong`; take it off to go back. */
+.wc-surface-white .im-field-card {
+  background: var(--surface-card) !important;
+  border-color: var(--line) !important;
+}
+.wc-surface-white .field-fill { background: var(--fill-subtle) !important; }
+
 /* ── A heavier reading of the form's type ─────────────────────────────
    Trialled on one screen before it goes near the rest. The labels, the
    group headings and the help lines were grey enough that a page of
@@ -1164,3 +1176,16 @@ html[data-dark="true"] body .print-btn-text {
 [data-dark="true"] .wc-ink-strong .im-info-panel p { color: #E5E7EB !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-400 { color: #B6BACD !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-500 { color: #D1D5DB !important; }
+
+/* The dark half of the white-card trial. Same reason as the ink block
+   above: the dark shims rewrite both the group card and the field fill at
+   a weight a two-class selector cannot beat, so these sit last. The card
+   takes the raised surface and the fields go darker than it — inset on
+   navy is what white-on-grey is on paper. */
+/* `div` because the shim it has to beat carries one too, and a tie goes
+   to whichever comes last. */
+[data-dark="true"] .wc-surface-white div.im-field-card {
+  background: var(--surface-card) !important;
+  border-color: var(--line) !important;
+}
+[data-dark="true"] .wc-surface-white .field-fill { background: rgba(0,0,0,0.22) !important; }

@@ -61,7 +61,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
 
   return (
-    <div className="w-full space-y-6 wc-ink-strong">
+    <div className="w-full space-y-6 wc-ink-strong wc-surface-white">
       {/* Clearance runs again when the agent leaves General Info, and a
           matching submission on this insured surfaces here. The prototype
           simulates a match every time so the banner is always visible —
