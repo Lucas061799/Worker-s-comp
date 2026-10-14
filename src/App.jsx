@@ -4,7 +4,6 @@ import norbielinkLogoDark from './assets/norbielink-logo-dark.png'
 import btisLogo from './assets/btislogo.png'
 import btisLogoDark from './assets/btislogo-dark.png'
 import Sidebar from './components/Sidebar'
-import RightPanel from './components/RightPanel'
 import PrintSummary from './components/PrintSummary'
 import { StepHeader, StepNav } from './components/wc/primitives'
 import PageZero from './pages/PageZero'
@@ -89,15 +88,9 @@ function App() {
   // null → not referring · 'form' → filling it in · 'submitted' → sent
   const [referralStage, setReferralStage] = useState(null)
   const [binding, setBinding] = useState(false)
-  // Which market is chosen on the indication, so the rail can feature it.
-  const [indicationPick, setIndicationPick] = useState(null)
   /* A step the agent asked for while a referral is out, held until they
      confirm they want to reopen the submission. */
   const [pendingStep, setPendingStep] = useState(null)
-  /* A market the agent asked for from the rail after one was already
-     chosen. Switching throws away the carrier's own questions, so it is
-     confirmed rather than done on the click. */
-  const [pendingCarrier, setPendingCarrier] = useState(null)
 
   const [submitted, setSubmitted] = useState(false)
   const [bindSummary, setBindSummary] = useState(null)
@@ -205,38 +198,30 @@ function App() {
     setShowingIndication(true)
   }, [])
 
+  /* The descriptors and the carrier's own questions belong to the market
+     that was chosen, so coming back to the indication and taking a
+     different one clears them and starts that step again. CarrierFlow
+     holds its answers in its own state, so dropping back to the sub-class
+     screen unmounts it and those go with it. */
   const handlePickCarrier = (result) => {
-    updateFormData('bind', { selectedCarrier: result.name, selectedCarrierId: result.id, premium: result.price })
-    setShowingIndication(false)
-    setSubclassDone(false)
-    setActiveStep(7) // carrier flow — sub-class first, then the questions
-  }
-
-  /* The descriptors and the carrier questions both belong to the market
-     that was chosen, so a switch clears them and starts that step again.
-     CarrierFlow holds its answers in its own state, so dropping back to
-     the sub-class screen unmounts it and the answers go with it. */
-  const switchCarrier = useCallback((id) => {
-    const c = CARRIERS.find(x => x.id === id)
-    if (!c) return
     setFormData(prev => {
+      const same = prev.bind?.selectedCarrierId === result.id
       /* The answers were given to the market being left, so they go with
          it — and the nav keys its "done" tick off carrierQuestions, which
          would otherwise show the step complete on the new carrier. */
-      const { carrierQuestions, packageId, addonsConfirmed, ...bind } = prev.bind || {}
+      const { carrierQuestions, packageId, addonsConfirmed, ...rest } = prev.bind || {}
+      const bind = same ? (prev.bind || {}) : rest
       return {
         ...prev,
-        bind: { ...bind, selectedCarrier: c.name, selectedCarrierId: c.id, premium: premiumForCarrier(prev, c.id) },
-        subclass: {},
+        bind: { ...bind, selectedCarrier: result.name, selectedCarrierId: result.id, premium: result.price },
+        subclass: same ? prev.subclass : {},
       }
     })
-    setIndicationPick(c.id)
-    setSubclassDone(false)
     setShowingIndication(false)
-    setFinalizing(false)
+    setSubclassDone(false)
     setBinding(false)
-    setActiveStep(7)
-  }, [])
+    setActiveStep(7) // carrier flow — sub-class first, then the questions
+  }
 
   const handleContinueToQuote = () => setFinalizing(true)
   const handleFinalPriceReady = useCallback(() => {
@@ -274,8 +259,6 @@ function App() {
     setSubclassDone(false)
     setReferralStage(null)
     setBinding(false)
-    setIndicationPick(null)
-    setPendingCarrier(null)
     try { localStorage.removeItem(SAVE_KEY) } catch { /* nothing to clear */ }
   }
 
@@ -642,7 +625,6 @@ owner_involved: 'yes',
                       onPickCarrier={handlePickCarrier}
                       referralInPlay={referralInPlay}
                       onRefer={() => setReferralStage('form')}
-                      onSelectionChange={setIndicationPick}
                     />
                   )}
                   {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carriers' && (
@@ -715,35 +697,6 @@ owner_involved: 'yes',
           </div>
         </main>
 
-        {/* Right rail — Submission summary. Only on desktop; hidden on
-            narrow viewports where it would push the form content.
-
-            It holds carriers and prices, and there are no prices until the
-            markets have been rated, so through the application it was six
-            placeholder rows of noise beside the form the agent is actually
-            filling in. It arrives with the indication and stays from there
-            on, which is where it earns its place: past the indication it is
-            the only way to change market. */}
-        {indicationReady && (
-        <div className="hidden xl:block">
-          <RightPanel
-            formData={formData}
-            isDark={darkMode}
-            indicationReady={indicationReady}
-            selectedCarrierId={indicationPick}
-            /* Only past the indication, and only while there is still a
-               carrier step to redo — once it is bound there is nothing to
-               switch. */
-            onPickCarrier={
-              indicationReady && !showingIndication && !referralStage && !binding && !submitted
-                && (currentKey === 'carrierflow' || currentKey === 'quote')
-                ? setPendingCarrier
-                : null
-            }
-            onDownloadSummary={() => setShowSummary(true)}
-          />
-        </div>
-        )}
       </div>
 
       <PrintSummary
@@ -773,31 +726,6 @@ owner_involved: 'yes',
         </Modal>
       )}
 
-      {pendingCarrier && (() => {
-        const next = CARRIERS.find(c => c.id === pendingCarrier)
-        return (
-          <Modal
-            title={`Switch to ${next?.name || 'this market'}?`}
-            width={480}
-            onDismiss={() => setPendingCarrier(null)}
-            footer={
-              <>
-                <ModalButton variant="ghost" onClick={() => setPendingCarrier(null)}>Cancel</ModalButton>
-                <ModalButton onClick={() => { const id = pendingCarrier; setPendingCarrier(null); switchCarrier(id) }}>
-                  Yes, switch carrier
-                </ModalButton>
-              </>
-            }
-          >
-            <p className="text-[14px] text-gray-600 leading-relaxed">
-              The sub-class descriptors and the carrier questions belong to{' '}
-              <b className="text-navy">{selectedCarrier?.name || 'the current market'}</b>, so switching
-              clears your answers and asks <b className="text-navy">{next?.name}</b>'s instead.
-              Nothing else on the submission changes.
-            </p>
-          </Modal>
-        )
-      })()}
     </div>
   )
 }

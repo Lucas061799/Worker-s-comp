@@ -181,7 +181,7 @@ function CarrierTile({ carrier, best, onSelect }) {
    see it. */
 const REFERRAL_THRESHOLD = 20000
 
-export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false, onSelectionChange }) {
+export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false }) {
   const checked = formData.carrierSelection?.checked || {}
 
   const results = useMemo(() => {
@@ -219,13 +219,8 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
             carrier={r}
             best={r.id === quoted[0]?.id}
             /* Select is the decision — it carries straight on to the
-               carrier's own questions, as the prototype's tiles do. The
-               rail is told first so it is already showing the right market
-               when the next screen arrives. */
-            onSelect={() => {
-              onSelectionChange && onSelectionChange(r.id)
-              onPickCarrier(r)
-            }}
+               carrier's own questions, as the prototype's tiles do. */
+            onSelect={() => onPickCarrier(r)}
           />
         ))}
       </div>
