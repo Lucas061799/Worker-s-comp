@@ -307,10 +307,13 @@ main.wc-surface-white .field-fill:focus-visible {
    size changes — only the ink. Put `wc-ink-strong` on a page's root to
    try it; take it off to go back. */
 .wc-ink-strong label { color: #1F2937; }
-.wc-ink-strong .im-section-label { color: #6B7280; }
 .wc-ink-strong .im-info-panel p { color: #374151; }
 .wc-ink-strong .text-gray-400 { color: #6B7280; }
 .wc-ink-strong .text-gray-500 { color: #4B5563; }
+/* After the greys above: a group heading also carries .text-gray-400, and
+   at equal weight the later rule wins — which is why it sat on their
+   colour however dark this one was set. */
+.wc-ink-strong .im-section-label { color: #4B5563; }
 
 /* The step an interstitial has not reached yet. Light grey on white reads
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
@@ -1191,10 +1194,11 @@ html[data-dark="true"] body .print-btn-text {
 /* The shim above reaches labels through .font-semibold, which outranks a
    plain descendant selector — this matches it and comes later. */
 [data-dark="true"] .wc-ink-strong label.font-semibold { color: #F3F4F6 !important; }
-[data-dark="true"] .wc-ink-strong .im-section-label { color: #B6BACD !important; }
 [data-dark="true"] .wc-ink-strong .im-info-panel p { color: #E5E7EB !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-400 { color: #B6BACD !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-500 { color: #D1D5DB !important; }
+/* Last, for the same reason as the light block. */
+[data-dark="true"] .wc-ink-strong .im-section-label { color: #CBCFE0 !important; }
 
 /* The dark half of the white-card trial. Same reason as the ink block
    above: the dark shims rewrite both the group card and the field fill at
