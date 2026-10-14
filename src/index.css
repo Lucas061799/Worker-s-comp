@@ -280,7 +280,21 @@ main.wc-surface-white { background: var(--surface-soft) !important; }
   background: var(--surface-card) !important;
   border-color: var(--line) !important;
 }
-.wc-surface-white .field-fill { background: var(--fill-subtle) !important; }
+/* The field goes back to the card's own colour and earns its edge from a
+   stronger stroke instead. Filled grey it read as something already
+   answered for you rather than something to type in — on a white card the
+   only way to say "enterable" is the border, since the fill has nowhere
+   lighter to go. The focus rules carry :focus so they still outrank this. */
+.wc-surface-white .field-fill {
+  background: var(--surface-card) !important;
+  border-color: var(--line-strong) !important;
+}
+main.wc-surface-white .field-fill:hover { border-color: #9CA3AF !important; }
+main.wc-surface-white .field-fill:focus,
+main.wc-surface-white .field-fill:focus-visible {
+  border-color: rgba(124,58,237,0.45) !important;
+  box-shadow: 0 0 0 2px rgba(124,58,237,0.10) !important;
+}
 
 /* ── A heavier reading of the form's type ─────────────────────────────
    Trialled on one screen before it goes near the rest. The labels, the
@@ -1190,4 +1204,15 @@ html[data-dark="true"] body .print-btn-text {
   background: var(--surface-card) !important;
   border-color: var(--line) !important;
 }
-[data-dark="true"] .wc-surface-white .field-fill { background: rgba(0,0,0,0.22) !important; }
+/* On navy the field can be lighter than its card, so it is — the same
+   "enterable" reading by the opposite route. */
+[data-dark="true"] .wc-surface-white .field-fill {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: var(--line-strong) !important;
+}
+[data-dark="true"] main.wc-surface-white .field-fill:hover { border-color: rgba(255,255,255,0.24) !important; }
+[data-dark="true"] main.wc-surface-white .field-fill:focus,
+[data-dark="true"] main.wc-surface-white .field-fill:focus-visible {
+  border-color: rgba(167,139,250,0.55) !important;
+  box-shadow: 0 0 0 2px rgba(167,139,250,0.16) !important;
+}
