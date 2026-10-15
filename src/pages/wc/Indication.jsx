@@ -157,7 +157,6 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
-              {best && <Tag tone="brand">Best value</Tag>}
               {carrier.promo && <Tag tone="brand">Promo</Tag>}
             </div>
 
@@ -263,7 +262,9 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
 
       {showRefer && (
         <div className="rounded-xl p-4 mt-3.5"
-          style={{ background: 'var(--surface-soft)', border: '1px dashed var(--line-strong)' }}>
+          /* The card surface, not --surface-soft: that is the page's own
+             colour, so the panel had nothing but its dashed edge. */
+          style={{ background: 'var(--surface-card)', border: '1px dashed var(--line-strong)' }}>
           {/* The copy is one block and the button sits against it. The
               prototype stacks the heading above a space-between row, which at
               this width left the sentence stranded far from the button. */}
