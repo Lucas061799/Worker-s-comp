@@ -353,6 +353,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
 
                 {appetite === 'good' && (
                   <InfoPanel
+                    tone="good"
                     footer={
                       /* One chip per carrier, so "we have a market" is a list
                          of names rather than a number to take on trust. */
@@ -377,9 +378,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                         })}
                       </div>
                     }
-                    icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>}
                     lead={<>Good news: {CARRIERS.length - NO_APPETITE.length} of {CARRIERS.length} carriers
                       have appetite for {picked?.code} in {state}.</>}
                     className="mt-3"
