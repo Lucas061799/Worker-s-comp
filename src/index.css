@@ -505,11 +505,6 @@ main.wc-surface-white .field-fill:focus-visible {
 [data-dark="true"] .jungle-cta .text-gray-400 {
   color: #4B5563 !important;
 }
-/* Green "Included" badge — strengthen in dark mode for contrast */
-[data-dark="true"] .bop-page span[style*="rgba(52, 211, 153"] {
-  background: rgba(52, 211, 153, 0.18) !important;
-  color: #6EE7B7 !important;
-}
 /* Section header titles (h2 from SectionHeader) */
 [data-dark="true"] section h2 {
   color: #F9FAFB !important;
@@ -877,8 +872,12 @@ button.force-white-text,
 [data-dark="true"] .im-chip-muted { background: rgba(255,255,255,0.08) !important; color: #9CA3AF !important; }
 [data-dark="true"] .im-chip-warn  { background: rgba(245,158,11,0.18) !important; color: #FCD34D !important; }
 [data-dark="true"] .im-chip-stop  { background: rgba(239,68,68,0.18) !important; color: #FCA5A5 !important; }
-.im-chip-good  { background: rgba(16,185,129,0.12); color: #047857; }
-[data-dark="true"] .im-chip-good  { background: rgba(16,185,129,0.20) !important; color: #6EE7B7 !important; }
+/* The design system's `.badge-sp-active` verbatim — teal on a 10% teal tint.
+   This was Tailwind emerald (rgba(16,185,129,…) / #047857 / #6EE7B7), which
+   the DS lists under "Not in the product": the positive state is teal, and
+   there is no green anywhere in Norbielink. */
+.im-chip-good  { background: rgba(115,201,183,0.10); color: #73C9B7; }
+[data-dark="true"] .im-chip-good  { background: rgba(115,201,183,0.15) !important; color: #73C9B7 !important; }
 
 .im-note-warn { color: #B45309; }
 [data-dark="true"] .im-note-warn { color: #FCD34D !important; }
@@ -914,25 +913,32 @@ button.force-white-text,
    that do — the gradient buttons, the selected pills, the prices. `color`
    drives the glyph, which is drawn with currentColor. */
 .im-info-panel {
-  background: rgba(115,201,183,0.12);
+  /* The DS success tint, #E8F7F3, and the DS teal — not the darkened
+     #0E8F7A this used to carry, which is not a Norbielink colour. */
+  background: #E8F7F3;
   border: 1px solid rgba(115,201,183,0.38);
-  color: #0E8F7A;
+  color: #73C9B7;
 }
 [data-dark="true"] .im-info-panel {
-  background: rgba(115,201,183,0.12) !important;
+  background: rgba(115,201,183,0.15) !important;
   border-color: rgba(115,201,183,0.30) !important;
-  color: #7FD9C6 !important;
+  /* The DS keeps teal unchanged across themes. */
+  color: #73C9B7 !important;
 }
 
 /* Only the disc inside a panel. The same class dresses the Banner's mark
-   and the indication's "why didn't quote" glyph, and those stay brand. */
+   and the indication's "why didn't quote" glyph, and those stay brand.
+
+   A translucent teal disc with the teal mark on it. That is the design
+   system's own pairing — its status pill sets #73C9B7 on a 10% teal tint —
+   so the mark reads softly by house standard rather than by accident. */
 .im-info-panel .im-panel-icon {
-  background: rgba(115,201,183,0.22);
-  color: #0E8F7A;
+  background: rgba(115,201,183,0.28);
+  color: #73C9B7;
 }
 [data-dark="true"] .im-info-panel .im-panel-icon {
-  background: rgba(115,201,183,0.22) !important;
-  color: #A7E8D9 !important;
+  background: rgba(115,201,183,0.28) !important;
+  color: #73C9B7 !important;
 }
 
 /* A limited appetite still lets the agent continue, so it stays in the brand

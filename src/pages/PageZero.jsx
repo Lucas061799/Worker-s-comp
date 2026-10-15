@@ -18,6 +18,14 @@ const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','
 /* The prototype's own nine demo codes, verbatim — including 5187, the
    dual-wage twin of 5183 that the Coverages popover tells the agent to
    enter but that was not selectable here. */
+/* The design system's field helper: 11px / 400, 4px under the box. It says
+   what belongs in the field, which an ⓘ only says to whoever thinks to
+   hover it. On the muted grey rather than the sub grey — these lines are
+   meant to be read, not just available. */
+function FieldHelp({ children }) {
+  return <p className="text-[11px] leading-[16.5px] mt-1" style={{ color: '#6B7280' }}>{children}</p>
+}
+
 const CLASSES = [
   { code: '5183', desc: 'Plumbing — shop & outside (≥ $31/hr)', contractor: true },
   { code: '5187', desc: 'Plumbing — shop & outside (< $31/hr)', contractor: true },
@@ -141,7 +149,12 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
           />
 
           <div className="relative z-10 min-h-full flex flex-col justify-center items-center py-10 px-6 md:px-[8%] lg:px-[10%]">
-            <div className="w-full max-w-xl">
+            {/* The column fills the height so Start Application can sit at
+                the foot of it. Everything above centres in what is left, so
+                the button does not walk up and down as the appetite answer
+                appears and the tip rewraps. */}
+            <div className="w-full max-w-xl flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col justify-center">
               <div className="mb-6">
                 <p className="text-xs md:text-sm font-bold tracking-widest uppercase text-gradient mb-2 md:mb-3">
                   Workers' Compensation Insurance
@@ -258,6 +271,9 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                       </div>
                     )}
                   </div>
+                  <FieldHelp>
+                    The class with the most payroll. You can add other classes on Coverages.
+                  </FieldHelp>
                 </div>
 
                 <div>
@@ -265,7 +281,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     Estimated Annual Payroll<span className="text-red-400">*</span>
                     <InfoDot
                       title="Estimated annual payroll"
-                      text="Enter the estimated payroll for all employees including officers if they will be included in coverage. This is an estimate only to confirm we have an available market; we'll ask for full payroll at the class code level later."
+                      text="An estimate only, to confirm we have an available market — we'll ask for full payroll at the class code level later."
                     />
                   </label>
                   <Input
@@ -273,6 +289,9 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     onChange={val => { setPayroll(val); setAppetite(null) }}
                     placeholder="$"
                   />
+                  <FieldHelp>
+                    All employees, before taxes. Include officers who will be covered.
+                  </FieldHelp>
                 </div>
 
                 {/* The prototype shows this box only for contracting classes.
@@ -285,7 +304,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     Contractor License Number
                     <InfoDot
                       title="Contractor license number"
-                      text="Certain carriers will require this in order to bind. We'll also prefill information based on this license."
+                      text="Certain carriers will require this in order to bind."
                     />
                   </label>
                   {/* Digits only, capped at 8 — CSLB numbers run to eight
@@ -297,6 +316,9 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     digits
                     maxLength={8}
                   />
+                  <FieldHelp>
+                    CA license numbers prefill business details from CSLB.
+                  </FieldHelp>
                 </div>
               </div>
 
@@ -364,6 +386,17 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     </p>
                   </div>
                 )}
+
+                {/* A demo affordance, not product copy: the two branches off
+                    this screen are reachable only through a class nobody
+                    would guess at, so the page says which ones. */}
+                <p className="text-[11px] leading-[16.5px] mt-3.5" style={{ color: '#6B7280' }}>
+                  Tip: class <b className="font-semibold" style={{ color: '#1F2937' }}>7228 · Trucking — long haul</b>{' '}
+                  shows the no-appetite message.{' '}
+                  <b className="font-semibold" style={{ color: '#1F2937' }}>7229 · Trucking — local hauling</b>{' '}
+                  adds the PUC and Motor Carrier Permit fields on Business info.
+                </p>
+              </div>
               </div>
 
               <button
@@ -372,7 +405,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                 disabled={!ready}
                 /* force-white-text only belongs on the gradient; a disabled
                    button with white text on the muted fill reads clickable. */
-                className={`w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${
+                className={`w-full h-11 mt-8 shrink-0 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${
                   ready ? 'btn-gradient force-white-text text-white hover:opacity-90' : 'cursor-not-allowed'
                 }`}
                 style={{
