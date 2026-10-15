@@ -994,8 +994,12 @@ button.force-white-text,
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
-.im-alert-desc { color: #6B7280; }
-[data-dark="true"] .im-alert-desc { color: #8B8FA8 !important; }
+/* The DS sets this #6B7280 / #8B8FA8. Those are a step lighter than this
+   app's secondary text, which carries the darkened ink treatment, and on a
+   toned panel the neutral grey came out muddy against the tint — about 4:1
+   on the amber in dark. One step in from the DS in each theme. */
+.im-alert-desc { color: #4B5563; }
+[data-dark="true"] .im-alert-desc { color: #D1D5DB !important; }
 
 /* The mark's stroke, as stops so the theme can move it. */
 .im-brand-stop-a { stop-color: #5C2ED4; }
@@ -1067,8 +1071,7 @@ button.force-white-text,
    line. #74C3B7, the design system's second teal, not the darkened ink the
    panels use for their glyphs — that one carries enough green to read as a
    different colour. The warn twin already exists as .im-note-warn. */
-.im-note-good { color: #74C3B7; }
-[data-dark="true"] .im-note-good { color: #74C3B7 !important; }
+
 
 [data-dark="true"] .im-banner {
   background: linear-gradient(88.09deg, rgba(124,58,237,0.18) 0%, rgba(166,20,195,0.12) 100%) !important;
@@ -1323,7 +1326,6 @@ html[data-dark="true"] body .print-btn-text {
 /* The shim above reaches labels through .font-semibold, which outranks a
    plain descendant selector — this matches it and comes later. */
 [data-dark="true"] .wc-ink-strong label.font-semibold { color: #F3F4F6 !important; }
-[data-dark="true"] .wc-ink-strong .im-info-panel .im-alert-desc { color: #8B8FA8 !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-400 { color: #B6BACD !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-500 { color: #D1D5DB !important; }
 /* Last, for the same reason as the light block. */

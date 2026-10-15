@@ -84,7 +84,7 @@ function modNote(value) {
   const n = parseFloat(value)
   if (!n) return ['Pre-filled from the FEIN lookup when available — enter 1.00 if the insured has no mod.', 'text-gray-500']
   const pct = Math.round(Math.abs(1 - n) * 100)
-  if (n < 1) return [`${pct}% credit: better-than-average loss experience`, 'im-note-good']
+  if (n < 1) return [`${pct}% credit: better-than-average loss experience`, 'im-note-brand']
   if (n > 1) return [`${pct}% debit: worse-than-average loss experience`, 'im-note-warn']
   return ['Unity mod: no credit or debit', 'text-gray-500']
 }
@@ -160,7 +160,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
             label={
               <span className="flex items-center gap-2 h-5">
                 <span>Experience mod<span className="text-red-400 ml-0.5">*</span></span>
-                {st === 'CA' && <Tag size="sm">WCIRB</Tag>}
+                {st === 'CA' && <Tag size="sm" tone="teal">WCIRB</Tag>}
               </span>
             }
             value={mod}
@@ -364,14 +364,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                 onChange={val => patch({ subCertificates: val })}
               />
             </div>
-
-            <InfoPanel
-              className="mt-5"
-              lead="Collect certificates of insurance from every subcontractor before work begins."
-            >
-              Payroll paid to uninsured or uncertificated subs is added to your payroll at
-              audit and charged at the applicable class rate.
-            </InfoPanel>
           </>
         )}
       </SubSection>
