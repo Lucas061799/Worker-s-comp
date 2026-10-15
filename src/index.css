@@ -892,9 +892,9 @@ button.force-white-text,
 /* The disclosure on a carrier tile: a hairline ring, so it reads as
    something to press rather than a stray mark. Quiet until it is reached
    for — the facts behind it are reference, not a decision. */
-.im-tile-chevron { color: #9CA3AF; border: 1px solid var(--line); }
+.im-tile-chevron { color: #6B7280; border: 1px solid var(--line-strong); }
 .im-tile-chevron:hover {
-  background: var(--fill-subtle); border-color: var(--line-strong); color: #6B7280;
+  background: var(--fill-subtle); border-color: #9CA3AF; color: #374151;
 }
 /* Matching the blanket dark `.border` shim's weight so the ring survives it. */
 [data-dark="true"] .im-tile-chevron,

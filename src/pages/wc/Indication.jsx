@@ -117,7 +117,7 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
               one piece of identification, and it buys the tile a line. */}
           <span className="flex items-center gap-2.5 min-w-0">
             <CarrierLogo carrier={carrier} size={40} />
-            <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
+            <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
               {carrier.name}
             </span>
           </span>
@@ -179,8 +179,10 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
           </>
         ) : (
           <>
-            <p className="text-[13px] font-semibold text-gray-500">Carrier declined this risk</p>
-            <p className="text-[11.5px] text-gray-400 leading-relaxed mt-1.5">{carrier.noquote}.</p>
+            {/* Muted, because the tile is not an option — but a step
+                darker than it was: it still has to be read. */}
+            <p className="text-[13px] font-semibold text-gray-700">Carrier declined this risk</p>
+            <p className="text-[12px] text-gray-500 leading-relaxed mt-1.5">{carrier.noquote}.</p>
           </>
         )}
       </div>

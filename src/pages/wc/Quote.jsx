@@ -218,7 +218,9 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
 
       {onRefer && (
         <div className="rounded-xl p-4 flex flex-wrap items-center justify-between gap-3"
-          style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
+          /* The card surface — --surface-soft is the page's own colour, so
+             the panel had nothing but its hairline. */
+          style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
           <div className="min-w-0">
             <p className="text-[13px] font-semibold text-gray-700">Didn't find the right quote?</p>
             <p className="text-[12px] text-gray-500">Refer this submission to an underwriter for manual review.</p>
