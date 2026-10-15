@@ -112,9 +112,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
     <div className="w-full space-y-6">
       {cslbFound && (
         <InfoPanel
-          icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>}
+          tone="good"
           lead={<>CSLB licence {cslbLicense} found.</>}
         >
           We prefilled the fields tagged CSLB. Please confirm them.

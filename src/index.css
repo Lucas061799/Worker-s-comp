@@ -957,7 +957,11 @@ button.force-white-text,
   /* The teal at the DS's own published alpha — the 10% its status pill
      fills with, lighter than the solid #E8F7F3 success tint and, being an
      alpha, it picks up whatever surface the panel is standing on. */
-  background: #F9FAFB;
+  /* The DS puts this on #F9FAFB, but that is our page colour — the alert
+     vanished into it and only the hairline was left. It takes the card
+     surface instead, which is what #F9FAFB is doing there: standing off
+     the white behind it. */
+  background: var(--surface-card);
   border: 1px solid #E5E7EB;
   color: #A614C3;
 }
@@ -965,6 +969,13 @@ button.force-white-text,
   background: rgba(255,255,255,0.04) !important;
   border-color: rgba(255,255,255,0.12) !important;
   color: #C084FC !important;
+}
+
+/* Inside a card the surface behind it is already white, so the alert takes
+   the DS's own #F9FAFB there and stands off it. On the page it is the other
+   way round — hence the card surface above. One alert, two neighbours. */
+.im-field-card .im-info-panel:not([class*="im-info-panel--"]) {
+  background: #F9FAFB;
 }
 
 /* The title carries the gradient; the description is muted. */
@@ -1004,6 +1015,24 @@ button.force-white-text,
   background: rgba(239,68,68,0.12) !important;
   border-color: rgba(239,68,68,0.34) !important;
   color: #FCA5A5 !important;
+}
+
+/* Something that went right — a licence found, a document accepted. The
+   teal family, with the disc the mark needs: #73C9B7 is too light to read
+   as a bare stroke, which is why the neutral alert does not use it. */
+.im-info-panel--good {
+  background: rgba(115,201,183,0.10);
+  border-color: rgba(115,201,183,0.38);
+  color: #73C9B7;
+}
+[data-dark="true"] .im-info-panel--good {
+  background: rgba(115,201,183,0.15) !important;
+  border-color: rgba(115,201,183,0.30) !important;
+  color: #73C9B7 !important;
+}
+.im-info-panel .im-panel-icon--good { background: rgba(115,201,183,0.16); color: #73C9B7; }
+[data-dark="true"] .im-info-panel .im-panel-icon--good {
+  background: rgba(115,201,183,0.22) !important; color: #73C9B7 !important;
 }
 
 /* A note the agent has to act on rather than simply read — a state payroll

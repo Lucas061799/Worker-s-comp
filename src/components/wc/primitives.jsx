@@ -302,6 +302,16 @@ export function WarnGlyph({ className = 'w-3.5 h-3.5' }) {
    and centres its own content. One line and the box is exactly the disc's
    height, so the line centres on it; two and the box grows past it, so both
    sit at the top. */
+/* The mark for a panel that reports something that went right. */
+export function CheckGlyph({ className = 'w-3.5 h-3.5' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  )
+}
+
 /* The design system's alert, transcribed: a neutral surface, a 12px radius,
    16px of padding and a 12px gap, with the brand as the only accent — a
    20px stroke mark and a gradient title over a muted description. It has no
@@ -313,14 +323,27 @@ export function InfoPanel({ children, icon, lead, tone = 'info', footer, classNa
   const variant = info ? '' : ` im-info-panel--${tone}`
   return (
     <div className={`im-info-panel${variant} rounded-xl p-4 flex items-start gap-3 ${className}`}>
-      {/* No disc. The DS draws the mark straight onto the surface, which is
-          also the only way a stroke this fine stays legible — a tinted disc
-          behind it ate the outline. */}
-      <span className="im-panel-mark w-5 h-5 flex items-center justify-center shrink-0">
-        {icon || (info ? <AlertGlyph className="w-5 h-5" gradient /> : <WarnGlyph className="w-5 h-5" />)}
+      {/* The neutral alert carries no disc — the DS draws its mark straight
+          onto the surface, and a tint behind a 2px stroke ate the outline.
+          A toned panel keeps the disc it has always had: its mark is a flat
+          colour, which a disc helps rather than hides. */}
+      <span className={info
+        ? 'im-panel-mark w-5 h-5 flex items-center justify-center shrink-0'
+        : `im-panel-icon im-panel-icon--${tone} w-7 h-7 rounded-full flex items-center justify-center shrink-0`}>
+        {icon || (info
+          ? <AlertGlyph className="w-5 h-5" gradient />
+          : tone === 'good'
+            ? <CheckGlyph />
+            : <WarnGlyph />)}
       </span>
       <span className="flex-1 min-w-0 min-h-5 flex flex-col justify-center">
-        {lead && <span className="im-alert-title text-[13px] font-semibold leading-[18px]">{lead}</span>}
+        {/* Only the neutral alert's title wears the gradient; a toned panel
+            already has a colour, and two in one line is one too many. */}
+        {lead && (
+          <span className={`text-[13px] font-semibold leading-[18px] ${info ? 'im-alert-title' : 'text-navy'}`}>
+            {lead}
+          </span>
+        )}
         {children && (
           <p className={`text-[12px] leading-[18px] im-alert-desc ${lead ? 'mt-1' : ''}`}>{children}</p>
         )}
