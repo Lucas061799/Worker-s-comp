@@ -38,9 +38,11 @@ function fieldLabel(text, { required, optional, tag } = {}) {
 function PillField({ label, required, value, onChange, help }) {
   return (
     <div>
-      <span className="block text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
+      {/* A <label>, not a span: the page's ink treatment darkens `label`,
+          and a span beside it comes out a whole step lighter. */}
+      <label className="block text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
         {label}{required && <span className="text-red-400 ml-0.5">*</span>}
-      </span>
+      </label>
       <YesNo value={value} onChange={onChange} name={label} />
       {help && <p className="text-xs text-gray-500 mt-2">{help}</p>}
     </div>

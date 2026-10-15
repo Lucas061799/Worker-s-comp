@@ -56,10 +56,12 @@ const emptyOfficer = () => ({ name: '', title: '', status: 'include' })
 function FieldLabel({ children, required }) {
   return (
     /* 20px, the height FormField's own label comes out at, so a hand-built
-       control and an Input beside it start their boxes on the same line. */
-    <span className="flex items-center h-5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+       control and an Input beside it start their boxes on the same line.
+       A <label> rather than a span, too: the page's ink treatment darkens
+       `label`, and a span beside it comes out a whole step lighter. */
+    <label className="flex items-center h-5 text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
       {children}{required && <span className="text-red-400 ml-0.5">*</span>}
-    </span>
+    </label>
   )
 }
 
