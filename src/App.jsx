@@ -13,7 +13,7 @@ import CoverageHistory from './pages/wc/CoverageHistory'
 import LossDetail from './pages/wc/LossDetail'
 import StateCoverages from './pages/wc/StateCoverages'
 import UnderwritingQuestions from './pages/wc/UnderwritingQuestions'
-import CarrierSelection, { CARRIERS } from './pages/wc/CarrierSelection'
+import { CARRIERS } from './pages/wc/CarrierSelection'
 import Loading, { RATING, FINALIZING, RatingPromo } from './pages/wc/Loading'
 import Locations from './pages/wc/Locations'
 import SubClassCode from './pages/wc/SubClassCode'
@@ -505,7 +505,9 @@ owner_involved: 'yes',
           setAttemptedQuote(true)
           return false
         }}
-        onGetIndication={() => goToStep(6)}
+        /* There is no market-selection screen any more: continuing from
+           here rates every carrier and lands on the price indication. */
+        onGetIndication={() => { goToStep(6); handleGetIndication() }}
       />
     ) },
   ]
@@ -638,14 +640,6 @@ owner_involved: 'yes',
                       onPickCarrier={handlePickCarrier}
                       referralInPlay={referralInPlay}
                       onRefer={() => setReferralStage('form')}
-                    />
-                  )}
-                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carriers' && (
-                    <CarrierSelection
-                      formData={formData}
-                      updateFormData={updateFormData}
-                      onGetIndication={handleGetIndication}
-                      onBack={() => goToStep(5)}
                     />
                   )}
                   {!rating && !finalizing && referralStage === 'form' && (

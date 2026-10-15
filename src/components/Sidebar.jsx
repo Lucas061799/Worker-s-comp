@@ -32,7 +32,6 @@ function getCompletion(formData) {
   const hist= formData.history       || {}
   const cov = formData.coverage      || {}
   const uw  = formData.underwriting  || {}
-  const sel = formData.carrierSelection?.checked || {}
   const bnd = formData.bind          || {}
 
   const state = pz.state || 'CA'
@@ -44,7 +43,9 @@ function getCompletion(formData) {
   c['losses']      = (hist.claimCount || 0) > 0 && !!hist.losses && hist.losses.length > 0
   c['coverages']   = !!(stateCov.classes && stateCov.classes.length > 0 && stateCov.classes.every(cl => cl.code && cl.payroll))
   c['questions']   = uw.safety_program !== undefined
-  c['carriers']    = Object.values(sel).some(Boolean)
+  // Nothing is chosen on this step any more — it is done once a carrier
+  // has been taken off the indication it shows.
+  c['carriers']    = !!bnd.selectedCarrier
   c['carrierflow'] = !!bnd.selectedCarrier && !!bnd.carrierQuestions
   c['quote']       = !!bnd.bound
   return c

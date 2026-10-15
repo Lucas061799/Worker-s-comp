@@ -182,11 +182,14 @@ function CarrierTile({ carrier, best, onSelect }) {
 const REFERRAL_THRESHOLD = 20000
 
 export default function Indication({ formData, onPickCarrier, onRefer, referralInPlay = false }) {
-  const checked = formData.carrierSelection?.checked || {}
+  /* No market-selection screen any more, so an absent list means every
+     carrier rather than none. A record written when that screen existed
+     still narrows to what it chose. */
+  const checked = formData.carrierSelection?.checked
 
   const results = useMemo(() => {
     return CARRIERS
-      .filter(c => checked[c.id])
+      .filter(c => !checked || checked[c.id])
       .map(c => {
         const meta = FACTORS[c.id] || { factor: 1, bind: true }
         return {
