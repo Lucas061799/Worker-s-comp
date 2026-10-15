@@ -4,7 +4,6 @@ import {
   RemoveButton,
   AddAnother,
   InfoDot,
-  InfoLine,
 } from '../../components/wc/primitives'
 
 const LOSS_TYPES = ['Medical', 'Indemnity', 'Both']
@@ -89,11 +88,6 @@ export default function LossDetail({ formData, updateFormData }) {
             rows={3}
           />
         </div>
-
-        <InfoLine className="mt-5">
-          If there are 4 or more claims, please email currently valued loss runs to{' '}
-          <b className="font-semibold text-navy">comp@btisinc.com</b>. Be sure to reference the quote number above.
-        </InfoLine>
       </FieldGroup>
     </div>
   )
