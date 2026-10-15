@@ -149,12 +149,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
           />
 
           <div className="relative z-10 min-h-full flex flex-col justify-center items-center py-10 px-6 md:px-[8%] lg:px-[10%]">
-            {/* The column fills the height so Start Application can sit at
-                the foot of it. Everything above centres in what is left, so
-                the button does not walk up and down as the appetite answer
-                appears and the tip rewraps. */}
-            <div className="w-full max-w-xl flex-1 flex flex-col">
-              <div className="flex-1 flex flex-col justify-center">
+            <div className="w-full max-w-xl">
               <div className="mb-6">
                 <p className="text-xs md:text-sm font-bold tracking-widest uppercase text-gradient mb-2 md:mb-3">
                   Workers' Compensation Insurance
@@ -397,7 +392,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                   adds the PUC and Motor Carrier Permit fields on Business info.
                 </p>
               </div>
-              </div>
 
               {/* Nothing to start until appetite has answered, and a disabled
                   button is still something the eye has to rule out. It
@@ -409,7 +403,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                 disabled={!ready}
                 /* force-white-text only belongs on the gradient; a disabled
                    button with white text on the muted fill reads clickable. */
-                className={`w-full h-11 mt-8 shrink-0 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${
+                className={`w-full h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition ${
                   ready ? 'btn-gradient force-white-text text-white hover:opacity-90' : 'cursor-not-allowed'
                 }`}
                 style={{
