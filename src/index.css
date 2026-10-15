@@ -978,10 +978,11 @@ button.force-white-text,
 }
 
 /* A field's own reading of what was typed into it — the ex-mod's credit
-   line. The house teal, the same ink the info panels carry, rather than a
-   green of its own. The warn twin already exists as .im-note-warn. */
-.im-note-good { color: #0E8F7A; }
-[data-dark="true"] .im-note-good { color: #7FD9C6 !important; }
+   line. The house teal itself, #73C9B7, not the darkened ink the panels use
+   for their glyphs — that one carries enough green to read as a different
+   colour. The warn twin already exists as .im-note-warn. */
+.im-note-good { color: #73C9B7; }
+[data-dark="true"] .im-note-good { color: #73C9B7 !important; }
 
 [data-dark="true"] .im-banner {
   background: linear-gradient(88.09deg, rgba(124,58,237,0.18) 0%, rgba(166,20,195,0.12) 100%) !important;
