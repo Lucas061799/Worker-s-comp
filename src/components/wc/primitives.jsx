@@ -267,6 +267,16 @@ export function AlertGlyph({ className = 'w-3.5 h-3.5' }) {
   )
 }
 
+/* Material Symbols "warning" — the mark for a note the agent has to act on
+   rather than simply read. Same family as AlertGlyph, same currentColor. */
+export function WarnGlyph({ className = 'w-3.5 h-3.5' }) {
+  return (
+    <svg className={className} viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+      <path d="M40-120l440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z" />
+    </svg>
+  )
+}
+
 /* A note in a panel. On a single-line note the icon and the copy end up
    centred against each other; on a longer one they both start at the top —
    which is what the eye wants in each case, and what a fixed items-start or
@@ -276,11 +286,16 @@ export function AlertGlyph({ className = 'w-3.5 h-3.5' }) {
    and centres its own content. One line and the box is exactly the disc's
    height, so the line centres on it; two and the box grows past it, so both
    sit at the top. */
-export function InfoPanel({ children, icon, lead, className = '' }) {
+export function InfoPanel({ children, icon, lead, tone = 'info', className = '' }) {
+  /* 'info' is the teal house note; 'warn' and 'stop' are the amber and red
+     families, each a modifier on the same box so there is one panel, not
+     three. */
+  const variant = tone === 'info' ? '' : ` im-info-panel--${tone}`
+  const disc = tone === 'info' ? '' : ` im-panel-icon--${tone}`
   return (
-    <div className={`im-info-panel rounded-xl p-4 flex items-start gap-3 ${className}`}>
-      <span className="im-panel-icon w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-        {icon || <AlertGlyph />}
+    <div className={`im-info-panel${variant} rounded-xl p-4 flex items-start gap-3 ${className}`}>
+      <span className={`im-panel-icon${disc} w-7 h-7 rounded-full flex items-center justify-center shrink-0`}>
+        {icon || (tone === 'info' ? <AlertGlyph /> : <WarnGlyph />)}
       </span>
       <span className="flex-1 min-h-7 flex items-center">
         <p className="text-[12.5px] text-gray-600 leading-relaxed">
@@ -320,7 +335,7 @@ export function NotePanel({ title, children }) {
 }
 
 /* Tag chip — SIC / NAICS / coverage family. */
-export function Tag({ children, tone = 'default' }) {
+export function Tag({ children, tone = 'default', size = 'md' }) {
   /* The brand tone wears the gradient, not a flat violet — the same
      purple-to-magenta wash the radio pills take, with the text to match. */
   const brand = tone === 'brand'
@@ -330,8 +345,14 @@ export function Tag({ children, tone = 'default' }) {
         border: '1px solid rgba(92,46,212,0.18)',
       }
     : { background: 'white', border: '1px solid #E5E7EB', color: '#6B7280' }
+  /* `sm` rides inside a field label, where the full-size chip makes the
+     label row taller than a plain one beside it and knocks the two columns
+     out of line. */
+  const sizing = size === 'sm'
+    ? 'px-2 py-0 h-[18px] text-[10px] tracking-[0.04em]'
+    : 'px-2.5 py-1 text-[11px]'
   return (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold" style={styles}>
+    <span className={`inline-flex items-center rounded-full font-semibold ${sizing}`} style={styles}>
       {brand ? <BrandText>{children}</BrandText> : children}
     </span>
   )
@@ -621,7 +642,9 @@ export function AddAnother({ onClick, children }) {
       onClick={onClick}
       className="add-another-btn w-full flex items-center justify-center gap-2 text-xs font-semibold border border-dashed border-[#A614C3]/30 rounded-xl px-4 py-3 transition"
     >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#A614C3' }}>
+      {/* The start of the gradient the label carries, so the mark and the
+          words read as one sweep rather than two different purples. */}
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#5C2ED4' }}>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
       </svg>
       <span className="text-gradient">{children}</span>

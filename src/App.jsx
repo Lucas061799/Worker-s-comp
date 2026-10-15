@@ -311,10 +311,12 @@ function App() {
     })
     updateFormData('coverage', {
       elLimits: '$1M / $1M / $1M',
-      officers: [
-        { name: 'Marcus Ruiz', title: 'President', status: 'include' },
-      ],
       CA: {
+        /* Officers are the state's own — each state card carries the people
+           it schedules payroll for under that state's rules. */
+        officers: [
+          { name: 'Marcus Ruiz', title: 'President', status: 'include' },
+        ],
         classes: [
           { location: 'Location 1', code: '5183', description: 'Plumbing NOC', payroll: '$480,000', ftEmployees: '6', ptEmployees: '1' },
           { location: 'Location 1', code: '8810', description: 'Clerical office employees', payroll: '$96,000', ftEmployees: '2', ptEmployees: '0' },

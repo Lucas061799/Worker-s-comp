@@ -186,7 +186,9 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
   const cov       = formData.coverage || {}
   const locations = formData.locations?.list || []
   const classes   = stateCov.classes || []
-  const officers  = cov.officers || []
+  // Officers moved onto the state's own card; older records kept them at
+  // the top of the section.
+  const officers  = stateCov.officers || cov.officers || []
   const losses    = (history.losses || []).filter(l => l.date || l.amount || l.description)
   const contact   = [business.firstName, business.lastName].filter(Boolean).join(' ')
   const brokerFee = Number(bind.brokerFee) || 0

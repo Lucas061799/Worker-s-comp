@@ -199,7 +199,7 @@ export default function PrintSummary({ formData, visible, onClose, onEdit }) {
                   <Row label="Total Annual Payroll" value={money(totalPayroll)} />
                   <Row label="Experience Mod" value={uw.experienceMod && `${uw.experienceMod} · ${uw.experienceModSource || 'Manual'}`} />
                   <Row label="Blanket Waiver" value={yesNo(stateCov.blanketWaiver)} />
-                  <Row label="Officers" value={(cov.officers || []).map(o => `${o.name} (${o.status === 'exclude' ? 'Excluded' : 'Included'})`).join(', ')} />
+                  <Row label="Officers" value={(stateCov.officers || cov.officers || []).map(o => `${o.name} (${o.status === 'exclude' ? 'Excluded' : 'Included'})`).join(', ')} />
                   <Row label="EL Limits" value={cov.elLimits} />
                   <Row label="Uses Subcontractors" value={yesNo(stateCov.usesSubs)} />
                 </Panel>

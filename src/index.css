@@ -720,7 +720,7 @@ button.force-white-text,
   color: #E879F9 !important;
 }
 [data-dark="true"] .add-another-btn svg {
-  color: #E879F9 !important;
+  color: #A78BFA !important;
 }
 [data-dark="true"] .add-another-btn:hover {
   background: rgba(167,139,250,0.15) !important;
@@ -735,11 +735,11 @@ button.force-white-text,
 [data-dark="true"] .bop-page .add-another-btn:hover {
   border-color: rgba(216,180,254,0.5) !important;
 }
-/* The generic "inline brand magenta → bright pink" shim matches this glyph's
-   inline colour and lightens it to #F0ABFC; Commercial Auto keeps it on
-   #E879F9, so outrank that shim for this button alone. */
+/* The generic "inline brand purple → lavender" shim matches this glyph's
+   inline colour and lightens it to #C4B5FD; the glyph wants the exact start
+   of the dark gradient its label carries, so outrank that shim here. */
 [data-dark="true"] .bop-page .add-another-btn svg {
-  color: #E879F9 !important;
+  color: #A78BFA !important;
 }
 
 /* Print Submission / outline action buttons in dark */
@@ -949,12 +949,39 @@ button.force-white-text,
   color: #FCA5A5 !important;
 }
 
-/* The disc follows its panel. `background` shorthand clears the brand
+/* A note the agent has to act on rather than simply read — a state payroll
+   rule, an uninsured-sub exposure. Amber, the family .im-chip-warn already
+   carries for that meaning. */
+.im-info-panel--warn {
+  background: rgba(245,158,11,0.10);
+  border-color: rgba(245,158,11,0.32);
+  color: #B45309;
+}
+[data-dark="true"] .im-info-panel--warn {
+  background: rgba(245,158,11,0.14) !important;
+  border-color: rgba(245,158,11,0.34) !important;
+  color: #FCD34D !important;
+}
+
+/* The disc follows its panel. Scoped inside .im-info-panel so it outranks
+   the teal `.im-info-panel .im-panel-icon` above — a bare `.im-panel-icon--x`
+   is one class lighter and loses, which left every variant wearing the
+   house teal on a coloured box. `background` shorthand clears the brand
    gradient the base chip sets. */
-.im-panel-icon--stop { background: rgba(239,68,68,0.14); color: #B91C1C; }
-[data-dark="true"] .im-panel-icon--stop {
+.im-info-panel .im-panel-icon--stop { background: rgba(239,68,68,0.14); color: #B91C1C; }
+[data-dark="true"] .im-info-panel .im-panel-icon--stop {
   background: rgba(239,68,68,0.24) !important; color: #FCA5A5 !important;
 }
+.im-info-panel .im-panel-icon--warn { background: rgba(245,158,11,0.18); color: #B45309; }
+[data-dark="true"] .im-info-panel .im-panel-icon--warn {
+  background: rgba(245,158,11,0.26) !important; color: #FCD34D !important;
+}
+
+/* A field's own reading of what was typed into it — the ex-mod's credit
+   line. The house teal, the same ink the info panels carry, rather than a
+   green of its own. The warn twin already exists as .im-note-warn. */
+.im-note-good { color: #0E8F7A; }
+[data-dark="true"] .im-note-good { color: #7FD9C6 !important; }
 
 [data-dark="true"] .im-banner {
   background: linear-gradient(88.09deg, rgba(124,58,237,0.18) 0%, rgba(166,20,195,0.12) 100%) !important;
