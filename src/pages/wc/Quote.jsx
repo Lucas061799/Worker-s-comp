@@ -226,8 +226,7 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           <button
             type="button"
             onClick={onRefer}
-            className="h-9 px-4 inline-flex items-center justify-center rounded-lg text-xs font-semibold shrink-0"
-            style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+            className="im-btn-outline h-9 px-4 inline-flex items-center justify-center rounded-lg text-xs font-semibold shrink-0"
           >
             Refer to underwriter
           </button>

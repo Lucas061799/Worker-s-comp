@@ -287,8 +287,7 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
             <button
               type="button"
               onClick={onRefer}
-              className="px-4 py-2 rounded-lg text-xs font-bold transition shrink-0 hover:opacity-80"
-              style={{ background: 'var(--surface-card)', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+              className="im-btn-outline px-4 py-2 rounded-lg text-xs font-bold transition shrink-0"
             >
               Refer to Underwriter
             </button>
