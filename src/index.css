@@ -929,15 +929,16 @@ button.force-white-text,
 /* Only the disc inside a panel. The same class dresses the Banner's mark
    and the indication's "why didn't quote" glyph, and those stay brand.
 
-   A translucent teal disc with the teal mark on it. That is the design
-   system's own pairing — its status pill sets #73C9B7 on a 10% teal tint —
-   so the mark reads softly by house standard rather than by accident. */
+   A 12% teal disc under a #73C9B7 outline mark — the treatment the
+   submission receipt's section cards already use, so the two agree. It is
+   also the design system's own pairing, give or take two points of alpha:
+   its status pill sets #73C9B7 on a 10% teal tint. */
 .im-info-panel .im-panel-icon {
-  background: rgba(115,201,183,0.28);
+  background: rgba(115,201,183,0.12);
   color: #73C9B7;
 }
 [data-dark="true"] .im-info-panel .im-panel-icon {
-  background: rgba(115,201,183,0.28) !important;
+  background: rgba(115,201,183,0.12) !important;
   color: #73C9B7 !important;
 }
 

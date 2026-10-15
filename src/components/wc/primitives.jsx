@@ -257,22 +257,28 @@ export function Banner({ children, icon = true }) {
 }
 
 /* A note under a group of fields: an icon and one grey line. */
-/* Material Symbols "error" — the alert mark the design calls for. Filled, so
-   it takes its colour from the disc it sits in. */
+/* A 2px stroke outline, drawn the way the design system draws an alert mark
+   — it lists a filled Material icon under "Don't". The dot is a zero-length
+   line, so it only paints with a round cap. */
 export function AlertGlyph({ className = 'w-3.5 h-3.5' }) {
   return (
-    <svg className={className} viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
-      <path d="M508.5-291.5Q520-303 520-320t-11.5-28.5Q497-360 480-360t-28.5 11.5Q440-337 440-320t11.5 28.5Q463-280 480-280t28.5-11.5ZM440-440h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 8v4.5M12 16.5h.01" />
     </svg>
   )
 }
 
-/* Material Symbols "warning" — the mark for a note the agent has to act on
-   rather than simply read. Same family as AlertGlyph, same currentColor. */
+/* The mark for a note the agent has to act on rather than simply read. The
+   same 2px outline AlertGlyph is drawn in, so a panel does not change
+   drawing style when it changes tone. */
 export function WarnGlyph({ className = 'w-3.5 h-3.5' }) {
   return (
-    <svg className={className} viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
-      <path d="M40-120l440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z" />
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3.2 22 20.8H2z" />
+      <path d="M12 10v4M12 17.4h.01" />
     </svg>
   )
 }

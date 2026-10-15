@@ -350,7 +350,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
 
                 {appetite === 'good' && (
                   <InfoPanel
-                    icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                    icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>}
                     lead="Good news!"
@@ -373,7 +373,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                 {appetite === 'declined' && (
                   <div className="im-info-panel im-info-panel--stop rounded-xl p-4 mt-3 flex items-start gap-3">
                     <span className="im-panel-icon im-panel-icon--stop w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
                       </svg>
                     </span>
@@ -399,6 +399,10 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
               </div>
               </div>
 
+              {/* Nothing to start until appetite has answered, and a disabled
+                  button is still something the eye has to rule out. It
+                  arrives with the answer instead. */}
+              {appetite && (
               <button
                 type="button"
                 onClick={handleStart}
@@ -424,6 +428,7 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </button>
+              )}
             </div>
           </div>
         </div>
