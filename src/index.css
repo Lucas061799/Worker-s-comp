@@ -941,14 +941,16 @@ button.force-white-text,
 /* The carrier BTIS writes itself. The house teal, matching the Instant
    bind chip on the tile beneath it, rather than a second brand wash
    competing with the price and the Select button. */
+/* BTIS's own purple, #3A2968 — the brand sheet's digital value, not the
+   gradient's start. White on it is about 11:1. */
 .im-reco-banner {
-  background: #5C2ED4;
-  border-bottom: 1px solid #5C2ED4;
+  background: #3A2968;
+  border-bottom: 1px solid #3A2968;
   color: #FFFFFF;
 }
 [data-dark="true"] .im-reco-banner {
-  background: #5C2ED4 !important;
-  border-bottom-color: #5C2ED4 !important;
+  background: #3A2968 !important;
+  border-bottom-color: #3A2968 !important;
   color: #FFFFFF !important;
 }
 /* The dot rides on the fill, so it is white at low alpha rather than a
