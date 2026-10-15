@@ -3,7 +3,6 @@ import {
   FieldGroup,
   Segmented,
   YesNo,
-  InfoLine,
   AlertGlyph,
   InfoPanel,
 } from '../../components/wc/primitives'
@@ -166,16 +165,23 @@ export default function CoverageHistory({ formData, updateFormData }) {
         </PillField>
 
         {claimsPast4 === 'yes' && (
-          <Input
-            label="How many claims?"
-            required
-            className="w-36 mt-5"
-            value={claimCount ? String(claimCount) : ''}
-            onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
-            placeholder="0"
-            digits
-            maxLength={3}
-          />
+          /* The box is narrow; the line under it is not, so it sits outside
+             the Input rather than inheriting its 144px and wrapping. */
+          <div className="mt-5">
+            <Input
+              label="How many claims?"
+              required
+              className="w-36"
+              value={claimCount ? String(claimCount) : ''}
+              onChange={val => patch({ claimCount: parseInt(val, 10) || 0 })}
+              placeholder="0"
+              digits
+              maxLength={3}
+            />
+            <p className="text-xs text-gray-500 mt-1.5">
+              You'll list each claim on Loss history.
+            </p>
+          </div>
         )}
       </FieldGroup>
 
@@ -194,11 +200,6 @@ export default function CoverageHistory({ formData, updateFormData }) {
         </InfoPanel>
       )}
 
-      {claimsPast4 === 'yes' && claimCount > 0 && claimCount < 4 && (
-        <InfoLine>
-          You'll list each claim on Loss history — it just appeared on the left.
-        </InfoLine>
-      )}
     </div>
   )
 }

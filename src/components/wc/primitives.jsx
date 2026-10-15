@@ -5,7 +5,7 @@
    one vocabulary. Every class it emits (im-*) is defined in index.css.
    ────────────────────────────────────────────────────────────────────────── */
 
-import { Children, useEffect, useRef, useState } from 'react'
+import { Children, useEffect, useId, useRef, useState } from 'react'
 
 export const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -260,10 +260,20 @@ export function Banner({ children, icon = true }) {
 /* A 2px stroke outline, drawn the way the design system draws an alert mark
    — it lists a filled Material icon under "Don't". The dot is a zero-length
    line, so it only paints with a round cap. */
-export function AlertGlyph({ className = 'w-3.5 h-3.5' }) {
+export function AlertGlyph({ className = 'w-3.5 h-3.5', gradient = false }) {
+  const id = useId()
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg className={className} viewBox="0 0 24 24" fill="none"
+      stroke={gradient ? `url(#${id})` : 'currentColor'}
       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {gradient && (
+        <defs>
+          <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" className="im-brand-stop-a" />
+            <stop offset="100%" className="im-brand-stop-b" />
+          </linearGradient>
+        </defs>
+      )}
       <circle cx="12" cy="12" r="10" />
       <path d="M12 8v4.5M12 16.5h.01" />
     </svg>
@@ -292,24 +302,28 @@ export function WarnGlyph({ className = 'w-3.5 h-3.5' }) {
    and centres its own content. One line and the box is exactly the disc's
    height, so the line centres on it; two and the box grows past it, so both
    sit at the top. */
+/* The design system's alert, transcribed: a neutral surface, a 12px radius,
+   16px of padding and a 12px gap, with the brand as the only accent — a
+   20px stroke mark and a gradient title over a muted description. It has no
+   severity variants there and no tinted surface; `warn` and `stop` stay
+   because this flow does have two states that must not read as notes — a
+   payroll rule the agent has to follow, and a risk with nothing to quote. */
 export function InfoPanel({ children, icon, lead, tone = 'info', footer, className = '' }) {
-  /* 'info' is the teal house note; 'warn' and 'stop' are the amber and red
-     families, each a modifier on the same box so there is one panel, not
-     three. */
-  const variant = tone === 'info' ? '' : ` im-info-panel--${tone}`
-  const disc = tone === 'info' ? '' : ` im-panel-icon--${tone}`
+  const info = tone === 'info'
+  const variant = info ? '' : ` im-info-panel--${tone}`
   return (
     <div className={`im-info-panel${variant} rounded-xl p-4 flex items-start gap-3 ${className}`}>
-      <span className={`im-panel-icon${disc} w-7 h-7 rounded-full flex items-center justify-center shrink-0`}>
-        {icon || (tone === 'info' ? <AlertGlyph /> : <WarnGlyph />)}
+      {/* No disc. The DS draws the mark straight onto the surface, which is
+          also the only way a stroke this fine stays legible — a tinted disc
+          behind it ate the outline. */}
+      <span className="im-panel-mark w-5 h-5 flex items-center justify-center shrink-0">
+        {icon || (info ? <AlertGlyph className="w-5 h-5" gradient /> : <WarnGlyph className="w-5 h-5" />)}
       </span>
-      {/* A column rather than a centred row: with one child it still centres
-          against the disc, and with a footer the two stack. */}
-      <span className="flex-1 min-w-0 min-h-7 flex flex-col justify-center">
-        <p className="text-[12.5px] text-gray-600 leading-relaxed">
-          {lead && <><span className="font-bold text-navy">{lead}</span>{' '}</>}
-          {children}
-        </p>
+      <span className="flex-1 min-w-0 min-h-5 flex flex-col justify-center">
+        {lead && <span className="im-alert-title text-[13px] font-semibold leading-[18px]">{lead}</span>}
+        {children && (
+          <p className={`text-[12px] leading-[18px] im-alert-desc ${lead ? 'mt-1' : ''}`}>{children}</p>
+        )}
         {footer && <div className="mt-2.5">{footer}</div>}
       </span>
     </div>
@@ -321,14 +335,11 @@ export function InfoLine({ children, className = '', icon = 'info' }) {
     /* The same box the panel notes use, scaled down for a single line: it sat
        loose on the page as bare text and a glyph, which read as a different
        component from the notes directly above it. */
-    <p className={`im-info-panel rounded-xl px-4 py-3 flex items-center gap-2.5 text-[11.5px] leading-relaxed ${className}`}>
-      <span className="im-panel-icon w-5 h-5 rounded-full flex items-center justify-center shrink-0">
-        <AlertGlyph className="w-3 h-3" />
+    <p className={`im-info-panel rounded-xl px-4 py-3 flex items-center gap-2.5 text-[12px] leading-[18px] ${className}`}>
+      <span className="im-panel-mark w-4 h-4 flex items-center justify-center shrink-0">
+        <AlertGlyph className="w-4 h-4" gradient />
       </span>
-      {/* The colour rides on the text, not the box: .im-info-panel sets `color`
-          for the glyph, and at equal specificity it was winning over the
-          utility and painting the copy brand purple. */}
-      <span className="text-gray-500">{children}</span>
+      <span className="im-alert-desc">{children}</span>
     </p>
   )
 }

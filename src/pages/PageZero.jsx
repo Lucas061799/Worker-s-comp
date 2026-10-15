@@ -398,20 +398,18 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                 )}
 
                 {appetite === 'declined' && (
-                  <div className="im-info-panel im-info-panel--stop rounded-xl p-4 mt-3 flex items-start gap-3">
-                    <span className="im-panel-icon im-panel-icon--stop w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
-                      </svg>
-                    </span>
-                    <p className="text-[12.5px] text-gray-600 leading-relaxed">
-                      <span className="font-bold text-navy">
-                        Outside appetite for {picked?.code} in {state} at this payroll.
-                      </span>{' '}
-                      We have no carrier for this risk, so there is nothing to quote.
-                      Try a different class or state, or call us on 877.649.6682 to talk it through.
-                    </p>
-                  </div>
+                  <InfoPanel
+                    tone="stop"
+                    className="mt-3"
+                    icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <path strokeLinecap="round" d="M8.5 8.5l7 7M15.5 8.5l-7 7" />
+                      </svg>}
+                    lead={<>Outside appetite for {picked?.code} in {state} at this payroll.</>}
+                  >
+                    We have no carrier for this risk, so there is nothing to quote.
+                    Try a different class or state, or call us on 877.649.6682 to talk it through.
+                  </InfoPanel>
                 )}
 
                 {/* A demo affordance, not product copy: the two branches off

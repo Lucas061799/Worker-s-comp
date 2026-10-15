@@ -307,7 +307,6 @@ main.wc-surface-white .field-fill:focus-visible {
    size changes — only the ink. Put `wc-ink-strong` on a page's root to
    try it; take it off to go back. */
 .wc-ink-strong label { color: #1F2937; }
-.wc-ink-strong .im-info-panel p { color: #374151; }
 .wc-ink-strong .text-gray-400 { color: #6B7280; }
 .wc-ink-strong .text-gray-500 { color: #4B5563; }
 /* After the greys above: a group heading also carries .text-gray-400, and
@@ -958,32 +957,40 @@ button.force-white-text,
   /* The teal at the DS's own published alpha — the 10% its status pill
      fills with, lighter than the solid #E8F7F3 success tint and, being an
      alpha, it picks up whatever surface the panel is standing on. */
-  background: rgba(115,201,183,0.10);
-  border: 1px solid rgba(115,201,183,0.38);
-  color: #73C9B7;
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  color: #A614C3;
 }
 [data-dark="true"] .im-info-panel {
-  background: rgba(115,201,183,0.15) !important;
-  border-color: rgba(115,201,183,0.30) !important;
-  /* The DS keeps teal unchanged across themes. */
-  color: #73C9B7 !important;
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #C084FC !important;
 }
 
-/* Only the disc inside a panel. The same class dresses the Banner's mark
-   and the indication's "why didn't quote" glyph, and those stay brand.
+/* The title carries the gradient; the description is muted. */
+.im-alert-title {
+  background: linear-gradient(88.54deg, #5C2ED4 0.1%, #A614C3 63.88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* `background-image`, not `background`: the shorthand also resets
+   background-clip, which drops the text clipping and paints the gradient as
+   a solid bar across the line. */
+[data-dark="true"] .im-alert-title {
+  background-image: linear-gradient(88.54deg, #A855F7 0.1%, #D946EF 63.88%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+.im-alert-desc { color: #6B7280; }
+[data-dark="true"] .im-alert-desc { color: #8B8FA8 !important; }
 
-   A 12% teal disc under a #73C9B7 outline mark — the treatment the
-   submission receipt's section cards already use, so the two agree. It is
-   also the design system's own pairing, give or take two points of alpha:
-   its status pill sets #73C9B7 on a 10% teal tint. */
-.im-info-panel .im-panel-icon {
-  background: rgba(115,201,183,0.12);
-  color: #73C9B7;
-}
-[data-dark="true"] .im-info-panel .im-panel-icon {
-  background: rgba(115,201,183,0.12) !important;
-  color: #73C9B7 !important;
-}
+/* The mark's stroke, as stops so the theme can move it. */
+.im-brand-stop-a { stop-color: #5C2ED4; }
+.im-brand-stop-b { stop-color: #A614C3; }
+[data-dark="true"] .im-brand-stop-a { stop-color: #A855F7; }
+[data-dark="true"] .im-brand-stop-b { stop-color: #D946EF; }
 
 /* A limited appetite still lets the agent continue, so it stays in the brand
    panel. Only a hard decline — nothing to quote — earns its own family, and it
@@ -1287,7 +1294,7 @@ html[data-dark="true"] body .print-btn-text {
 /* The shim above reaches labels through .font-semibold, which outranks a
    plain descendant selector — this matches it and comes later. */
 [data-dark="true"] .wc-ink-strong label.font-semibold { color: #F3F4F6 !important; }
-[data-dark="true"] .wc-ink-strong .im-info-panel p { color: #E5E7EB !important; }
+[data-dark="true"] .wc-ink-strong .im-info-panel .im-alert-desc { color: #8B8FA8 !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-400 { color: #B6BACD !important; }
 [data-dark="true"] .wc-ink-strong .text-gray-500 { color: #D1D5DB !important; }
 /* Last, for the same reason as the light block. */
