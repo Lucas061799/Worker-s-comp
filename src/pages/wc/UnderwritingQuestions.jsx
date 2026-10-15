@@ -5,6 +5,7 @@ import {
   RowGroup,
   AnswerRow,
   YesNo,
+  InfoPanel,
   PrimaryButton,
 } from '../../components/wc/primitives'
 
@@ -109,9 +110,12 @@ export default function UnderwritingQuestions({
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">
-        Please validate all credit questions for this risk to improve pricing.
-      </p>
+      {/* Every answer arrives pre-set to Yes, so the one thing the agent
+          must do here is disagree where the insured does — which is worth
+          more than a subtitle. */}
+      <InfoPanel tone="warn" lead="Please validate every credit question for this risk.">
+        Change any answer that isn't true for this insured.
+      </InfoPanel>
 
       {/* Four topic groups, asked as a compact list — question on the
           left, its answer on the right. */}
