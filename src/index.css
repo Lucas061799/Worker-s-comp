@@ -913,9 +913,10 @@ button.force-white-text,
    that do — the gradient buttons, the selected pills, the prices. `color`
    drives the glyph, which is drawn with currentColor. */
 .im-info-panel {
-  /* The DS success tint, #E8F7F3, and the DS teal — not the darkened
-     #0E8F7A this used to carry, which is not a Norbielink colour. */
-  background: #E8F7F3;
+  /* The teal at the DS's own published alpha — the 10% its status pill
+     fills with, lighter than the solid #E8F7F3 success tint and, being an
+     alpha, it picks up whatever surface the panel is standing on. */
+  background: rgba(115,201,183,0.10);
   border: 1px solid rgba(115,201,183,0.38);
   color: #73C9B7;
 }
