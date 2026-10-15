@@ -400,7 +400,7 @@ export function Textarea({ label, required, placeholder, rows = 4, value, onChan
 }
 
 // Select / Dropdown — custom styled, no native <select>
-export function Select({ label, required, options = [], value, onChange, placeholder = 'Select...', className = '', error = false, wideMenu = false }) {
+export function Select({ label, required, options = [], value, onChange, placeholder = 'Select...', className = '', error = false, wideMenu = false, help }) {
   const [open, setOpen] = useState(false)
   const [dropdownStyle, setDropdownStyle] = useState({})
   const ref = useRef(null)
@@ -524,6 +524,7 @@ export function Select({ label, required, options = [], value, onChange, placeho
       )}
 
       {error && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1"><span>⚠</span> This field is required</p>}
+      {help && !error && <p className="text-xs text-gray-500 mt-1.5">{help}</p>}
     </div>
   )
 }

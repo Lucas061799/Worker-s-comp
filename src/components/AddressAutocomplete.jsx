@@ -26,7 +26,7 @@ function normalizeState(raw) {
   return hit || trimmed
 }
 
-export default function AddressAutocomplete({ value, onChange, onSelect, label = 'Address', required, error }) {
+export default function AddressAutocomplete({ value, onChange, onSelect, label = 'Address', required, error, className = '' }) {
   const [query, setQuery] = useState(value || '')
   const [suggestions, setSuggestions] = useState([])
   const [open, setOpen] = useState(false)
@@ -133,7 +133,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, label =
   }
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div ref={containerRef} className={`relative w-full ${className}`}>
       {label && (
         <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
           {label}{required && <span className="text-red-400 ml-0.5">*</span>}

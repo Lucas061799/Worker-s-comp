@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { Input, Select, Checkbox, FormGrid } from '../../components/FormField'
 import AddressAutocomplete from '../../components/AddressAutocomplete'
-import {FieldGroup, NotePanel, YesNo, InfoPanel } from '../../components/wc/primitives'
+import { FieldGroup, YesNo, InfoPanel, Tag } from '../../components/wc/primitives'
+import { US_STATES } from '../PageZero'
 
 const ENTITY_OPTIONS = [
   { value: 'corp',    label: 'Corporation' },
@@ -15,18 +16,45 @@ const EXPERIENCE_OPTIONS = Array.from({ length: 11 }, (_, i) =>
   i === 10 ? '10+' : String(i)
 )
 
+/* A field label that can carry more than its own name: the required mark, an
+   "Optional" marker, and the CSLB chip that says where a prefilled answer
+   came from. Passed to Input/Select as the label, so one definition keeps
+   every column on the same baseline. */
+function fieldLabel(text, { required, optional, tag } = {}) {
+  return (
+    <span className="flex items-center gap-2 min-h-5">
+      <span>
+        {text}
+        {required && <span className="text-red-400 ml-0.5">*</span>}
+        {optional && <span className="font-medium ml-1.5" style={{ color: '#9CA3AF' }}>Optional</span>}
+      </span>
+      {tag && <Tag size="sm">{tag}</Tag>}
+    </span>
+  )
+}
+
 /* A question whose answer is a pill pair rather than a text box — same
    label typography as Input so the column reads as one form. */
-function PillField({ label, required, value, onChange, children }) {
+function PillField({ label, required, value, onChange, help }) {
   return (
     <div>
-      <label className="block text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
+      <span className="block text-[13px] font-semibold text-gray-600 mb-2.5 tracking-wide">
         {label}{required && <span className="text-red-400 ml-0.5">*</span>}
-      </label>
+      </span>
       <YesNo value={value} onChange={onChange} name={label} />
-      {children}
+      {help && <p className="text-xs text-gray-500 mt-2">{help}</p>}
     </div>
   )
+}
+
+/* The year reads itself back as a count, so an agent who typed 2018 does not
+   have to work out that it means eight years in business. */
+function yearsInBusiness(year) {
+  const y = Number(String(year || '').replace(/\D/g, ''))
+  const now = new Date().getFullYear()
+  if (String(y).length !== 4 || y > now || y < 1900) return null
+  const n = now - y
+  return n < 1 ? 'New this year' : `${n} year${n === 1 ? '' : 's'} in business`
 }
 
 export default function BusinessInfo({ formData, updateFormData, showErrors = false }) {
@@ -42,9 +70,10 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
   /* A contracting class started with a licence number means CSLB has already
      been asked, and what it returns lands on this screen. The agent is told so
      and asked to check it, rather than finding fields filled in with no
-     explanation. */
+     explanation. The chip marks which fields it filled. */
   const cslbLicense = isContractor ? (pageZero.contractorLicense || '') : ''
   const cslbFound = !!cslbLicense && !!data.cslbPrefilled
+  const cslb = cslbFound ? 'CSLB' : undefined
 
   /* Gated on what it writes rather than a ref: a ref latched before a timer
      that the cleanup cancels never fires at all under StrictMode's
@@ -75,95 +104,190 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
     return () => clearTimeout(t)
   }, [data.fein, isCA, formData.underwriting?.experienceMod, updateFormData])
 
+  const years = yearsInBusiness(data.yearEstablished)
+
   return (
     <div className="w-full space-y-6">
       {cslbFound && (
         <InfoPanel
-          icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+          icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>}
           lead={<>CSLB licence {cslbLicense} found.</>}
         >
-          Fields on screen prefilled — please confirm before continuing.
+          We prefilled the fields tagged CSLB. Please confirm them.
         </InfoPanel>
       )}
 
-      <FieldGroup label="Company Information">
+      <FieldGroup label="Company">
         <div className="space-y-5">
-          {/* The DBA question qualifies the legal name, so it sits under it
-              rather than floating across the group on its own line. */}
-          <FormGrid>
+          {/* The name takes two columns of the three the row below uses, so
+              the legal name has room to be read and FEIN keeps the width its
+              nine digits need. */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-5">
+            <Input
+              className="sm:col-span-2"
+              label={fieldLabel('Legal business name', { required: true, tag: cslb })}
+              value={data.name}
+              onChange={set('name')}
+              placeholder="Business name"
+              error={err('name')}
+            />
+            <Input
+              label={fieldLabel('FEIN', { required: true })}
+              value={data.fein}
+              onChange={set('fein')}
+              placeholder="00-0000000"
+              error={err('fein')}
+            />
+          </div>
+
+          {/* What the business is, how long it has been it, and how long the
+              owner has done the trade — one row, because all three qualify
+              the same thing. */}
+          <FormGrid cols={3}>
+            <Select
+              label={fieldLabel('Entity type', { required: true, tag: cslb })}
+              options={ENTITY_OPTIONS}
+              value={data.entityType || 'corp'}
+              onChange={set('entityType')}
+              error={err('entityType')}
+              help="Sets the owner and officer rules on Coverages."
+            />
             <div>
               <Input
-                label="Legal business name"
-                required
-                value={data.name}
-                onChange={set('name')}
-                placeholder="Business name"
-                error={err('name')}
+                label={fieldLabel('Year business was established', { required: true })}
+                value={data.yearEstablished}
+                onChange={set('yearEstablished')}
+                placeholder="e.g. 2014"
+                digits
+                maxLength={4}
+                error={err('yearEstablished')}
               />
-              <Checkbox
-                className="mt-3"
-                label="Operates under a DBA (doing business as)"
-                checked={!!data.hasDba}
-                onChange={val => updateFormData('business', { hasDba: val, ...(val ? {} : { dbaName: '' }) })}
-              />
+              {years && !err('yearEstablished') && (
+                <p className="text-xs mt-1.5 im-note-good">{years}</p>
+              )}
             </div>
-            <div>
-              <Input
-                label="FEIN"
-                required
-                value={data.fein}
-                onChange={set('fein')}
-                placeholder="94-0000000"
-                error={err('fein')}
-              />
-            </div>
+            <Select
+              label={fieldLabel('Years of industry experience', { required: true })}
+              options={EXPERIENCE_OPTIONS}
+              value={data.industryExperience}
+              onChange={set('industryExperience')}
+              error={err('industryExperience')}
+              help="Owner's experience in this trade, including before this business."
+            />
           </FormGrid>
 
-          {/* DBA name leads when the box above is ticked — it qualifies the
-              legal name, so it belongs next to it rather than after the
-              website. Website takes the row on its own otherwise. */}
-          <FormGrid>
-            {data.hasDba && (
+          {/* Transportation classes carry their own permit numbers. */}
+          {isTransportation && (
+            <FormGrid>
               <Input
-                label="DBA name"
+                label={fieldLabel('Public Utilities Commission (PUC) number')}
+                value={data.pucNumber}
+                onChange={set('pucNumber')}
+                placeholder="Permit number"
+              />
+              <Input
+                label={fieldLabel('California Motor Carrier Permit number')}
+                value={data.motorCarrierNumber}
+                onChange={set('motorCarrierNumber')}
+                placeholder="Permit number"
+              />
+            </FormGrid>
+          )}
+
+          {/* The DBA question qualifies the legal name, so it stands on its
+              own line under the company's identity rather than competing for
+              a column with the website. */}
+          <Checkbox
+            label="Operates under a DBA (doing business as)"
+            checked={!!data.hasDba}
+            onChange={val => updateFormData('business', { hasDba: val, ...(val ? {} : { dbaName: '' }) })}
+          />
+
+          {data.hasDba && (
+            <FormGrid>
+              <Input
+                label={fieldLabel('DBA name', { required: true })}
                 value={data.dbaName}
                 onChange={set('dbaName')}
-                placeholder="e.g. Sierra Ridge Plumbing & Rooter"
+                placeholder="Name customers know the business by"
+                error={err('dbaName')}
               />
-            )}
+            </FormGrid>
+          )}
+
+          <FormGrid>
             <Input
-              label="Website"
+              label={fieldLabel('Website', { optional: true })}
               value={data.website}
               onChange={set('website')}
               placeholder="e.g. www.sierraridgeplumbing.com"
+            />
+            <Input
+              label={fieldLabel('Business phone', { required: true })}
+              type="tel"
+              value={data.businessPhone}
+              onChange={set('businessPhone')}
+              placeholder="(555) 000-0000"
+              error={err('businessPhone')}
             />
           </FormGrid>
         </div>
       </FieldGroup>
 
-      <FieldGroup label="Physical Address">
+      <FieldGroup label="Physical address">
         <div className="space-y-5">
-          <AddressAutocomplete
-            label="Physical address"
-            required
-            value={data.address || ''}
-            onChange={set('address')}
-            onSelect={({ address, city, state, zip }) =>
-              updateFormData('business', { address, city, state, zip })
-            }
-            error={err('address') ? 'This field is required' : ''}
-          />
+          {/* The street still autocompletes — picking a suggestion fills the
+              three boxes below, which stay editable rather than being
+              reported back in a panel the agent cannot correct. */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-5">
+            <AddressAutocomplete
+              className="sm:col-span-2"
+              label={fieldLabel('Street address', { required: true, tag: cslb })}
+              value={data.address || ''}
+              onChange={set('address')}
+              onSelect={({ address, city, state, zip }) =>
+                updateFormData('business', { address, city, state, zip })
+              }
+              error={err('address') ? 'This field is required' : ''}
+            />
+            <Input
+              label={fieldLabel('Suite / unit', { optional: true })}
+              value={data.suite}
+              onChange={set('suite')}
+              placeholder="Suite (optional)"
+            />
+          </div>
 
-          {data.address && data.city && (
-            <NotePanel title="Address parsed">
-              {data.address}, {data.city}, {data.state} {data.zip}
-            </NotePanel>
-          )}
+          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-x-6 gap-y-5">
+            <Input
+              label={fieldLabel('City', { required: true })}
+              value={data.city}
+              onChange={set('city')}
+              placeholder="City"
+              error={err('city')}
+            />
+            <Select
+              label={fieldLabel('State', { required: true })}
+              options={US_STATES}
+              value={data.state}
+              onChange={set('state')}
+              error={err('state')}
+            />
+            <Input
+              label={fieldLabel('ZIP', { required: true })}
+              value={data.zip}
+              onChange={set('zip')}
+              placeholder="00000"
+              digits
+              maxLength={5}
+              error={err('zip')}
+            />
+          </div>
 
           <PillField
-            label="Is the mailing address the same as the physical address?"
+            label="Is the mailing address the same?"
             required
             value={data.mailSame === false ? 'no' : 'yes'}
             onChange={val => set('mailSame')(val === 'yes')}
@@ -171,8 +295,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
 
           {data.mailSame === false && (
             <AddressAutocomplete
-              label="Mailing address"
-              required
+              label={fieldLabel('Mailing address', { required: true })}
               value={data.mailAddress || ''}
               onChange={set('mailAddress')}
               onSelect={({ address, city, state, zip }) =>
@@ -193,69 +316,49 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
             required
             value={data.additionalLocations || 'no'}
             onChange={set('additionalLocations')}
+            help={data.additionalLocations === 'yes'
+              ? "You'll list each one on the Locations step."
+              : 'Only the physical address above will be used.'}
           />
-
-          {/* Transportation classes carry their own permit numbers. */}
-          {isTransportation && (
-            <FormGrid>
-              <Input
-                label="Public Utilities Commission (PUC) number"
-                value={data.pucNumber}
-                onChange={set('pucNumber')}
-                placeholder="Permit number"
-              />
-              <Input
-                label="California Motor Carrier Permit number"
-                value={data.motorCarrierNumber}
-                onChange={set('motorCarrierNumber')}
-                placeholder="Permit number"
-              />
-            </FormGrid>
-          )}
         </div>
       </FieldGroup>
 
-      <FieldGroup label="Contact Info">
+      <FieldGroup label="Contact info">
         <div className="space-y-5">
           <FormGrid>
-            <Input label="First name" required value={data.firstName} onChange={set('firstName')} placeholder="First name" error={err('firstName')} />
-            <Input label="Last name"  required value={data.lastName}  onChange={set('lastName')}  placeholder="Last name"  error={err('lastName')} />
-          </FormGrid>
-          <FormGrid>
-            <Input label="Phone" required type="tel"   value={data.phone} onChange={set('phone')} placeholder="(555) 123-4567" error={err('phone')} />
-            <Input label="Email" required type="email" value={data.email} onChange={set('email')} placeholder="e.g. owner@business.com" error={err('email')} />
-          </FormGrid>
-        </div>
-      </FieldGroup>
-
-      <FieldGroup label="Entity">
-        <div className="space-y-5">
-          <FormGrid>
-            <Select
-              label="Entity type"
-              required
-              options={ENTITY_OPTIONS}
-              value={data.entityType || 'corp'}
-              onChange={set('entityType')}
-              error={err('entityType')}
+            <Input
+              label={fieldLabel('First name', { required: true })}
+              value={data.firstName}
+              onChange={set('firstName')}
+              placeholder="First name"
+              error={err('firstName')}
             />
             <Input
-              label="Year business was established"
-              required
-              value={data.yearEstablished}
-              onChange={set('yearEstablished')}
-              placeholder="e.g. 2014"
-              error={err('yearEstablished')}
+              label={fieldLabel('Last name', { required: true })}
+              value={data.lastName}
+              onChange={set('lastName')}
+              placeholder="Last name"
+              error={err('lastName')}
             />
           </FormGrid>
           <FormGrid>
-            <Select
-              label="Years of industry experience"
-              required
-              options={EXPERIENCE_OPTIONS}
-              value={data.industryExperience}
-              onChange={set('industryExperience')}
-              error={err('industryExperience')}
+            <Input
+              label={fieldLabel('Phone', { required: true })}
+              type="tel"
+              value={data.phone}
+              onChange={set('phone')}
+              placeholder="(555) 123-4567"
+              error={err('phone')}
+              help="Best number to reach this contact."
+            />
+            <Input
+              label={fieldLabel('Email', { required: true })}
+              type="email"
+              value={data.email}
+              onChange={set('email')}
+              placeholder="e.g. owner@business.com"
+              error={err('email')}
+              help="Quotes and policy documents go here."
             />
           </FormGrid>
         </div>
