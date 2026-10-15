@@ -30,7 +30,7 @@ import WcSubmission from './pages/wc/WcSubmission'
 // Price indication gate rendered between them by Sidebar.
 // `group` heads the rail: everything the agent fills in is Application, and
 // everything that follows a price is Quote. It is not the same split as
-// `phase`, which is about what unlocks when — Carrier selection is reachable
+// `phase`, which is about what unlocks when — Price indication is reachable
 // in phase 1 but belongs under Quote, because that is the screen the price
 // arrives on.
 const BASE_STEPS = [
@@ -40,7 +40,7 @@ const BASE_STEPS = [
   { id: 9, num: '2c', key: 'locations',   label: 'Locations',              phase: 1, group: 'application', condLocations: true },
   { id: 4, num: '3',  key: 'coverages',   label: 'Coverages',              phase: 1, group: 'application' },
   { id: 5, num: '4',  key: 'questions',   label: 'Credit opportunity',     phase: 1, group: 'application' },
-  { id: 6, num: '5',  key: 'carriers',    label: 'Carrier selection',      phase: 1, group: 'quote' },
+  { id: 6, num: '5',  key: 'carriers',    label: 'Price indication',       phase: 1, group: 'quote' },
   { id: 7, num: '6',  key: 'carrierflow', label: 'Carrier questions',      phase: 2, group: 'quote' },
   { id: 8, num: '7',  key: 'quote',       label: 'Quote & bind',           phase: 2, group: 'quote' },
 ]

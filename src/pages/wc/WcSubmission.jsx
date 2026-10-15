@@ -21,7 +21,7 @@ const STEP_LABELS = [
   'Loss history',
   'Coverages',
   'Credit opportunity',
-  'Carrier selection',
+  'Price indication',
   'Carrier questions',
   'Quote & bind',
 ]

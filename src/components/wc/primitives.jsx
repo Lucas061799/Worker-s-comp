@@ -292,7 +292,7 @@ export function WarnGlyph({ className = 'w-3.5 h-3.5' }) {
    and centres its own content. One line and the box is exactly the disc's
    height, so the line centres on it; two and the box grows past it, so both
    sit at the top. */
-export function InfoPanel({ children, icon, lead, tone = 'info', className = '' }) {
+export function InfoPanel({ children, icon, lead, tone = 'info', footer, className = '' }) {
   /* 'info' is the teal house note; 'warn' and 'stop' are the amber and red
      families, each a modifier on the same box so there is one panel, not
      three. */
@@ -303,11 +303,14 @@ export function InfoPanel({ children, icon, lead, tone = 'info', className = '' 
       <span className={`im-panel-icon${disc} w-7 h-7 rounded-full flex items-center justify-center shrink-0`}>
         {icon || (tone === 'info' ? <AlertGlyph /> : <WarnGlyph />)}
       </span>
-      <span className="flex-1 min-h-7 flex items-center">
+      {/* A column rather than a centred row: with one child it still centres
+          against the disc, and with a footer the two stack. */}
+      <span className="flex-1 min-w-0 min-h-7 flex flex-col justify-center">
         <p className="text-[12.5px] text-gray-600 leading-relaxed">
           {lead && <><span className="font-bold text-navy">{lead}</span>{' '}</>}
           {children}
         </p>
+        {footer && <div className="mt-2.5">{footer}</div>}
       </span>
     </div>
   )

@@ -7,6 +7,7 @@ import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
 import { Input, Select, DateInput } from '../components/FormField'
 import {InfoDot, AlertGlyph, InfoPanel } from '../components/wc/primitives'
+import { CARRIERS } from './wc/CarrierSelection'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -25,6 +26,13 @@ const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','
 function FieldHelp({ children }) {
   return <p className="text-[11px] leading-[16.5px] mt-1" style={{ color: '#6B7280' }}>{children}</p>
 }
+
+/* Which of the carriers the submission will be shopped to have appetite.
+   Read off the one list Carrier selection uses, so what this screen names
+   and what the agent later sees cannot drift apart. ICW / Zenith is the
+   prototype's standing decline; the real rules land with BRD v2 §7.3,
+   alongside DECLINED_APPETITE below. */
+const NO_APPETITE = ['icwzenith']
 
 const CLASSES = [
   { code: '5183', desc: 'Plumbing — shop & outside (≥ $31/hr)', contractor: true },
@@ -345,14 +353,38 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
 
                 {appetite === 'good' && (
                   <InfoPanel
+                    footer={
+                      /* One chip per carrier, so "we have a market" is a list
+                         of names rather than a number to take on trust. */
+                      <div className="flex flex-wrap gap-1.5">
+                        {CARRIERS.map(c => {
+                          const no = NO_APPETITE.includes(c.id)
+                          return (
+                            <span
+                              key={c.id}
+                              className={`im-chip ${no ? 'im-chip-gone' : 'im-chip-avail'}`}
+                            >
+                              {!no && (
+                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor"
+                                  strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                                  viewBox="0 0 24 24" aria-hidden="true">
+                                  <path d="M5 12l5 5 9-10" />
+                                </svg>
+                              )}
+                              {c.name}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    }
                     icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>}
-                    lead="Good news!"
+                    lead={<>Good news: {CARRIERS.length - NO_APPETITE.length} of {CARRIERS.length} carriers
+                      have appetite for {picked?.code} in {state}.</>}
                     className="mt-3"
                   >
-                    Based on class, state and payroll, we have at least 1 carrier available.
-                    Final approval is subject to full risk characteristics.
+                    Final approval depends on the full application.
                   </InfoPanel>
                 )}
 
