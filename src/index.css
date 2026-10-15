@@ -889,14 +889,14 @@ button.force-white-text,
 .im-note-brand { color: #A614C3; }
 [data-dark="true"] .im-note-brand { color: #C084FC !important; }
 
-/* The outlined form of the brand button: a brand edge on the card surface
-   that fills with the gradient when the pointer is on it. For an action
-   that is offered rather than urged — a carrier to take, a quote to send —
-   where a solid gradient would read as already chosen. */
+/* The secondary button, drawn exactly as StepNav's Back is: the card
+   surface, a --line hairline, grey text. It fills with the brand gradient
+   under the pointer — an action that is offered rather than urged, where a
+   solid gradient at rest would read as already chosen. */
 .im-btn-outline {
   background: var(--surface-card);
-  border: 1.5px solid rgba(92,46,212,0.35);
-  color: #5C2ED4;
+  border: 1px solid var(--line);
+  color: #4B5563;
   transition: background 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 .im-btn-outline:hover {
@@ -909,8 +909,8 @@ button.force-white-text,
 [data-dark="true"] .im-btn-outline,
 [data-dark="true"] .bop-page .im-btn-outline {
   background: rgba(255,255,255,0.04) !important;
-  border-color: rgba(167,139,250,0.45) !important;
-  color: #C4B5FD !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #D1D5DB !important;
 }
 [data-dark="true"] .im-btn-outline:hover,
 [data-dark="true"] .bop-page .im-btn-outline:hover {
