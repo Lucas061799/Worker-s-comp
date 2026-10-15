@@ -6,6 +6,24 @@ import { DemoJump } from './DemoJump'
 const DARK_JUNGLE_OPACITY = 0.6
 const DARK_BORDER_RIGHT   = '1px solid rgba(255,255,255,0.12)'
 
+/* The rail's three stages. Appetite check is its own — it is the question
+   the submission starts from rather than a step of it. */
+const GROUP_LABELS = { start: 'Start', application: 'Application', quote: 'Quote' }
+
+/* The design system's uppercase label: 10px, 1px of tracking, the muted
+   grey. It replaces the rule that used to separate the appetite check from
+   the steps — a heading already says where one stage ends. */
+function NavGroup({ children, isDark, first = false }) {
+  return (
+    <div
+      className={`px-3 ${first ? 'pt-1' : 'pt-4'} pb-1.5 text-[10px] font-semibold uppercase tracking-[1px] leading-[15px]`}
+      style={{ color: isDark ? '#8B8FA8' : '#9CA3AF' }}
+    >
+      {children}
+    </div>
+  )
+}
+
 // Section completion — reads from formData in the shape written by the WC pages.
 function getCompletion(formData) {
   const c = {}
@@ -81,6 +99,7 @@ export default function Sidebar({
             them with a rule under it. */}
         {onPageZeroClick && (
           <>
+            <NavGroup isDark={isDark} first>{GROUP_LABELS.start}</NavGroup>
             <button
               type="button"
               onClick={onPageZeroClick}
@@ -105,15 +124,21 @@ export default function Sidebar({
                 Appetite check
               </span>
             </button>
-            <div className="mx-3 mb-1.5" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
           </>
         )}
-        {steps.map(step => {
+        {steps.map((step, i) => {
           const isActive = step.id === activeStep
           const isDone = !!completion[step.key] && !isActive
           const locked = step.phase === 2 && !indicationReady
+          /* A heading whenever the stage changes, so the list never repeats
+             one and never loses one if a conditional step drops out. */
+          const heading = step.group && step.group !== steps[i - 1]?.group
+            ? GROUP_LABELS[step.group]
+            : null
           return (
-            <div key={step.id} className="relative mb-0.5">
+            <div key={step.id}>
+              {heading && <NavGroup isDark={isDark}>{heading}</NavGroup>}
+              <div className="relative mb-0.5">
               {isActive && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-full"
                   style={{ background: 'linear-gradient(180deg, #5C2ED4 0%, #A614C3 100%)' }} />
@@ -161,6 +186,7 @@ export default function Sidebar({
                   {step.label}
                 </span>
               </button>
+              </div>
             </div>
           )
         })}
