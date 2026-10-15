@@ -167,11 +167,13 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
                 auto margin collapses to nothing on the tallest tile, which
                 left the button sitting on the chips. */}
             <div className="mt-auto pt-5">
+              {/* Outlined, not filled. Six solid gradient buttons in a grid
+                  read as six carriers already chosen; the choice has not
+                  been made yet, and filling in is what Bind does. */}
               <button
                 type="button"
                 onClick={onSelect}
-                className="w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition hover:opacity-90"
-                style={{ background: BRAND_GRADIENT, color: '#fff', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
+                className="im-tile-select w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
               >
                 Select
               </button>

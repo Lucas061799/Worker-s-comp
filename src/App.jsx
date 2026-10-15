@@ -40,7 +40,7 @@ const BASE_STEPS = [
   { id: 9, num: '2c', key: 'locations',   label: 'Locations',              phase: 1, group: 'application', condLocations: true },
   { id: 4, num: '3',  key: 'coverages',   label: 'Coverages',              phase: 1, group: 'application' },
   { id: 5, num: '4',  key: 'questions',   label: 'Credit opportunity',     phase: 1, group: 'application' },
-  { id: 6, num: '5',  key: 'carriers',    label: 'Price indication',       phase: 1, group: 'quote' },
+  { id: 6, num: '5',  key: 'carriers',    label: 'Price indication',       phase: 2, group: 'quote' },
   { id: 7, num: '6',  key: 'carrierflow', label: 'Carrier questions',      phase: 2, group: 'quote' },
   { id: 8, num: '7',  key: 'quote',       label: 'Quote & bind',           phase: 2, group: 'quote' },
 ]
@@ -468,7 +468,7 @@ owner_involved: 'yes',
     locations:   'Locations',
     coverages:   'Coverages',
     questions:   'Credit opportunity',
-    carriers:    'Select markets to approach',
+    carriers:    'Price indication',
     loading:     'Rating',
     finalizing:  'Final price',
     indication:  'Price indication',
@@ -560,7 +560,14 @@ owner_involved: 'yes',
           <Sidebar
             steps={steps}
             activeStep={activeStep}
-            onStepClick={(id) => { goToStep(id); setMobileSidebarOpen(false) }}
+            /* Step 6 is the indication itself — there is no screen behind
+               it any more, so going there means showing it. Before it has
+               been rated there is nothing to show, and the rail locks it. */
+            onStepClick={(id) => {
+              if (id === 6 && indicationReady) goToIndication()
+              else goToStep(id)
+              setMobileSidebarOpen(false)
+            }}
             formData={formData}
             isDark={darkMode}
             onToggleDark={() => setDarkMode(d => !d)}
