@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
   BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoLine, InfoPanel, Tag,
@@ -71,6 +71,19 @@ export function feesFor(premium, brokerFee = 0) {
    facts that are the same whoever is reading them. */
 function CarrierTile({ carrier, best, onSelect }) {
   const quoted = !carrier.noquote
+  const [open, setOpen] = useState(false)
+
+  /* The servicing facts, which are the same whoever is reading them. They
+     open underneath the tile rather than in a popover over its neighbours:
+     a floating card covered the two tiles beside it, and these are meant to
+     be compared. */
+  const details = [
+    ['Quote SLA', carrier.sla],
+    ['Endorsement SLA', carrier.endorsementSla],
+    ['Billing', carrier.billing],
+    ['Servicing', carrier.own],
+    ['Underwriting', carrier.reco ? 'BTIS authority' : 'Carrier'],
+  ].filter(([, v]) => v)
 
   return (
     <div
@@ -84,16 +97,8 @@ function CarrierTile({ carrier, best, onSelect }) {
       {/* The carrier BTIS writes itself gets a banner across the top rather
           than a badge in the row, as the prototype has it. */}
       {carrier.reco && quoted && (
-        <div
-          className="px-3 py-1.5 flex items-center justify-center gap-1.5"
-          style={{
-            background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)',
-            borderBottom: '1px solid var(--line-soft)',
-          }}
-        >
-          <span className="text-[10px] font-bold tracking-wide">
-            <BrandText>★ BTIS Recommended</BrandText>
-          </span>
+        <div className="im-reco-banner px-3 py-1.5 flex items-center justify-center gap-1.5">
+          <span className="text-[10px] font-bold tracking-wide">★ BTIS Recommended</span>
           <InfoDot
             title="Why BTIS Recommended?"
             label="Why BTIS Recommended?"
@@ -114,18 +119,16 @@ function CarrierTile({ carrier, best, onSelect }) {
           </span>
           <span className="flex items-center gap-1.5 shrink-0 self-start mt-1">
             {carrier.promo && quoted && <Tag tone="brand">Promo</Tag>}
-            <InfoDot
-              title={carrier.name}
-              label={`${carrier.name} servicing details`}
-              text={
-                <span className="block space-y-1.5">
-                  <span className="flex justify-between gap-4"><b className="font-semibold">Quote SLA</b>{carrier.sla}</span>
-                  <span className="flex justify-between gap-4"><b className="font-semibold">Endorsement SLA</b>{carrier.endorsementSla}</span>
-                  <span className="flex justify-between gap-4"><b className="font-semibold">Billing</b>{carrier.billing}</span>
-                  <span className="flex justify-between gap-4"><b className="font-semibold">Underwriting</b>{carrier.reco ? 'BTIS authority' : 'Carrier'}</span>
-                </span>
-              }
-            />
+            <button
+              type="button"
+              onClick={() => setOpen(o => !o)}
+              aria-expanded={open}
+              data-open={open}
+              aria-label={`${carrier.name} servicing details`}
+              className="im-info-dot w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+            >
+              <span className="text-[10px] font-bold leading-none">i</span>
+            </button>
           </span>
         </div>
 
@@ -172,6 +175,18 @@ function CarrierTile({ carrier, best, onSelect }) {
           </>
         )}
       </div>
+
+      {open && (
+        <dl className="px-5 pt-3.5 pb-4 space-y-2"
+          style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--surface-soft)' }}>
+          {details.map(([label, value]) => (
+            <div key={label} className="flex justify-between gap-4 text-[11.5px] leading-snug">
+              <dt className="font-semibold shrink-0 text-navy">{label}</dt>
+              <dd className="text-right" style={{ color: 'var(--ink-2)' }}>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </div>
   )
 }

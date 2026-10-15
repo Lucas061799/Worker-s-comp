@@ -884,6 +884,32 @@ button.force-white-text,
 .im-note-brand { color: #A614C3; }
 [data-dark="true"] .im-note-brand { color: #C084FC !important; }
 
+/* The carrier BTIS writes itself. The house teal, matching the Instant
+   bind chip on the tile beneath it, rather than a second brand wash
+   competing with the price and the Select button. */
+.im-reco-banner {
+  background: rgba(115,201,183,0.12);
+  border-bottom: 1px solid rgba(115,201,183,0.28);
+  color: #73C9B7;
+}
+[data-dark="true"] .im-reco-banner {
+  background: rgba(115,201,183,0.16) !important;
+  border-bottom-color: rgba(115,201,183,0.28) !important;
+  color: #73C9B7 !important;
+}
+.im-reco-banner .im-info-dot {
+  background: rgba(115,201,183,0.26);
+  color: #4EA897;
+}
+.im-reco-banner .im-info-dot:hover,
+.im-reco-banner .im-info-dot[data-open="true"] {
+  background: rgba(115,201,183,0.40);
+}
+[data-dark="true"] .im-reco-banner .im-info-dot {
+  background: rgba(115,201,183,0.30) !important;
+  color: #C8EDE4 !important;
+}
+
 /* A provenance chip — CSLB, a rating bureau — in the house teal. The
    hairline is what makes a 10px label read at this tint; the DS's own tonal
    pill has none, but it is also never this small. */

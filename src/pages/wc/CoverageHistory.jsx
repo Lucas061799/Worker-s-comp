@@ -61,20 +61,6 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
-      {/* Clearance runs again when the agent leaves General Info, and a
-          matching submission on this insured surfaces here. The prototype
-          simulates a match every time so the banner is always visible —
-          wire this to the real check when there is one. */}
-      <InfoPanel
-        lead="Heads up."
-      >
-        We found another submission for this insured submitted within the past 30 days.
-        We operate on a jump-ball basis, so no Broker of Record (BOR) letter is required at
-        this time. We'll re-run this check again when bind is attempted to confirm there's no
-        duplicate submission — the first submission to bind coverage with the insured's
-        approval gets the business.
-      </InfoPanel>
-
       {/* A form, not a question list: typed and chosen values carry their
           label above the field, the way Business info does. The compact
           label-left row is for Yes/No and segmented answers. */}
