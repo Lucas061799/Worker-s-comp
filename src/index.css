@@ -942,13 +942,13 @@ button.force-white-text,
    bind chip on the tile beneath it, rather than a second brand wash
    competing with the price and the Select button. */
 .im-reco-banner {
-  background: #73C9B7;
-  border-bottom: 1px solid #73C9B7;
+  background: #1B0750;
+  border-bottom: 1px solid #1B0750;
   color: #FFFFFF;
 }
 [data-dark="true"] .im-reco-banner {
-  background: #73C9B7 !important;
-  border-bottom-color: #73C9B7 !important;
+  background: #1B0750 !important;
+  border-bottom-color: #1B0750 !important;
   color: #FFFFFF !important;
 }
 /* The dot rides on the fill, so it is white at low alpha rather than a
