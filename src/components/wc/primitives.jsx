@@ -348,12 +348,17 @@ export function Tag({ children, tone = 'default', size = 'md', shape = 'pill' })
   /* The brand tone wears the gradient, not a flat violet — the same
      purple-to-magenta wash the radio pills take, with the text to match. */
   const brand = tone === 'brand'
+  /* The teal tone carries its colours in a class rather than inline, so the
+     dark-mode shims that match on inline styles cannot repaint it. */
+  const teal = tone === 'teal'
   const styles = brand
     ? {
         background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)',
         border: '1px solid rgba(92,46,212,0.18)',
       }
-    : { background: 'white', border: '1px solid #E5E7EB', color: '#6B7280' }
+    : teal
+      ? undefined
+      : { background: 'white', border: '1px solid #E5E7EB', color: '#6B7280' }
   /* `sm` rides inside a field label, where the full-size chip makes the
      label row taller than a plain one beside it and knocks the two columns
      out of line. */
@@ -366,7 +371,7 @@ export function Tag({ children, tone = 'default', size = 'md', shape = 'pill' })
      family. */
   const corner = shape === 'chip' ? 'rounded-md' : 'rounded-full'
   return (
-    <span className={`inline-flex items-center font-semibold ${corner} ${sizing}`} style={styles}>
+    <span className={`inline-flex items-center font-semibold ${corner} ${sizing}${teal ? ' im-tag-teal' : ''}`} style={styles}>
       {brand ? <BrandText>{children}</BrandText> : children}
     </span>
   )

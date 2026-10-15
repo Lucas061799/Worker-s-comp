@@ -28,7 +28,7 @@ function fieldLabel(text, { required, optional, tag } = {}) {
         {required && <span className="text-red-400 ml-0.5">*</span>}
         {optional && <span className="font-medium ml-1.5" style={{ color: '#9CA3AF' }}>Optional</span>}
       </span>
-      {tag && <Tag size="sm">{tag}</Tag>}
+      {tag && <Tag size="sm" tone="teal">{tag}</Tag>}
     </span>
   )
 }
@@ -165,7 +165,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
                 error={err('yearEstablished')}
               />
               {years && !err('yearEstablished') && (
-                <p className="text-xs mt-1.5 im-note-good">{years}</p>
+                <p className="text-xs mt-1.5 im-note-brand">{years}</p>
               )}
             </div>
             <Select

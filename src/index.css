@@ -879,6 +879,27 @@ button.force-white-text,
 .im-chip-good  { background: rgba(115,201,183,0.10); color: #73C9B7; }
 [data-dark="true"] .im-chip-good  { background: rgba(115,201,183,0.15) !important; color: #73C9B7 !important; }
 
+/* The brand's flat magenta — Razz, what the design system uses for links,
+   active icons and in-flight status. For a field reading its own answer
+   back where that answer is neither good news nor bad, only derived. */
+.im-note-brand { color: #A614C3; }
+[data-dark="true"] .im-note-brand { color: #C084FC !important; }
+
+/* A provenance chip — CSLB, a rating bureau — in the house teal. The
+   hairline is what makes a 10px label read at this tint; the DS's own tonal
+   pill has none, but it is also never this small. */
+.im-tag-teal {
+  background: rgba(115,201,183,0.14);
+  border: 1px solid rgba(115,201,183,0.45);
+  color: #73C9B7;
+}
+[data-dark="true"] .im-tag-teal,
+[data-dark="true"] .bop-page .im-tag-teal {
+  background: rgba(115,201,183,0.16) !important;
+  border-color: rgba(115,201,183,0.40) !important;
+  color: #73C9B7 !important;
+}
+
 /* The appetite check's carrier list. A tonal teal pill vanished against a
    panel of the same tint, so these are drawn the way the prototype draws
    them: a white chip on the tint, a teal hairline, and the mark in teal.
