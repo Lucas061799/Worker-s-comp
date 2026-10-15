@@ -978,11 +978,11 @@ button.force-white-text,
 }
 
 /* A field's own reading of what was typed into it — the ex-mod's credit
-   line. The house teal itself, #73C9B7, not the darkened ink the panels use
-   for their glyphs — that one carries enough green to read as a different
-   colour. The warn twin already exists as .im-note-warn. */
-.im-note-good { color: #73C9B7; }
-[data-dark="true"] .im-note-good { color: #73C9B7 !important; }
+   line. #74C3B7, the design system's second teal, not the darkened ink the
+   panels use for their glyphs — that one carries enough green to read as a
+   different colour. The warn twin already exists as .im-note-warn. */
+.im-note-good { color: #74C3B7; }
+[data-dark="true"] .im-note-good { color: #74C3B7 !important; }
 
 [data-dark="true"] .im-banner {
   background: linear-gradient(88.09deg, rgba(124,58,237,0.18) 0%, rgba(166,20,195,0.12) 100%) !important;

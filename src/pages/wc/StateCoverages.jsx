@@ -141,7 +141,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
       style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
 
       <div className="flex items-center gap-2.5">
-        <Tag tone="brand">{st}</Tag>
+        <Tag tone="brand" shape="chip">{st}</Tag>
         <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
       </div>
       <p className="text-[12.5px] text-gray-500 leading-relaxed mt-2">

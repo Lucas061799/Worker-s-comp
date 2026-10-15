@@ -335,7 +335,7 @@ export function NotePanel({ title, children }) {
 }
 
 /* Tag chip — SIC / NAICS / coverage family. */
-export function Tag({ children, tone = 'default', size = 'md' }) {
+export function Tag({ children, tone = 'default', size = 'md', shape = 'pill' }) {
   /* The brand tone wears the gradient, not a flat violet — the same
      purple-to-magenta wash the radio pills take, with the text to match. */
   const brand = tone === 'brand'
@@ -351,8 +351,13 @@ export function Tag({ children, tone = 'default', size = 'md' }) {
   const sizing = size === 'sm'
     ? 'px-2 py-0 h-[18px] text-[10px] tracking-[0.04em]'
     : 'px-2.5 py-1 text-[11px]'
+  /* A pill reads as a token — a tier, a flag, a value in a list. A thing the
+     row is *about*, like the state a card belongs to, takes the squarer
+     status-chip corner instead: 6px, the radius the design system gives that
+     family. */
+  const corner = shape === 'chip' ? 'rounded-md' : 'rounded-full'
   return (
-    <span className={`inline-flex items-center rounded-full font-semibold ${sizing}`} style={styles}>
+    <span className={`inline-flex items-center font-semibold ${corner} ${sizing}`} style={styles}>
       {brand ? <BrandText>{children}</BrandText> : children}
     </span>
   )
