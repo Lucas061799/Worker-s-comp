@@ -889,13 +889,23 @@ button.force-white-text,
 .im-note-brand { color: #A614C3; }
 [data-dark="true"] .im-note-brand { color: #C084FC !important; }
 
-/* The disclosure on a carrier tile. Quiet until it is reached for — the
-   facts behind it are reference, not a decision. */
-.im-tile-chevron { color: #9CA3AF; }
-.im-tile-chevron:hover { background: var(--fill-subtle); color: #6B7280; }
-[data-dark="true"] .im-tile-chevron { color: #8B8FA8 !important; }
-[data-dark="true"] .im-tile-chevron:hover {
-  background: rgba(255,255,255,0.08) !important; color: #D1D5DB !important;
+/* The disclosure on a carrier tile: a hairline ring, so it reads as
+   something to press rather than a stray mark. Quiet until it is reached
+   for — the facts behind it are reference, not a decision. */
+.im-tile-chevron { color: #9CA3AF; border: 1px solid var(--line); }
+.im-tile-chevron:hover {
+  background: var(--fill-subtle); border-color: var(--line-strong); color: #6B7280;
+}
+/* Matching the blanket dark `.border` shim's weight so the ring survives it. */
+[data-dark="true"] .im-tile-chevron,
+[data-dark="true"] .bop-page .im-tile-chevron {
+  color: #8B8FA8 !important; border-color: rgba(255,255,255,0.18) !important;
+}
+[data-dark="true"] .im-tile-chevron:hover,
+[data-dark="true"] .bop-page .im-tile-chevron:hover {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.30) !important;
+  color: #D1D5DB !important;
 }
 
 /* The carrier BTIS writes itself. The house teal, matching the Instant

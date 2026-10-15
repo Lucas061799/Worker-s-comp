@@ -127,9 +127,9 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
               onClick={onToggle}
               aria-expanded={open}
               aria-label={`${carrier.name} servicing details`}
-              className="im-tile-chevron w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition"
+              className="im-tile-chevron w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
             >
-              <svg className="w-3.5 h-3.5 transition-transform" viewBox="0 0 24 24" fill="none"
+              <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                 style={{ transform: open ? 'rotate(180deg)' : 'none' }} aria-hidden="true">
                 <path d="M6 9l6 6 6-6" />
