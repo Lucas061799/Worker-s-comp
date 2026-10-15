@@ -936,26 +936,32 @@ button.force-white-text,
    bind chip on the tile beneath it, rather than a second brand wash
    competing with the price and the Select button. */
 .im-reco-banner {
-  background: rgba(115,201,183,0.12);
-  border-bottom: 1px solid rgba(115,201,183,0.28);
-  color: #73C9B7;
+  background: #73C9B7;
+  border-bottom: 1px solid #73C9B7;
+  color: #FFFFFF;
 }
 [data-dark="true"] .im-reco-banner {
-  background: rgba(115,201,183,0.16) !important;
-  border-bottom-color: rgba(115,201,183,0.28) !important;
-  color: #73C9B7 !important;
+  background: #73C9B7 !important;
+  border-bottom-color: #73C9B7 !important;
+  color: #FFFFFF !important;
 }
+/* The dot rides on the fill, so it is white at low alpha rather than a
+   second colour. */
 .im-reco-banner .im-info-dot {
-  background: rgba(115,201,183,0.26);
-  color: #4EA897;
+  background: rgba(255,255,255,0.30);
+  color: #FFFFFF;
 }
 .im-reco-banner .im-info-dot:hover,
 .im-reco-banner .im-info-dot[data-open="true"] {
-  background: rgba(115,201,183,0.40);
+  background: rgba(255,255,255,0.48);
 }
 [data-dark="true"] .im-reco-banner .im-info-dot {
-  background: rgba(115,201,183,0.30) !important;
-  color: #C8EDE4 !important;
+  background: rgba(255,255,255,0.30) !important;
+  color: #FFFFFF !important;
+}
+[data-dark="true"] .im-reco-banner .im-info-dot:hover,
+[data-dark="true"] .im-reco-banner .im-info-dot[data-open="true"] {
+  background: rgba(255,255,255,0.48) !important;
 }
 
 /* A provenance chip — CSLB, a rating bureau — in the house teal. The
