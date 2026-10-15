@@ -70,6 +70,21 @@ export default function Sidebar({
   const productName  = "Workers' Compensation"
   const submissionId = 'WC-2026-048291'
 
+  /* Who the submission is for, under the number that identifies it. The
+     rail is the one thing on screen on every step, so the insured and the
+     three facts the whole quote hangs on — state, governing class and
+     effective date — belong here rather than being re-stated per page. */
+  const insuredName = formData.business?.name
+  const pz = formData.pageZero || {}
+  const effective = (() => {
+    const raw = pz.effectiveDate
+    if (!raw) return null
+    const [y, m, d] = String(raw).split('-')
+    return y && m && d ? `${+m}/${+d}/${y}` : raw
+  })()
+  const insuredMeta = [pz.state, pz.mainClass, effective && `Eff. ${effective}`]
+    .filter(Boolean).join(' · ')
+
   return (
     <aside
       className="w-64 2xl:w-72 flex flex-col h-full sticky top-0 shrink-0 relative overflow-hidden"
@@ -88,6 +103,19 @@ export default function Sidebar({
         <p className="text-[11px] mt-0.5 whitespace-nowrap" style={{ color: isDark ? '#B6BACD' : '#6B7280' }}>
           Submission Number: {submissionId}
         </p>
+        {insuredName && (
+          <>
+            <div className="mt-2.5" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
+            <p className="text-[12px] font-semibold mt-2.5 truncate" style={{ color: isDark ? '#F3F4F6' : '#1F2937' }}>
+              {insuredName}
+            </p>
+            {insuredMeta && (
+              <p className="text-[11px] mt-0.5 truncate" style={{ color: isDark ? '#8B8FA8' : '#6B7280' }}>
+                {insuredMeta}
+              </p>
+            )}
+          </>
+        )}
         <div className="mt-3" style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'}` }} />
       </div>
 

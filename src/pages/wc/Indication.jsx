@@ -69,7 +69,7 @@ export function feesFor(premium, brokerFee = 0) {
    accordion, so every market and its price is on screen at once. What the
    accordion hid behind a chevron is behind the ⓘ instead: the servicing
    facts that are the same whoever is reading them. */
-function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
+function CarrierTile({ carrier, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
 
   /* The servicing facts, which are the same whoever is reading them. They
@@ -91,11 +91,13 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
 
   return (
     <div
-      className={`rounded-2xl overflow-hidden flex flex-col transition ${best ? 'im-edge-best' : ''}`}
+      /* Every tile is drawn the same. The cheapest used to carry a brand
+         edge and a glow, which read as a market already chosen rather than
+         the one that happens to be first in a list sorted by price. */
+      className="rounded-2xl overflow-hidden flex flex-col transition"
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: `1.5px solid ${best ? '#7C3AED' : 'var(--line)'}`,
-        boxShadow: best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
+        border: '1.5px solid var(--line)',
       }}
     >
       {/* The carrier BTIS writes itself gets a banner across the top rather
@@ -254,7 +256,6 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
           <CarrierTile
             key={r.id}
             carrier={r}
-            best={r.id === quoted[0]?.id}
             /* Select is the decision — it carries straight on to the
                carrier's own questions, as the prototype's tiles do. */
             onSelect={() => onPickCarrier(r)}
