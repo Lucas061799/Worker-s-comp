@@ -199,16 +199,14 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
             <button
               type="button"
               onClick={() => setPresenting(true)}
-              className="h-10 px-6 w-full inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-              style={{ background: 'white', color: '#5C2ED4', border: '1.5px solid rgba(92,46,212,0.35)' }}
+              className="im-btn-outline h-10 px-6 w-full inline-flex items-center justify-center rounded-xl text-sm font-semibold"
             >
               Present quote
             </button>
             <button
               type="button"
               onClick={handleEmail}
-              className="h-10 px-6 w-full inline-flex items-center justify-center rounded-xl text-sm font-semibold"
-              style={{ background: 'white', color: '#6B7280', border: '1.5px solid #E5E7EB' }}
+              className="im-btn-outline h-10 px-6 w-full inline-flex items-center justify-center rounded-xl text-sm font-semibold"
             >
               Email quote
             </button>

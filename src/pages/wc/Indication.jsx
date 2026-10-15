@@ -173,7 +173,7 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
               <button
                 type="button"
                 onClick={onSelect}
-                className="im-tile-select w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
+                className="im-btn-outline w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
               >
                 Select
               </button>

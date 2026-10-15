@@ -889,28 +889,34 @@ button.force-white-text,
 .im-note-brand { color: #A614C3; }
 [data-dark="true"] .im-note-brand { color: #C084FC !important; }
 
-/* A carrier tile's Select. The outlined form of the brand button — the
-   grid offers markets, it has not chosen one. */
-.im-tile-select {
+/* The outlined form of the brand button: a brand edge on the card surface
+   that fills with the gradient when the pointer is on it. For an action
+   that is offered rather than urged — a carrier to take, a quote to send —
+   where a solid gradient would read as already chosen. */
+.im-btn-outline {
   background: var(--surface-card);
   border: 1.5px solid rgba(92,46,212,0.35);
   color: #5C2ED4;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
-.im-tile-select:hover {
-  background: linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%);
-  border-color: rgba(92,46,212,0.55);
+.im-btn-outline:hover {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
+  border-color: transparent;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(166,20,195,0.25);
 }
 /* Matching the blanket dark `.border` shim's weight so the edge survives it. */
-[data-dark="true"] .im-tile-select,
-[data-dark="true"] .bop-page .im-tile-select {
+[data-dark="true"] .im-btn-outline,
+[data-dark="true"] .bop-page .im-btn-outline {
   background: rgba(255,255,255,0.04) !important;
   border-color: rgba(167,139,250,0.45) !important;
   color: #C4B5FD !important;
 }
-[data-dark="true"] .im-tile-select:hover,
-[data-dark="true"] .bop-page .im-tile-select:hover {
-  background: rgba(167,139,250,0.16) !important;
-  border-color: rgba(167,139,250,0.65) !important;
+[data-dark="true"] .im-btn-outline:hover,
+[data-dark="true"] .bop-page .im-btn-outline:hover {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%) !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
 }
 
 /* The disclosure on a carrier tile: a hairline ring, so it reads as
