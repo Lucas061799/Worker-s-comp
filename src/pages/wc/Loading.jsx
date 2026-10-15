@@ -50,7 +50,9 @@ export default function Loading({ plan = RATING, children, onDone, onSkip }) {
 
   return (
     <div className="w-full">
-      <div className="rounded-2xl p-6 md:p-7" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
+      {/* im-field-card so an alert inside it takes the design system's grey
+          surface rather than the card colour it is standing on. */}
+      <div className="im-field-card rounded-2xl p-6 md:p-7" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
         <div className="flex items-center justify-between gap-3 mb-4">
           <Tag tone="brand">{tag}</Tag>
           <BrandText className="text-xs font-bold">{progress}%</BrandText>
