@@ -122,7 +122,6 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
             </span>
           </span>
           <span className="flex items-center gap-1.5 shrink-0 self-start mt-1">
-            {carrier.promo && quoted && <Tag tone="brand">Promo</Tag>}
             <button
               type="button"
               onClick={onToggle}
@@ -151,11 +150,15 @@ function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
               <span className="text-[11px] text-gray-400">/ yr indication</span>
             </p>
 
+            {/* What the carrier will do with this submission leads — it is
+                the thing that changes what happens next. What the price is
+                worth, and what is on offer, follow it. */}
             <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
-              {best && <Tag tone="brand">Best value</Tag>}
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
+              {best && <Tag tone="brand">Best value</Tag>}
+              {carrier.promo && <Tag tone="brand">Promo</Tag>}
             </div>
 
             {/* Two auto margins — here and above the chips — so a row stays
