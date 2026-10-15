@@ -875,14 +875,28 @@ button.force-white-text,
    This was Tailwind emerald (rgba(16,185,129,…) / #047857 / #6EE7B7), which
    the DS lists under "Not in the product": the positive state is teal, and
    there is no green anywhere in Norbielink. */
-.im-chip-good  { background: rgba(115,201,183,0.10); color: #73C9B7; }
-[data-dark="true"] .im-chip-good  { background: rgba(115,201,183,0.15) !important; color: #73C9B7 !important; }
+.im-chip-good  { background: rgba(115,201,183,0.10); border: 1px solid rgba(115,201,183,0.45); color: #73C9B7; }
+[data-dark="true"] .im-chip-good,
+[data-dark="true"] .bop-page .im-chip-good {
+  background: rgba(115,201,183,0.15) !important;
+  border-color: rgba(115,201,183,0.40) !important;
+  color: #73C9B7 !important;
+}
 
 /* The brand's flat magenta — Razz, what the design system uses for links,
    active icons and in-flight status. For a field reading its own answer
    back where that answer is neither good news nor bad, only derived. */
 .im-note-brand { color: #A614C3; }
 [data-dark="true"] .im-note-brand { color: #C084FC !important; }
+
+/* The disclosure on a carrier tile. Quiet until it is reached for — the
+   facts behind it are reference, not a decision. */
+.im-tile-chevron { color: #9CA3AF; }
+.im-tile-chevron:hover { background: var(--fill-subtle); color: #6B7280; }
+[data-dark="true"] .im-tile-chevron { color: #8B8FA8 !important; }
+[data-dark="true"] .im-tile-chevron:hover {
+  background: rgba(255,255,255,0.08) !important; color: #D1D5DB !important;
+}
 
 /* The carrier BTIS writes itself. The house teal, matching the Instant
    bind chip on the tile beneath it, rather than a second brand wash

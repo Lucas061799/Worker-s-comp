@@ -69,14 +69,18 @@ export function feesFor(premium, brokerFee = 0) {
    accordion, so every market and its price is on screen at once. What the
    accordion hid behind a chevron is behind the ⓘ instead: the servicing
    facts that are the same whoever is reading them. */
-function CarrierTile({ carrier, best, onSelect }) {
+function CarrierTile({ carrier, best, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
-  const [open, setOpen] = useState(false)
 
   /* The servicing facts, which are the same whoever is reading them. They
      open underneath the tile rather than in a popover over its neighbours:
      a floating card covered the two tiles beside it, and these are meant to
-     be compared. */
+     be compared.
+
+     One switch for the whole grid, not one per tile. The point of these
+     rows is to read them across carriers, and opening them together also
+     keeps the grid level — a single tile growing stretches its row-mates
+     and opens a gap above their buttons. */
   const details = [
     ['Quote SLA', carrier.sla],
     ['Endorsement SLA', carrier.endorsementSla],
@@ -121,13 +125,16 @@ function CarrierTile({ carrier, best, onSelect }) {
             {carrier.promo && quoted && <Tag tone="brand">Promo</Tag>}
             <button
               type="button"
-              onClick={() => setOpen(o => !o)}
+              onClick={onToggle}
               aria-expanded={open}
-              data-open={open}
               aria-label={`${carrier.name} servicing details`}
-              className="im-info-dot w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+              className="im-tile-chevron w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition"
             >
-              <span className="text-[10px] font-bold leading-none">i</span>
+              <svg className="w-3.5 h-3.5 transition-transform" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ transform: open ? 'rotate(180deg)' : 'none' }} aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
             </button>
           </span>
         </div>
@@ -147,7 +154,7 @@ function CarrierTile({ carrier, best, onSelect }) {
             <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
               {best && <Tag tone="brand">Best value</Tag>}
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
-                {carrier.bind ? 'Instant bind' : 'Refer'}
+                {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
             </div>
 
@@ -224,6 +231,12 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
   const lowest = quoted.length ? Math.min(...quoted.map(r => r.price)) : null
   const showRefer = !referralInPlay && lowest !== null && lowest > REFERRAL_THRESHOLD
 
+  /* One switch for the grid rather than one per tile: these rows exist to
+     be read across carriers, and opening them together keeps the row level
+     — a single tile growing stretches its row-mates and opens a gap above
+     their buttons. */
+  const [detailsOpen, setDetailsOpen] = useState(false)
+
   return (
     <div className="w-full">
       <p className="text-sm text-gray-500 -mt-2">
@@ -239,6 +252,8 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
             /* Select is the decision — it carries straight on to the
                carrier's own questions, as the prototype's tiles do. */
             onSelect={() => onPickCarrier(r)}
+            open={detailsOpen}
+            onToggle={() => setDetailsOpen(o => !o)}
           />
         ))}
       </div>
