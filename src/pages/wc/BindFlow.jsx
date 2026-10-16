@@ -20,9 +20,9 @@ const money2 = (n) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2
 /* The prototype's plans. Down payment is a share of premium; the rest bills on
    the same day each month. */
 const PLANS = [
-  { id: '12pay',  name: '12-Pay',  downPct: 0.10, installments: 11 },
-  { id: '10pay',  name: '10-Pay',  downPct: 0.10, installments: 9 },
-  { id: '2pay',   name: '2-Pay',   downPct: 0.50, installments: 1 },
+  { id: '12pay',  name: '12-Pay',  downPct: 0.10, installments: 11, period: 'mo' },
+  { id: '10pay',  name: '10-Pay',  downPct: 0.10, installments: 9,  period: 'mo' },
+  { id: '2pay',   name: '2-Pay',   downPct: 0.50, installments: 1,  period: '6mo' },
   { id: 'annual', name: 'Annual',  downPct: 1,    installments: 0 },
 ]
 
@@ -35,12 +35,14 @@ function isoToUs(iso) {
   return y && m && d ? `${m}/${d}/${y}` : ''
 }
 
-/* Three treatments of the payment step, offered so the shape can be chosen
-   by looking at it rather than described. */
+/* Four treatments of the payment step, offered so the shape can be chosen
+   by looking at it rather than described. Two are ours; two are transcribed
+   from the apps that already answer this question — CBIC and GL-BOP. */
 const PAY_LAYOUTS = [
   { value: '1', label: 'Payment 1 — stacked bars' },
   { value: '2', label: 'Payment 2 — ledger beside the card' },
   { value: '3', label: "Payment 3 — CBIC's billing cards" },
+  { value: '4', label: "Payment 4 — GL-BOP's priced plans" },
 ]
 
 /* Documents differ by carrier, and none of them start satisfied: binding is
@@ -413,7 +415,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
             />
           </div>
           <p className="text-[11px] text-gray-400 mt-2">
-            Demo only — the figures and the arithmetic are the same in all three.
+            Demo only — four treatments of the same step, on the same quote.
           </p>
         </div>
       </div>
@@ -500,6 +502,40 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
     )
 
     const pay = () => { if (!cardOk) { setShowErrors(true); return } setAuthorising(true) }
+
+    /* What the fourth layout needs. GL-BOP splits today's payment into the
+       fees BTIS collects and the premium the carrier collects — two charges
+       on one card. Our plans finance both, so each charge is this plan's
+       share of its own annual figure; the two still come to the same Due
+       today every other layout prints. */
+    const svcFee = fees?.service || 0
+    const brkFee = fees?.broker || 0
+    const totalFees = svcFee + brkFee
+    const share = chosen.downPct
+    const pctLabel = `${Math.round(share * 100)}% down`
+    const feesToday = Math.round(totalFees * share * 100) / 100
+    const premiumToday = Math.round((dueToday - feesToday) * 100) / 100
+
+    /* The muted label takes the gray-500 class rather than its hex: the
+       dark shim lifts the class to #D1D5DB, and a literal #6B7280 stays
+       put at 3.3:1 on the card it sits on. */
+    const GlRow = ({ label, value, bold }) => (
+      <div className="flex items-center justify-between gap-4 py-1">
+        <span className={`text-[13px] ${bold ? 'font-semibold' : 'text-gray-500'}`}
+          style={bold ? { color: 'var(--ink-2)' } : undefined}>{label}</span>
+        <span className={`text-[13px] ${bold ? 'font-bold' : 'font-semibold'}`}
+          style={{ color: 'var(--ink)' }}>{value}</span>
+      </div>
+    )
+
+    /* GL-BOP's charge headings: the number in brand gradient, what it is
+       for beside it in grey. */
+    const ChargeHead = ({ n, children }) => (
+      <div className="flex items-baseline gap-2 mb-1">
+        <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-gradient">Charge {n}</span>
+        <span className="text-[11px] text-gray-400">{children}</span>
+      </div>
+    )
 
     return (
       <div className="w-full space-y-6">
@@ -738,6 +774,153 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
             </div>
           </>
         )}
+        {/* ── Layout 4: GL-BOP's. The plans priced as four cards rather
+               than a list, the fees given a panel of their own with the
+               broker fee editable in place, and the payment read back as
+               the two charges that will actually appear on the card. ── */}
+        {payVariant === 4 && (
+          <>
+            <FieldGroup label="Payment plan">
+              {/* Two up on a narrow screen, four across once there is room —
+                  the cards carry two figures each and get cramped below that. */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {PLANS.map(p => {
+                  const on = p.id === plan
+                  const { down: d, inst: each } = amountsFor(p)
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setPlan(p.id)}
+                      className={`relative text-left rounded-xl px-4 py-3.5 flex flex-col transition ${on ? 'im-choice-on' : 'im-pick-row'}`}
+                      style={{ minHeight: 168 }}
+                    >
+                      <span className="block text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400">
+                        {p.name}
+                      </span>
+                      <span className="block text-lg font-bold leading-tight mt-1.5" style={{ color: 'var(--ink)' }}>
+                        {money(p.installments ? each : d)}
+                        {p.period && <span className="text-[11px] font-normal text-gray-400 ml-0.5">/{p.period}</span>}
+                      </span>
+                      {/* The sub-line keeps its height even on Annual, which
+                          has nothing to say — otherwise the dashed rule lands
+                          on a different line on that one card. */}
+                      <span className="block text-[11px] text-gray-400 mt-1 leading-snug" style={{ minHeight: 30 }}>
+                        {p.installments
+                          ? `${money(d)} down + ${p.installments} installment${p.installments === 1 ? '' : 's'}`
+                          : ''}
+                      </span>
+                      <span className="block my-3" style={{ borderTop: '1px dashed var(--line)' }} />
+                      <span className="block mt-auto">
+                        <span className="block text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-0.5">
+                          Due today
+                        </span>
+                        <span className="block text-lg font-bold leading-tight" style={{ color: 'var(--ink)' }}>
+                          {money(d)}
+                        </span>
+                      </span>
+                      {on && (
+                        <span className="absolute bottom-2.5 right-2.5 w-5 h-5 rounded-full flex items-center justify-center"
+                          style={{ background: BRAND_GRADIENT }}>
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </FieldGroup>
+
+            <FieldGroup label="Fees">
+              <GlRow label="BTIS Service Fee" value={money2(svcFee)} />
+              {/* The broker fee is the one number on this screen the agent
+                  sets, so it is typed where it is read rather than in the
+                  rail — GL-BOP puts the box in the row itself. */}
+              <div className="flex items-center justify-between gap-4 py-1">
+                <span className="text-[13px] text-gray-500 flex items-center gap-2.5">
+                  Broker Fee
+                  <span className="flex items-center gap-1 rounded-lg px-2.5 py-1 w-[84px] shrink-0 field-fill"
+                    style={{ border: '1px solid var(--line)' }}>
+                    <span className="text-[12px] text-gray-400">$</span>
+                    <input
+                      value={brokerFee ?? ''}
+                      onChange={e => onBrokerFee && onBrokerFee(e.target.value.replace(/\D/g, ''))}
+                      placeholder="0"
+                      className="w-full bg-transparent text-[12.5px] text-right focus:outline-none"
+                      style={{ color: 'var(--ink)' }}
+                    />
+                  </span>
+                </span>
+                <span className="text-[13px] font-semibold" style={{ color: 'var(--ink)' }}>{money2(brkFee)}</span>
+              </div>
+              <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
+                <GlRow label="Total Fees" value={money2(totalFees)} bold />
+              </div>
+            </FieldGroup>
+
+            <FieldGroup label="Payment summary">
+              <InfoPanel lead="Two separate charges">
+                Both go to the same card. BTIS collects its fees; {carrier?.name || 'the carrier'} collects
+                premium.
+              </InfoPanel>
+
+              <div className="mt-4">
+                <ChargeHead n={1}>
+                  Policy fees{share < 1 ? ` · ${pctLabel}` : ''}
+                </ChargeHead>
+                <GlRow label="BTIS Service Fee" value={money2(Math.round(svcFee * share * 100) / 100)} />
+                {brkFee > 0 && (
+                  <GlRow label="Broker Fee" value={money2(Math.round(brkFee * share * 100) / 100)} />
+                )}
+                <div className="mt-1.5 pt-1.5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+                  <GlRow label="Total fees today" value={money2(feesToday)} bold />
+                </div>
+              </div>
+
+              <div className="my-3" style={{ borderTop: '1px solid var(--line-soft)' }} />
+
+              <div>
+                <ChargeHead n={2}>
+                  Policy premium{share < 1 ? ` · ${pctLabel}` : ''}
+                </ChargeHead>
+                {/* One line, so no total under it — the figure would only be
+                    printed twice. The fees above do get one, because there
+                    are two of them to add up. */}
+                <GlRow label="Workers' Comp Premium" value={money2(premiumToday)} />
+                {chosen.installments > 0 && (
+                  <p className="text-[11.5px] text-gray-400 mt-2">
+                    {chosen.installments} × {money2(perInstallment)} to follow, billed on this day each month.
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4 pt-3 flex items-center justify-between gap-4"
+                style={{ borderTop: '1px solid var(--line)' }}>
+                <span className="text-[13px] font-bold" style={{ color: 'var(--ink-2)' }}>Due today (this card)</span>
+                <span className="text-xl font-bold" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</span>
+              </div>
+            </FieldGroup>
+
+            {/* No card fields on the page: GL-BOP hands the card to the
+                processor's own dialog, so paying opens the disclosure here
+                rather than validating a number typed above it. */}
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <p className="text-[11.5px] text-gray-400 max-w-sm leading-relaxed">
+                Paying authorises both charges above on the same card. The BTIS fee disclosure is
+                shown before anything is charged.
+              </p>
+              <div className="flex items-center gap-3">
+                <span className={`im-chip ${paid ? 'im-chip-good' : 'im-chip-muted'}`}>
+                  {paid ? 'Paid' : 'Not yet paid'}
+                </span>
+                <PrimaryButton onClick={() => setAuthorising(true)}>Pay {money2(dueToday)}</PrimaryButton>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* The bind sits in the footer, opposite Back, where every other
             step puts its primary action. Layouts 1 and 2 advance on being
             paid instead, from their own Pay button, so they leave it off. */}
