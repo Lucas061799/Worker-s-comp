@@ -76,9 +76,6 @@ function App() {
      would strand a resumed agent on a page the nav no longer lists. */
   const [indicationReady, setIndicationReady] = useState(() => !!restored?.indicationReady)   // results computed → gate unlocked
   const [showingIndication, setShowingIndication] = useState(false) // currently on the Indication screen
-  /* Which of the three payment treatments the bind flow draws. A demo
-     control: the rail offers it under Quote & bind, where it applies. */
-  const [payVariant, setPayVariant] = useState(1)
   /* The second carrier call. Rating prices the markets; this one turns the
      chosen indication into the bindable number, once the carrier's own
      questions have been answered. */
@@ -566,8 +563,6 @@ owner_involved: 'yes',
             /* Step 6 is the indication itself — there is no screen behind
                it any more, so going there means showing it. Before it has
                been rated there is nothing to show, and the rail locks it. */
-            payVariant={payVariant}
-            onPayVariantChange={setPayVariant}
             onStepClick={(id) => {
               if (id === 6 && indicationReady) goToIndication()
               else goToStep(id)
@@ -706,7 +701,6 @@ owner_involved: 'yes',
                       effectiveDate={formData.pageZero?.effectiveDate}
                       onBack={() => setBinding(false)}
                       onBound={handleBound}
-                      payVariant={payVariant}
                     />
                   )}
                 </div>
