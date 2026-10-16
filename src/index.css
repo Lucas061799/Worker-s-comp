@@ -404,6 +404,18 @@ main.wc-surface-white .field-fill:focus-visible {
    brand-tinted panel it read as a hole. One explicit class on every
    control settles it, and nothing has to out-specify anything. */
 .field-fill { background: #ffffff; }
+/* Tailwind's `outline-none` is a 2px *transparent* outline, not an absent
+   one. `transition-all` happily animates outline-color and outline-width,
+   but outline-style can never animate — it flips from none to solid on the
+   first frame of focus. A text field rests at the initial outline-color,
+   which is currentColor, so clicking into one painted a 3px #1F2937 ring
+   instantly and then faded it out over 150ms underneath the purple one.
+   Resting the colour at transparent leaves nothing to fade.
+   Only the text controls: they already carry focus:outline-none and draw
+   their own ring, whereas the Select trigger and the checkbox share
+   .field-fill and still want the browser's ring when tabbed to. */
+input.field-fill,
+textarea.field-fill { outline-color: transparent; }
 [data-dark="true"] .field-fill { background: rgba(255,255,255,0.06) !important; }
 
 [data-dark="true"] .bop-page input,
