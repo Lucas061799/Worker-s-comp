@@ -186,7 +186,11 @@ function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee 
     </div>
   )
   return (
-    <div>
+    /* One white panel, the way the left rail is one white panel — the
+       heading, the progress and the figures are the same surface rather
+       than a card floating on the page beneath a loose title. */
+    <div className="rounded-2xl p-5"
+      style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
       <h3 className="text-base font-bold text-navy">Quote in Progress</h3>
       <div className="flex items-center justify-between gap-3 mt-1.5">
         <span className="text-[11.5px] text-gray-400">All progress auto-saved</span>
@@ -196,8 +200,7 @@ function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee 
         <div className="h-full rounded-full" style={{ width: '75%', background: BRAND_GRADIENT }} />
       </div>
 
-      <div className="rounded-2xl p-5 mt-4"
-        style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
+      <div className="mt-5 pt-5" style={{ borderTop: '1px solid var(--line-soft)' }}>
         <h4 className="text-sm font-bold mb-4" style={{ color: 'var(--ink)' }}>Premium Breakdown</h4>
 
         <div className="flex items-center gap-3 mb-4">
@@ -235,7 +238,9 @@ function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee 
 
       <button
         type="button"
-        className="w-full mt-3 inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[13px] font-bold transition hover:opacity-90 force-white-text"
+        /* 12px, not 13: the label is long and the rail is 300px, so at the
+           larger size it broke onto a second line. */
+        className="w-full mt-5 inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[12px] font-bold whitespace-nowrap transition hover:opacity-90 force-white-text"
         style={{ background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
