@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Input, FormGrid, Checkbox } from '../../components/FormField'
 import {
+  BRAND_GRADIENT,
   Modal,
   ModalButton,
   FieldGroup,
@@ -98,6 +99,59 @@ function Stepper({ at }) {
 /* A heading and a drop target. It used to wrap both in a card, which put
    a box inside a box inside the group's own card — three borders deep for
    one upload. The dashed target is the only frame it needs. */
+/* CBIC's bind card, brought over for the third payment layout: two options
+   stay on screen and the one chosen opens its own questions inside the same
+   card, under a thin rule. */
+function ChoiceCard({ selected, label, detail, onSelect, children }) {
+  return (
+    <div
+      className={`rounded-xl transition-all field-fill ${selected ? 'im-edge-brand' : ''}`}
+      style={{ border: `1.5px solid ${selected ? '' : 'var(--line)'}` }}
+    >
+      <button type="button" onClick={onSelect} className="w-full text-left px-4 py-3.5 flex items-start gap-3">
+        <span className={`w-4 h-4 rounded-full shrink-0 mt-0.5 flex items-center justify-center border-2 ${selected ? 'yn-ring' : 'yn-off-ring'}`}>
+          {selected && <span className="w-1.5 h-1.5 rounded-full yn-dot" />}
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[13.5px] font-bold" style={{ color: 'var(--ink)' }}>{label}</span>
+          {detail && (
+            <span className="block text-[12px] text-gray-500 leading-relaxed mt-0.5">{detail}</span>
+          )}
+        </span>
+      </button>
+      {/* What it opens lines up with the label, not the card edge. */}
+      {selected && children && (
+        <div className="pl-11 pr-4 pb-4">
+          <div className="pt-4 space-y-4" style={{ borderTop: '1px solid var(--line)' }}>{children}</div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ChoiceGroup({ title, children }) {
+  return (
+    <div>
+      <p className="text-[13px] font-bold mb-1" style={{ color: 'var(--ink)' }}>{title}</p>
+      {children}
+    </div>
+  )
+}
+
+function ChoiceRadio({ checked, onChange, label, note }) {
+  return (
+    <label onClick={onChange} className="flex items-start gap-2.5 cursor-pointer select-none py-1.5">
+      <span className={`w-[18px] h-[18px] rounded-full shrink-0 flex items-center justify-center border-2 ${checked ? 'yn-ring' : 'yn-off-ring'}`}>
+        {checked && <span className="w-1.5 h-1.5 rounded-full yn-dot" />}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[13px] leading-[18px]" style={{ color: 'var(--ink)' }}>{label}</span>
+        {note && <span className="block text-[12px] leading-snug text-gray-400 mt-0.5">{note}</span>}
+      </span>
+    </label>
+  )
+}
+
 function DocBox({ title, required, uploaded, onToggle }) {
   return (
     <div>
@@ -149,6 +203,11 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   /* Bind is the signature, so the terms it stands for are shown before it
      is taken, not after. */
   const [confirming, setConfirming] = useState(false)
+  /* Three treatments of the payment step, switchable on the screen itself so
+     the shape can be chosen by looking at it rather than described. */
+  const [payVariant, setPayVariant] = useState(1)
+  const [bill, setBill] = useState('direct')
+  const [payBy, setPayBy] = useState('complete')
 
   const grandTotal = fees?.total ?? premium
   const chosen = PLANS.find(p => p.id === plan) || PLANS[0]
@@ -272,78 +331,245 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   /* ─────────── 3. Payment ─────────── */
   if (step === 2) {
     const cardOk = card.number.replace(/\D/g, '').length >= 15 && /^\d{2}\s*\/\s*\d{2}$/.test(card.exp.trim())
+    const planLine = chosen.installments
+      ? `Selected plan: ${chosen.name} — ${chosen.installments} × ${money2(perInstallment)} to follow.`
+      : `Selected plan: ${chosen.name} (paid in full today).`
+
+    const ledger = [
+      ["Workers' Comp Premium", money2(premium)],
+      ['BTIS Service Fee', money2(fees?.service || 0)],
+      ['Broker Fee', money2(fees?.broker || 0)],
+    ]
+    const Ledger = ({ className = '', style }) => (
+      <div className={className} style={style}>
+        {ledger.map(([k, v]) => (
+          <div key={k} className="flex items-center justify-between gap-4 py-1">
+            <span className="text-[13px] text-gray-500">{k}</span>
+            <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
+          </div>
+        ))}
+        <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
+          <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
+          <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
+        </div>
+      </div>
+    )
+
+    const pay = () => { if (!cardOk) { setShowErrors(true); return } setAuthorising(true) }
+
     return (
       <div className="w-full space-y-6">
         <Stepper at={2} />
 
-        {/* The prototype's shape: two bars, one above the other, each the
-            width of the page. */}
-        <FieldGroup label="Policy premium &amp; fees">
-          {/* The amounts on white, the note on the group's grey beneath —
-              the figures are the content of this bar and read as a block
-              rather than four lines on a background. */}
-          <div className="rounded-lg px-5 py-4"
-            style={{ background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }}>
-            {[
-              ["Workers' Comp Premium", money2(premium)],
-              ['BTIS Service Fee', money2(fees?.service || 0)],
-              ['Broker Fee', money2(fees?.broker || 0)],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between gap-4 py-1">
-                <span className="text-[13px] text-gray-500">{k}</span>
-                <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>{v}</span>
-              </div>
-            ))}
-            <div className="mt-2.5 pt-3 flex items-center justify-between gap-4" style={{ borderTop: '1px solid var(--line)' }}>
-              <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-2)' }}>Grand Total</span>
-              <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{money2(grandTotal)}</span>
-            </div>
-          </div>
-          {/* A quiet line, as in the prototype — not a panel with an icon. */}
-          <p className="text-[11.5px] text-gray-400 mt-3">
-            Read-only — to change these amounts, go back to the quote.
-          </p>
-        </FieldGroup>
+        {/* ── Layout 1: two stacked bars, the prototype's shape ── */}
+        {payVariant === 1 && (
+          <>
+            <FieldGroup label="Policy premium &amp; fees">
+              {/* The amounts on white, the note on the group's grey beneath —
+                  the figures are the content of this bar and read as a block
+                  rather than four lines on a background. */}
+              <Ledger className="rounded-lg px-5 py-4"
+                style={{ background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }} />
+              <p className="text-[11.5px] text-gray-400 mt-3">
+                Read-only — to change these amounts, go back to the quote.
+              </p>
+            </FieldGroup>
 
-        <FieldGroup label="Amount due today">
-          <p className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
-          <p className="text-[12px] text-gray-500 mt-1">
-            Selected plan: {chosen.name}
-            {chosen.installments
-              ? ` — ${chosen.installments} × ${money2(perInstallment)} to follow.`
-              : ' (paid in full today).'}
-          </p>
-          <FormGrid className="mt-4">
-            <Input label="Card number" required value={card.number}
-              onChange={v => setCard(c => ({ ...c, number: v }))}
-              placeholder="4242 4242 4242 4242" digits maxLength={16}
-              error={showErrors && !cardOk} />
-            <Input label="Expiration" required value={card.exp}
-              onChange={v => setCard(c => ({ ...c, exp: v }))}
-              placeholder="MM / YY" maxLength={7}
-              error={showErrors && !cardOk} />
-          </FormGrid>
-          {/* The payment is taken here, beside its own status, rather than from
-              the footer — this screen advances on being paid. */}
-          <div className="flex items-center gap-3 mt-4 flex-wrap">
-            <PrimaryButton
-              onClick={() => { if (!cardOk) { setShowErrors(true); return } setAuthorising(true) }}
-              disabled={!cardOk}
-            >
-              Pay {money2(dueToday)}
-            </PrimaryButton>
-            <span className={`im-chip ${paid ? 'im-chip-good' : 'im-chip-muted'}`}>
-              {paid ? 'Paid' : 'Not yet paid'}
-            </span>
-          </div>
-          {!cardOk && (
-            <p className="text-[12px] text-gray-400 mt-2.5">
-              Card details are needed to take the down payment.
-            </p>
-          )}
-        </FieldGroup>
+            <FieldGroup label="Amount due today">
+              <p className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
+              <p className="text-[12px] text-gray-500 mt-1">{planLine}</p>
+              <FormGrid className="mt-4">
+                <Input label="Card number" required value={card.number}
+                  onChange={v => setCard(c => ({ ...c, number: v }))}
+                  placeholder="4242 4242 4242 4242" digits maxLength={16}
+                  error={showErrors && !cardOk} />
+                <Input label="Expiration" required value={card.exp}
+                  onChange={v => setCard(c => ({ ...c, exp: v }))}
+                  placeholder="MM / YY" maxLength={7}
+                  error={showErrors && !cardOk} />
+              </FormGrid>
+              {/* The payment is taken here, beside its own status, rather than
+                  from the footer — this screen advances on being paid. */}
+              <div className="flex items-center gap-3 mt-4 flex-wrap">
+                <PrimaryButton onClick={pay} disabled={!cardOk}>Pay {money2(dueToday)}</PrimaryButton>
+                <span className={`im-chip ${paid ? 'im-chip-good' : 'im-chip-muted'}`}>
+                  {paid ? 'Paid' : 'Not yet paid'}
+                </span>
+              </div>
+              {!cardOk && (
+                <p className="text-[12px] text-gray-400 mt-2.5">
+                  Card details are needed to take the down payment.
+                </p>
+              )}
+            </FieldGroup>
+          </>
+        )}
+
+        {/* ── Layout 2: what it costs beside what to do about it, the shape
+               the quote screen uses one step earlier ── */}
+        {payVariant === 2 && (
+          <FieldGroup label="Payment">
+            <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 lg:gap-0">
+              <div className="w-full lg:w-[400px] shrink-0 lg:pr-10">
+                <Ledger />
+                <p className="text-[11.5px] text-gray-400 mt-3.5">
+                  Read-only — to change these amounts, go back to the quote.
+                </p>
+              </div>
+              <div className="w-full lg:flex-1 lg:pl-10 lg:border-l" style={{ borderColor: 'var(--line)' }}>
+                <SectionLabel className="!mb-1.5">Due today</SectionLabel>
+                <p className="text-3xl font-bold leading-none" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
+                <p className="text-[12px] text-gray-500 mt-2">{planLine}</p>
+                <div className="space-y-4 mt-5">
+                  <Input label="Card number" required value={card.number}
+                    onChange={v => setCard(c => ({ ...c, number: v }))}
+                    placeholder="4242 4242 4242 4242" digits maxLength={16}
+                    error={showErrors && !cardOk} />
+                  <Input label="Expiration" required value={card.exp}
+                    onChange={v => setCard(c => ({ ...c, exp: v }))}
+                    placeholder="MM / YY" maxLength={7}
+                    error={showErrors && !cardOk} />
+                </div>
+                <PrimaryButton className="w-full mt-5" onClick={pay} disabled={!cardOk}>
+                  Pay {money2(dueToday)}
+                </PrimaryButton>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className={`im-chip ${paid ? 'im-chip-good' : 'im-chip-muted'}`}>
+                    {paid ? 'Paid' : 'Not yet paid'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </FieldGroup>
+        )}
+
+        {/* ── Layout 3: CBIC's — the premium read back, then billing chosen
+               as a card that opens its own questions ── */}
+        {payVariant === 3 && (
+          <>
+            <div>
+              <SectionLabel>Step 1: Review the premium</SectionLabel>
+              <div className="im-field-card rounded-xl p-5 sm:p-6"
+                style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+                <Ledger />
+                <p className="text-[11.5px] text-gray-400 mt-3">
+                  Read-only — to change these amounts, go back to the quote.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <SectionLabel>Step 2: Select payment and request to bind</SectionLabel>
+              <div className="space-y-2.5">
+                <ChoiceCard
+                  selected={bill === 'direct'}
+                  onSelect={() => setBill('direct')}
+                  label={
+                    <span className="inline-flex items-center flex-wrap gap-x-2 gap-y-1">
+                      Direct Bill
+                      <span className="px-2 py-[3px] rounded-full text-[8.5px] font-bold leading-none tracking-[0.12em] force-white-text -translate-y-px"
+                        style={{ background: BRAND_GRADIENT, color: 'white' }}>
+                        RECOMMENDED
+                      </span>
+                    </span>
+                  }
+                  detail="The carrier bills the insured. $10 instalment fee is added per payment."
+                >
+                  <ChoiceGroup title="Select instalment options">
+                    {PLANS.map(p => {
+                      const { down: d, inst: each } = amountsFor(p)
+                      return (
+                        <ChoiceRadio
+                          key={p.id}
+                          checked={plan === p.id}
+                          onChange={() => setPlan(p.id)}
+                          label={p.installments
+                            ? `${p.installments} payment${p.installments === 1 ? '' : 's'} of ${money2(each)} with ${money2(d)} down`
+                            : `One payment of ${money2(d)}`}
+                        />
+                      )
+                    })}
+                  </ChoiceGroup>
+
+                  <ChoiceGroup title="Choose how to pay">
+                    <ChoiceRadio
+                      checked={payBy === 'complete'}
+                      onChange={() => setPayBy('complete')}
+                      label="Complete payment for the applicant"
+                    />
+                    <ChoiceRadio
+                      checked={payBy === 'send'}
+                      onChange={() => setPayBy('send')}
+                      label="Send to the applicant for payment"
+                      note="They receive a link; the policy binds once it is paid."
+                    />
+                  </ChoiceGroup>
+
+                  {payBy === 'complete' && (
+                    <div className="space-y-4 mt-1">
+                      <Input label="Card number" required value={card.number}
+                        onChange={v => setCard(c => ({ ...c, number: v }))}
+                        placeholder="4242 4242 4242 4242" digits maxLength={16}
+                        error={showErrors && !cardOk} />
+                      <Input label="Expiration" required value={card.exp}
+                        onChange={v => setCard(c => ({ ...c, exp: v }))}
+                        placeholder="MM / YY" maxLength={7}
+                        error={showErrors && !cardOk} />
+                    </div>
+                  )}
+                </ChoiceCard>
+
+                <ChoiceCard
+                  selected={bill === 'agency'}
+                  onSelect={() => setBill('agency')}
+                  label="Agency Bill"
+                  detail="The agency bills the insured and collects the premium."
+                />
+              </div>
+
+              <div className="flex items-center gap-3 mt-4 flex-wrap">
+                <PrimaryButton
+                  onClick={() => {
+                    if (bill === 'direct' && payBy === 'complete') { pay(); return }
+                    setStep(3)
+                  }}
+                  disabled={bill === 'direct' && payBy === 'complete' && !cardOk}
+                >
+                  {bill === 'direct' && payBy === 'complete'
+                    ? `Pay ${money2(dueToday)}`
+                    : 'Request to bind'}
+                </PrimaryButton>
+                <span className="text-[12px] text-gray-500">
+                  {bill === 'agency'
+                    ? 'The agency collects the premium — nothing is charged here.'
+                    : payBy === 'send'
+                      ? 'A payment link goes to the insured.'
+                      : `${money2(dueToday)} due today.`}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
 
         <StepNav onBack={back} />
+
+        {/* A demo control, not part of the flow: three treatments of this one
+            step so the shape can be chosen by looking at it. The figures and
+            the arithmetic are the same in all three. */}
+        <div className="pt-2" style={{ borderTop: '1px solid var(--line-soft)' }}>
+          <div className="flex items-center gap-2 flex-wrap pt-3">
+            <span className="text-[11px] text-gray-400 mr-1">Layout</span>
+            {[1, 2, 3].map(n => (
+              <button key={n} type="button" onClick={() => setPayVariant(n)}
+                className={`im-chip transition ${payVariant === n ? 'im-chip-brand' : 'im-chip-muted'}`}>
+                Payment {n}
+              </button>
+            ))}
+            <span className="text-[11px] text-gray-400 ml-1">
+              {payVariant === 1 ? 'Stacked bars' : payVariant === 2 ? 'Ledger beside the card' : "CBIC's billing cards"}
+            </span>
+          </div>
+        </div>
 
         {authorising && (
           <Modal
