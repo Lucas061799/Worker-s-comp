@@ -18,7 +18,7 @@ import Loading, { RATING, FINALIZING, RatingPromo } from './pages/wc/Loading'
 import Locations from './pages/wc/Locations'
 import SubClassCode from './pages/wc/SubClassCode'
 import Referral, { ReferralSubmitted } from './pages/wc/Referral'
-import BindFlow from './pages/wc/BindFlow'
+import BindFlow, { QuoteRail } from './pages/wc/BindFlow'
 import { feesFor, FACTORS, premiumForCarrier } from './pages/wc/Indication'
 import { Modal, ModalButton } from './components/wc/primitives'
 import Indication from './pages/wc/Indication'
@@ -76,6 +76,10 @@ function App() {
      would strand a resumed agent on a page the nav no longer lists. */
   const [indicationReady, setIndicationReady] = useState(() => !!restored?.indicationReady)   // results computed → gate unlocked
   const [showingIndication, setShowingIndication] = useState(false) // currently on the Indication screen
+  /* Which of the three payment treatments the bind flow draws. The shell
+     holds it because the third one brings a right rail with it, and that
+     rail mounts out here beside <main>. */
+  const [payVariant, setPayVariant] = useState(1)
   /* The second carrier call. Rating prices the markets; this one turns the
      chosen indication into the bindable number, once the carrier's own
      questions have been answered. */
@@ -704,6 +708,8 @@ owner_involved: 'yes',
                       insuredName={formData.business?.name}
                       brokerFee={formData.bind?.brokerFee ?? ''}
                       onBrokerFee={v => updateFormData('bind', { brokerFee: v })}
+                      payVariant={payVariant}
+                      onPayVariantChange={setPayVariant}
                     />
                   )}
                 </div>
@@ -714,6 +720,23 @@ owner_involved: 'yes',
           </div>
         </main>
 
+        {/* The third payment treatment is CBIC's, and CBIC keeps the price in
+            a right rail. It mounts here, beside main, the way this app's
+            right rail always did — not inside the page's own column. Desktop
+            only; on a narrow viewport it would push the form. */}
+        {binding && payVariant === 3 && !submitted && (
+          <div className="hidden xl:block">
+            <QuoteRail
+              carrier={selectedCarrier}
+              insured={formData.business?.name}
+              premium={selectedPremium}
+              service={feesFor(selectedPremium, 0).service}
+              brokerFee={formData.bind?.brokerFee ?? ''}
+              onBrokerFee={v => updateFormData('bind', { brokerFee: v })}
+              isDark={darkMode}
+            />
+          </div>
+        )}
       </div>
 
       <PrintSummary

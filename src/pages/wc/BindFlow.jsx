@@ -173,8 +173,10 @@ function ChoiceRadio({ checked, onChange, label, note }) {
 }
 
 /* CBIC's right-hand rail: what the policy costs, kept beside the screen
-   that commits to it, with the broker fee editable from here. */
-function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee }) {
+   that commits to it, with the broker fee editable from here. It mounts in
+   the shell next to <main>, the way this app's right rail always has —
+   sticky, full height, its own surface — not inside the page's content. */
+export function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee, isDark = false }) {
   const fee = Number(String(brokerFee ?? '').replace(/\D/g, '')) || 0
   const gross = premium + service
   const totalDue = gross + fee
@@ -186,7 +188,14 @@ function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee 
     </div>
   )
   return (
-    <div>
+    <aside
+      className="w-72 2xl:w-80 flex flex-col h-full sticky top-0 shrink-0"
+      style={{
+        background: isDark ? '#191D35' : 'white',
+        borderLeft: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #F3F4F6',
+      }}
+    >
+      <div className="p-5 flex-1 overflow-y-auto sidebar-nav">
       <h3 className="text-base font-bold text-navy">Quote in Progress</h3>
       <div className="flex items-center justify-between gap-3 mt-1.5">
         <span className="text-[11.5px] text-gray-400">All progress auto-saved</span>
@@ -244,7 +253,8 @@ function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee 
         </svg>
         Download Binding Application
       </button>
-    </div>
+      </div>
+    </aside>
   )
 }
 
@@ -283,7 +293,7 @@ function DocBox({ title, required, uploaded, onToggle }) {
   )
 }
 
-export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound, insuredName, brokerFee, onBrokerFee }) {
+export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound, insuredName, brokerFee, onBrokerFee, payVariant = 1, onPayVariantChange }) {
   const [step, setStep] = useState(0)
   const required = DOCS_BY_CARRIER[carrier?.id] ?? []
   const [docs, setDocs] = useState({})
@@ -299,9 +309,6 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   /* Bind is the signature, so the terms it stands for are shown before it
      is taken, not after. */
   const [confirming, setConfirming] = useState(false)
-  /* Three treatments of the payment step, switchable on the screen itself so
-     the shape can be chosen by looking at it rather than described. */
-  const [payVariant, setPayVariant] = useState(1)
   const [bill, setBill] = useState('direct')
   const [payBy, setPayBy] = useState('complete')
   /* What the third layout asks for. It is CBIC's screen, so these are its
@@ -563,11 +570,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                card fields of the other two do not appear here, because they
                do not appear there. ── */}
         {payVariant === 3 && (
-          /* CBIC keeps the price beside the screen that commits to it, so
-             this layout carries its rail. The other two do not — the figures
-             are the content of their own panels. */
-          <div className="flex flex-col xl:flex-row gap-6 xl:gap-0 xl:items-stretch">
-          <div className="flex-1 min-w-0 space-y-6">
+          <>
             <div>
               <SectionLabel>Step 1: Review / Edit the Application</SectionLabel>
               <FieldGroup>
@@ -724,23 +727,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                 </svg>
               </button>
             </div>
-          </div>
-
-          {/* A column, not a card: white to the edges and the full height of
-              the step, with a hairline down its left — the way the step rail
-              on the other side is drawn. */}
-          <aside className="w-full xl:w-[316px] shrink-0 rounded-2xl xl:rounded-none p-5 xl:pl-6 xl:-my-5 xl:py-10"
-            style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', borderWidth: '1px' }}>
-            <QuoteRail
-              carrier={carrier}
-              insured={insuredName}
-              premium={premium}
-              service={fees?.service || 0}
-              brokerFee={brokerFee}
-              onBrokerFee={onBrokerFee}
-            />
-          </aside>
-          </div>
+          </>
         )}
         <StepNav onBack={back} />
 
@@ -754,7 +741,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               wideMenu
               options={PAY_LAYOUTS}
               value={String(payVariant)}
-              onChange={v => setPayVariant(Number(v))}
+              onChange={v => onPayVariantChange && onPayVariantChange(Number(v))}
             />
           </div>
           <p className="text-[11px] text-gray-400 mt-2">
