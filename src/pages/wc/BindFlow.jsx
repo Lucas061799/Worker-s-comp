@@ -125,12 +125,18 @@ function Stepper({ at }) {
 function ChoiceCard({ selected, label, detail, onSelect, children }) {
   return (
     <div
-      className={`rounded-xl transition-all field-fill ${selected ? 'im-edge-brand' : ''}`}
-      style={{ border: `1.5px solid ${selected ? '' : 'var(--line)'}` }}
+      className={`rounded-xl transition-all ${selected ? 'im-choice-on' : 'field-fill'}`}
+      style={selected ? undefined : { border: '1.5px solid var(--line)' }}
     >
       <button type="button" onClick={onSelect} className="w-full text-left px-4 py-3.5 flex items-start gap-3">
-        <span className={`w-4 h-4 rounded-full shrink-0 mt-0.5 flex items-center justify-center border-2 ${selected ? 'yn-ring' : 'yn-off-ring'}`}>
-          {selected && <span className="w-1.5 h-1.5 rounded-full yn-dot" />}
+        {/* Filled when chosen, with a white centre — not a ring around a
+            coloured dot. */}
+        <span className="w-4 h-4 rounded-full shrink-0 mt-0.5 flex items-center justify-center"
+          style={{
+            border: selected ? 'none' : '2px solid var(--line-strong)',
+            background: selected ? BRAND_GRADIENT : 'transparent',
+          }}>
+          {selected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
         </span>
         <span className="min-w-0">
           <span className="block text-[13.5px] font-bold" style={{ color: 'var(--ink)' }}>{label}</span>
@@ -142,7 +148,7 @@ function ChoiceCard({ selected, label, detail, onSelect, children }) {
       {/* What it opens lines up with the label, not the card edge. */}
       {selected && children && (
         <div className="pl-11 pr-4 pb-4">
-          <div className="pt-4 space-y-4" style={{ borderTop: '1px solid var(--line)' }}>{children}</div>
+          <div className="pt-4 space-y-4 im-rule-brand">{children}</div>
         </div>
       )}
     </div>
@@ -161,8 +167,12 @@ function ChoiceGroup({ title, children }) {
 function ChoiceRadio({ checked, onChange, label, note }) {
   return (
     <label onClick={onChange} className="flex items-start gap-2.5 cursor-pointer select-none py-1.5">
-      <span className={`w-[18px] h-[18px] rounded-full shrink-0 flex items-center justify-center border-2 ${checked ? 'yn-ring' : 'yn-off-ring'}`}>
-        {checked && <span className="w-1.5 h-1.5 rounded-full yn-dot" />}
+      <span className="w-[18px] h-[18px] rounded-full shrink-0 flex items-center justify-center"
+        style={{
+          border: checked ? 'none' : '1.5px solid var(--line-strong)',
+          background: checked ? BRAND_GRADIENT : 'var(--surface-card)',
+        }}>
+        {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
       </span>
       <span className="min-w-0">
         <span className="block text-[13px] leading-[18px]" style={{ color: 'var(--ink)' }}>{label}</span>
@@ -196,16 +206,7 @@ export function QuoteRail({ carrier, insured, premium, service, brokerFee, onBro
       }}
     >
       <div className="p-5 flex-1 overflow-y-auto sidebar-nav">
-      <h3 className="text-base font-bold text-navy">Quote in Progress</h3>
-      <div className="flex items-center justify-between gap-3 mt-1.5">
-        <span className="text-[11.5px] text-gray-400">All progress auto-saved</span>
-        <span className="text-[11.5px] font-bold text-gradient">75%</span>
-      </div>
-      <div className="im-progress-track h-1.5 rounded-full mt-2 overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: '75%', background: BRAND_GRADIENT }} />
-      </div>
-
-      <div className="mt-5 pt-5" style={{ borderTop: '1px solid var(--line-soft)' }}>
+      <div>
         <h4 className="text-sm font-bold mb-4" style={{ color: 'var(--ink)' }}>Premium Breakdown</h4>
 
         <div className="flex items-center gap-3 mb-4">
