@@ -12,6 +12,7 @@ import {
   QuestionCard,
   CarrierLogo,
   YesNo,
+  BrandText,
 } from '../../components/wc/primitives'
 
 const money = (n) => '$' + Math.round(n).toLocaleString()
@@ -95,6 +96,135 @@ const SUBJECTIVITIES_BY_CARRIER = {
   greatamerican: ['3 years of loss runs on file and reviewed.', 'Insured does not subcontract more than 10% of total operations.'],
   pie: ['Supplemental application on file and reviewed.', 'Insured maintains a formal return-to-work program.'],
   employers: ['Experience rating worksheet reviewed and on file.', 'Insured does not do any work above 30ft.', 'No employees operate heavy equipment without certification.'],
+}
+
+/* Everything the agent has to accept before binding, as GL-BOP lists it.
+   The amounts and the inbox are this line of business's, and the fraud
+   warning keeps its general wording rather than Colorado's reporting
+   clause — the insured here is not in Colorado. */
+const GL_CONSENTS = (service) => [
+  {
+    key: 'fraud',
+    label: 'Fraud Warning Statement',
+    summary: 'Required state disclosure',
+    details:
+      'It is unlawful to knowingly provide false, incomplete, or misleading facts or information to an ' +
+      'insurance company for the purpose of defrauding or attempting to defraud the company. Penalties may ' +
+      'include imprisonment, fines, denial of insurance, and civil damages.',
+  },
+  {
+    key: 'svcFee',
+    label: `BTIS Service Fee (${money(service)})`,
+    summary: 'One-time, non-refundable',
+    details:
+      `BTIS will impose a Service Fee of ${money2(service)}, separate from amounts charged by the insurer. ` +
+      'This fee is non-refundable except where required by law.',
+  },
+  {
+    key: 'broker',
+    label: 'Broker Disclosure',
+    summary: 'Broker fee and compensation arrangements',
+    details:
+      'If indicated, Total Amount Due includes a Broker Fee for services that may include performing a risk ' +
+      'analysis, comparing policies, processing submissions, searching the markets for the desired coverage, ' +
+      'working with underwriters on the coverage proposal, and servicing the policy after issuance. If we are ' +
+      'deemed to be a broker, we represent the insured and will represent you honestly and competently in ' +
+      'placing the insurance. We will also receive commission from the insurer. Broker Fees on admitted ' +
+      'policies are fully earned and nonrefundable, except where applicable by law. The insured is not ' +
+      'obligated to purchase the proposed insurance.',
+  },
+  {
+    key: 'esign',
+    label: 'Electronic Delivery Consent',
+    summary: 'Receive policy documents electronically',
+    details:
+      'I consent to receive policy documents, notices, and disclosures electronically at the email address on ' +
+      'file. I understand I may withdraw this consent at any time by contacting BTIS.',
+  },
+  {
+    key: 'terms',
+    label: 'Quotation Terms & Conditions',
+    summary: 'Quote subject to underwriting review',
+    details:
+      'This is not a final quote, nor is it an offer of insurance. Pricing is based only upon the rating ' +
+      'information your agent has provided and may be subject to change due to additional rating variables. ' +
+      'All quotations should be considered an estimate and are subject to change based on accurate ' +
+      'underwriting information, changes in state rates, experience modifications, or any other items by ' +
+      'jurisdictions that have control over such items. This quotation is strictly conditioned upon no ' +
+      'material change in the risk between the date of this quotation and the inception date of the ' +
+      'proposed policy.',
+  },
+  {
+    key: 'sameDay',
+    label: 'Same-Day Bind Request',
+    summary: 'Must be submitted by 5 PM PST',
+    details:
+      'Same-day bind requests must be received by 5 pm PST. Requests received after that time will be ' +
+      'processed the following business day. This card will be used for renewal — contact ' +
+      'wcbinds@btisinc.com within 15 days to change. Pricing is subject to change due to rate and ' +
+      'underwriting updates.',
+  },
+]
+
+/* One acknowledgment: a hit area that accepts it, and a chevron beside
+   that opens the full text. The mark is a tinted brand circle either way
+   — an alert before it is accepted, a check after — so the row changes
+   state without changing shape. */
+function GlConsentRow({ item, checked, onChange, open, onToggle }) {
+  const edge = checked ? 'rgba(92,46,212,0.45)' : 'var(--line)'
+  const inner = checked ? 'rgba(92,46,212,0.30)' : 'var(--line-soft)'
+  return (
+    <div className="rounded-lg overflow-hidden transition"
+      style={{ background: 'var(--surface-card)', border: `1px solid ${edge}` }}>
+      <div className="flex items-stretch">
+        <button type="button" onClick={() => onChange(!checked)}
+          className="im-consent-hit flex-1 flex items-center gap-3 px-3.5 py-3 text-left min-w-0">
+          <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <defs>
+                <linearGradient id={`glConsent-${item.key}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#5C2ED4" className="im-brand-stop-a" />
+                  <stop offset="100%" stopColor="#A614C3" className="im-brand-stop-b" />
+                </linearGradient>
+              </defs>
+              {checked ? (
+                <path d="M5 13l4 4L19 7" stroke={`url(#glConsent-${item.key})`} strokeWidth="2.6" />
+              ) : (
+                <g stroke={`url(#glConsent-${item.key})`} strokeWidth="2.2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </g>
+              )}
+            </svg>
+          </span>
+          <span className="min-w-0 block">
+            <span className="block text-[13px] font-semibold leading-tight" style={{ color: 'var(--ink)' }}>
+              {item.label}
+            </span>
+            <span className="block text-[11px] leading-tight mt-0.5 truncate text-gray-400">{item.summary}</span>
+          </span>
+        </button>
+        <button type="button" onClick={onToggle}
+          aria-label={open ? 'Hide details' : 'Show details'}
+          className="im-consent-hit px-3 flex items-center justify-center"
+          style={{ borderLeft: `1px solid ${inner}` }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round"
+            className="shrink-0 transition-transform"
+            style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+      </div>
+      {open && (
+        <div className="px-3.5 pb-3 pt-2.5" style={{ borderTop: `1px solid ${inner}` }}>
+          <p className="text-[12px] leading-relaxed text-gray-500">{item.details}</p>
+        </div>
+      )}
+    </div>
+  )
 }
 
 const STEPS = ['Documents', 'Payment plan', 'Payment', 'Subjectivities']
@@ -323,6 +453,13 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   const [signMethod, setSignMethod] = useState('esign')
   const [insuredEmail, setInsuredEmail] = useState('')
   const [attested, setAttested] = useState(false)
+  /* What the fourth layout asks for, which is GL-BOP's: who to send the
+     policy to, and the acknowledgments that stand in for a signature. */
+  const [glContact, setGlContact] = useState({ firstName: '', lastName: '', email: '' })
+  const [glConsents, setGlConsents] = useState({})
+  const [glTermsOpen, setGlTermsOpen] = useState(false)
+  const [glDetails, setGlDetails] = useState({})
+  const [glTried, setGlTried] = useState(false)
 
   const grandTotal = fees?.total ?? premium
   const chosen = PLANS.find(p => p.id === plan) || PLANS[0]
@@ -515,6 +652,17 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
     const pctLabel = `${Math.round(share * 100)}% down`
     const feesToday = Math.round(totalFees * share * 100) / 100
     const premiumToday = Math.round((dueToday - feesToday) * 100) / 100
+
+    const glList = GL_CONSENTS(svcFee)
+    const glAccepted = glList.filter(c => glConsents[c.key]).length
+    const glAllDone = glAccepted === glList.length
+    const glContactIn = !!(glContact.firstName && glContact.lastName && glContact.email)
+    const glCanPay = glAllDone && glContactIn
+    const glSetContact = (k) => (v) => setGlContact(c => ({ ...c, [k]: v }))
+    const glToggleAll = () => {
+      const next = !glAllDone
+      setGlConsents(Object.fromEntries(glList.map(c => [c.key, next])))
+    }
 
     /* The muted label takes the gray-500 class rather than its hex: the
        dark shim lifts the class to #D1D5DB, and a literal #6B7280 stays
@@ -780,6 +928,47 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                the two charges that will actually appear on the card. ── */}
         {payVariant === 4 && (
           <>
+            {/* GL-BOP opens the screen by reading the quote back: who wrote
+                it, what it costs for the year, and the proposal to send on.
+                It carries no section label — it is the headline, not a
+                field group — so the card is drawn here rather than through
+                FieldGroup. The figure is premium alone; the fees get their
+                own panel below, the way they do there. */}
+            <div className="rounded-xl p-6 text-center"
+              style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
+              <div className="flex items-center justify-center mb-4">
+                {/* The tinted pill without Tag's stroke — a wash and the
+                    name, nothing drawn round it. Tag keeps its border for
+                    everywhere else it is used. */}
+                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em]"
+                  style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.08) 0%, rgba(166,20,195,0.08) 100%)' }}>
+                  <BrandText>{carrier?.name}</BrandText>
+                </span>
+              </div>
+              <div className="flex items-baseline justify-center gap-1 mb-3">
+                <span className="text-4xl font-bold" style={{ color: 'var(--ink)' }}>{money(premium)}</span>
+                <span className="text-sm text-gray-400">/year</span>
+              </div>
+              <button type="button" className="inline-flex items-center gap-1.5 text-[13px] font-semibold hover:underline">
+                {/* The icon takes its own gradient def rather than
+                    currentColor: the label beside it fills its text with
+                    transparent, and currentColor would inherit that. */}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <defs>
+                    <linearGradient id="glProposalG" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#5C2ED4" className="im-brand-stop-a" />
+                      <stop offset="100%" stopColor="#A614C3" className="im-brand-stop-b" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="url(#glProposalG)" />
+                  <polyline points="14 2 14 8 20 8" stroke="url(#glProposalG)" />
+                  <line x1="12" y1="11" x2="12" y2="17" stroke="url(#glProposalG)" />
+                  <polyline points="9 14 12 17 15 14" stroke="url(#glProposalG)" />
+                </svg>
+                <span className="text-gradient">Download Quote Proposal</span>
+              </button>
+            </div>
+
             <FieldGroup label="Payment plan">
               {/* Two up on a narrow screen, four across once there is room —
                   the cards carry two figures each and get cramped below that. */}
@@ -903,6 +1092,90 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               </div>
             </FieldGroup>
 
+            <FieldGroup label="Insured contact">
+              {/* Where the policy and its documents go. Errors only after a
+                  pay has been attempted, so the form does not open shouting
+                  at fields nobody has reached yet. */}
+              <div className="space-y-4">
+                <FormGrid>
+                  <Input label="First Name" required value={glContact.firstName}
+                    onChange={glSetContact('firstName')} placeholder="First name"
+                    error={glTried && !glContact.firstName} />
+                  <Input label="Last Name" required value={glContact.lastName}
+                    onChange={glSetContact('lastName')} placeholder="Last name"
+                    error={glTried && !glContact.lastName} />
+                </FormGrid>
+                <Input label="Email" required type="email" value={glContact.email}
+                  onChange={glSetContact('email')} placeholder="name@company.com"
+                  error={glTried && !glContact.email} />
+              </div>
+            </FieldGroup>
+
+            {/* Six acknowledgments behind one row: accept them together, or
+                open the panel and take them one at a time with the full text
+                under each. */}
+            <div className={`rounded-xl overflow-hidden ${glAllDone ? 'im-choice-on' : ''}`}
+              style={glAllDone ? undefined : { background: 'var(--surface-card)', border: '1.5px solid var(--line)' }}>
+              <div className="flex items-stretch">
+                <button type="button" onClick={glToggleAll}
+                  className="im-consent-hit flex-1 flex items-center gap-3 px-4 py-3 text-left min-w-0">
+                  <span className="w-5 h-5 rounded flex items-center justify-center shrink-0 transition"
+                    style={{
+                      background: glAllDone ? BRAND_GRADIENT : 'var(--surface-card)',
+                      border: glAllDone ? '1.5px solid transparent' : '1.5px solid var(--line-strong)',
+                    }}>
+                    {glAllDone && (
+                      <svg width="11" height="11" viewBox="0 0 10 10" fill="none">
+                        <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="min-w-0 block">
+                    <span className="block text-[13px] font-semibold truncate" style={{ color: 'var(--ink)' }}>
+                      {glAllDone
+                        ? 'All acknowledgments accepted'
+                        : `Accept all ${glList.length} acknowledgments`}
+                    </span>
+                    <span className="block text-[11px] truncate text-gray-400">
+                      {glAllDone
+                        ? "You're good to pay."
+                        : glAccepted > 0
+                          ? `${glAccepted} of ${glList.length} accepted — tap to accept the rest.`
+                          : 'Tap to accept all, or expand to review each.'}
+                    </span>
+                  </span>
+                </button>
+                <button type="button" onClick={() => setGlTermsOpen(o => !o)}
+                  aria-label={glTermsOpen ? 'Hide details' : 'Show details'}
+                  className="im-consent-hit px-3 flex items-center justify-center"
+                  style={{ borderLeft: `1px solid ${glAllDone ? 'rgba(92,46,212,0.18)' : 'var(--line-soft)'}` }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"
+                    strokeLinecap="round" strokeLinejoin="round"
+                    className="shrink-0 transition-transform"
+                    style={{ transform: glTermsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+              </div>
+              {glTermsOpen && (
+                <div className="px-4 pb-4 pt-3"
+                  style={{ borderTop: `1px solid ${glAllDone ? 'rgba(92,46,212,0.18)' : 'var(--line-soft)'}` }}>
+                  <div className="space-y-2.5">
+                    {glList.map(c => (
+                      <GlConsentRow
+                        key={c.key}
+                        item={c}
+                        checked={!!glConsents[c.key]}
+                        onChange={val => setGlConsents(prev => ({ ...prev, [c.key]: val }))}
+                        open={!!glDetails[c.key]}
+                        onToggle={() => setGlDetails(prev => ({ ...prev, [c.key]: !prev[c.key] }))}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* No card fields on the page: GL-BOP hands the card to the
                 processor's own dialog, so paying opens the disclosure here
                 rather than validating a number typed above it. */}
@@ -915,9 +1188,21 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                 <span className={`im-chip ${paid ? 'im-chip-good' : 'im-chip-muted'}`}>
                   {paid ? 'Paid' : 'Not yet paid'}
                 </span>
-                <PrimaryButton onClick={() => setAuthorising(true)}>Pay {money2(dueToday)}</PrimaryButton>
+                <PrimaryButton
+                  onClick={() => { if (!glCanPay) { setGlTried(true); return } setAuthorising(true) }}
+                  disabled={false}
+                >
+                  Pay {money2(dueToday)}
+                </PrimaryButton>
               </div>
             </div>
+            {glTried && !glCanPay && (
+              <p className="text-[11.5px] text-right text-gray-400 -mt-2">
+                {!glContactIn
+                  ? 'The insured contact is needed before the card is charged.'
+                  : `${glList.length - glAccepted} acknowledgment${glList.length - glAccepted === 1 ? '' : 's'} still to accept.`}
+              </p>
+            )}
           </>
         )}
 

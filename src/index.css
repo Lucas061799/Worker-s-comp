@@ -1484,3 +1484,10 @@ html[data-dark="true"] body .print-btn-text {
   border-color: rgba(167,139,250,0.55) !important;
   box-shadow: 0 0 0 2px rgba(167,139,250,0.16) !important;
 }
+
+/* The hit areas inside GL-BOP's acknowledgment rows. They sit on a card
+   rather than the page, so the hover is a wash over whatever is beneath
+   them — black in light, white in dark — not a colour of its own. */
+.im-consent-hit { background: transparent; transition: background 140ms; }
+.im-consent-hit:hover { background: rgba(0,0,0,0.02); }
+[data-dark="true"] .im-consent-hit:hover { background: rgba(255,255,255,0.05); }
