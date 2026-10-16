@@ -63,11 +63,14 @@ function Bolt() {
   )
 }
 
-export default function CrossSell({ onQuote }) {
+/* `bare` drops the card chrome and the side padding: inside a dialog the
+   panel is already the card, and a second border around the same content
+   reads as a box in a box. */
+export default function CrossSell({ onQuote, bare = false }) {
   return (
     <div
-      className="screen-only rounded-2xl px-4 md:px-10 py-6 md:py-8"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }}
+      className={bare ? '' : 'screen-only rounded-2xl px-4 md:px-10 py-6 md:py-8'}
+      style={bare ? undefined : { background: 'var(--surface-card)', border: '1px solid var(--line-soft)' }}
     >
       <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-1.5 mb-2">
