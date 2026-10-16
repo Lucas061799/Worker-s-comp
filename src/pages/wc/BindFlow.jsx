@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Input, FormGrid, Checkbox, Select } from '../../components/FormField'
+import { Input, FormGrid, Checkbox, Select, DateInput } from '../../components/FormField'
 import {
   BRAND_GRADIENT,
   Modal,
@@ -9,6 +9,8 @@ import {
   SectionLabel,
   StepNav,
   InfoPanel,
+  QuestionCard,
+  YesNo,
 } from '../../components/wc/primitives'
 
 const money = (n) => '$' + Math.round(n).toLocaleString()
@@ -22,6 +24,15 @@ const PLANS = [
   { id: '2pay',   name: '2-Pay',   downPct: 0.50, installments: 1 },
   { id: 'annual', name: 'Annual',  downPct: 1,    installments: 0 },
 ]
+
+const CB_INSTALMENT_FEE = 10
+const CB_INSTALMENT_SHARE = 0.326
+
+/* The form stores an ISO date; CBIC's date field shows MM/DD/YYYY. */
+function isoToUs(iso) {
+  const [y, m, d] = String(iso).split('-')
+  return y && m && d ? `${m}/${d}/${y}` : ''
+}
 
 /* Three treatments of the payment step, offered so the shape can be chosen
    by looking at it rather than described. */
@@ -216,6 +227,15 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   const [payVariant, setPayVariant] = useState(1)
   const [bill, setBill] = useState('direct')
   const [payBy, setPayBy] = useState('complete')
+  /* What the third layout asks for. It is CBIC's screen, so these are its
+     fields, not this flow's: the step is reviewed and signed here rather
+     than paid for. */
+  const [cbEffective, setCbEffective] = useState(effectiveDate ? isoToUs(effectiveDate) : '')
+  const [cbReview, setCbReview] = useState('no')
+  const [cbInstalment, setCbInstalment] = useState('ten-pay')
+  const [signMethod, setSignMethod] = useState('esign')
+  const [insuredEmail, setInsuredEmail] = useState('')
+  const [attested, setAttested] = useState(false)
 
   const grandTotal = fees?.total ?? premium
   const chosen = PLANS.find(p => p.id === plan) || PLANS[0]
@@ -229,6 +249,14 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   }
   const { down, inst: perInstallment } = amountsFor(chosen)
   const dueToday = down
+
+  /* CBIC's own schedule: a $10 fee per instalment, and the instalments
+     carrying 32.6% of the financed total — back-solved from its worked
+     example, and carried over here unchanged. */
+  const cbOnePay = grandTotal + CB_INSTALMENT_FEE
+  const cbFinanced = grandTotal + CB_INSTALMENT_FEE * 10
+  const cbInstalmentAmt = Math.round((cbFinanced * CB_INSTALMENT_SHARE / 9) * 100) / 100
+  const cbDown = Math.round((cbFinanced - cbInstalmentAmt * 9) * 100) / 100
 
   const subjectivities = SUBJECTIVITIES_BY_CARRIER[carrier?.id] ?? []
   const allDocsIn = required.every(d =>
@@ -453,21 +481,40 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
 
         {/* ── Layout 3: CBIC's — the premium read back, then billing chosen
                as a card that opens its own questions ── */}
+        {/* ── Layout 3: CBIC's screen, transcribed. Its own two sections,
+               its own copy, its own choices — the premium ledger and the
+               card fields of the other two do not appear here, because they
+               do not appear there. ── */}
         {payVariant === 3 && (
           <>
             <div>
-              <SectionLabel>Step 1: Review the premium</SectionLabel>
-              <div className="im-field-card rounded-xl p-5 sm:p-6"
-                style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-                <Ledger />
-                <p className="text-[11.5px] text-gray-400 mt-3">
-                  Read-only — to change these amounts, go back to the quote.
-                </p>
-              </div>
+              <SectionLabel>Step 1: Review / Edit the Application</SectionLabel>
+              <FieldGroup>
+                <div className="flex flex-wrap items-start gap-x-10 gap-y-5">
+                  <DateInput
+                    label="Effective Date"
+                    required
+                    value={cbEffective}
+                    onChange={setCbEffective}
+                    className="w-[220px]"
+                  />
+                  <div>
+                    <label className="block text-[13px] font-semibold text-gray-600 mb-1.5 tracking-wide">
+                      Review Application:
+                    </label>
+                    {/* The pills are shorter than the date field, so they sit
+                        centred in a box of the same height rather than riding
+                        high beside it. */}
+                    <div className="h-[42px] flex items-center">
+                      <YesNo value={cbReview} onChange={setCbReview} name="Review application" />
+                    </div>
+                  </div>
+                </div>
+              </FieldGroup>
             </div>
 
             <div>
-              <SectionLabel>Step 2: Select payment and request to bind</SectionLabel>
+              <SectionLabel>Step 2: Select Payment and Request to Bind</SectionLabel>
               <div className="space-y-2.5">
                 <ChoiceCard
                   selected={bill === 'direct'}
@@ -475,90 +522,129 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                   label={
                     <span className="inline-flex items-center flex-wrap gap-x-2 gap-y-1">
                       Direct Bill
-                      <span className="px-2 py-[3px] rounded-full text-[8.5px] font-bold leading-none tracking-[0.12em] force-white-text -translate-y-px"
+                      <span className="px-2 py-[3px] rounded-full text-[8.5px] font-bold leading-none tracking-[0.12em] -translate-y-px"
                         style={{ background: BRAND_GRADIENT, color: 'white' }}>
                         RECOMMENDED
                       </span>
                     </span>
                   }
-                  detail="The carrier bills the insured. $10 instalment fee is added per payment."
+                  detail="The carrier bills the insured, with 1 pay or 10 pay options. $10 fee added per installment"
                 >
-                  <ChoiceGroup title="Select instalment options">
-                    {PLANS.map(p => {
-                      const { down: d, inst: each } = amountsFor(p)
-                      return (
-                        <ChoiceRadio
-                          key={p.id}
-                          checked={plan === p.id}
-                          onChange={() => setPlan(p.id)}
-                          label={p.installments
-                            ? `${p.installments} payment${p.installments === 1 ? '' : 's'} of ${money2(each)} with ${money2(d)} down`
-                            : `One payment of ${money2(d)}`}
-                        />
-                      )
-                    })}
+                  <ChoiceGroup title="Select installment options">
+                    <ChoiceRadio
+                      checked={cbInstalment === 'one-pay'}
+                      onChange={() => setCbInstalment('one-pay')}
+                      label={`One payment of ${money2(cbOnePay)}`}
+                    />
+                    <ChoiceRadio
+                      checked={cbInstalment === 'ten-pay'}
+                      onChange={() => setCbInstalment('ten-pay')}
+                      label={`9 payments of ${money2(cbInstalmentAmt)} with ${money2(cbDown)} down`}
+                    />
                   </ChoiceGroup>
 
                   <ChoiceGroup title="Choose how to pay">
                     <ChoiceRadio
                       checked={payBy === 'complete'}
                       onChange={() => setPayBy('complete')}
-                      label="Complete payment for the applicant"
+                      label="Complete payment for Applicant"
                     />
                     <ChoiceRadio
                       checked={payBy === 'send'}
                       onChange={() => setPayBy('send')}
-                      label="Send to the applicant for payment"
-                      note="They receive a link; the policy binds once it is paid."
+                      label="Send to Applicant for payment"
                     />
                   </ChoiceGroup>
-
-                  {payBy === 'complete' && (
-                    <div className="space-y-4 mt-1">
-                      <Input label="Card number" required value={card.number}
-                        onChange={v => setCard(c => ({ ...c, number: v }))}
-                        placeholder="4242 4242 4242 4242" digits maxLength={16}
-                        error={showErrors && !cardOk} />
-                      <Input label="Expiration" required value={card.exp}
-                        onChange={v => setCard(c => ({ ...c, exp: v }))}
-                        placeholder="MM / YY" maxLength={7}
-                        error={showErrors && !cardOk} />
-                    </div>
-                  )}
                 </ChoiceCard>
 
                 <ChoiceCard
                   selected={bill === 'agency'}
                   onSelect={() => setBill('agency')}
                   label="Agency Bill"
-                  detail="The agency bills the insured and collects the premium."
+                  detail="The agency bills the insured and collects premium."
                 />
               </div>
+            </div>
 
-              <div className="flex items-center gap-3 mt-4 flex-wrap">
-                <PrimaryButton
-                  onClick={() => {
-                    if (bill === 'direct' && payBy === 'complete') { pay(); return }
-                    setStep(3)
-                  }}
-                  disabled={bill === 'direct' && payBy === 'complete' && !cardOk}
+            <div>
+              <SectionLabel>Signature</SectionLabel>
+              <p className="text-[12px] text-gray-400 mb-3">
+                The application has to be signed by the insured before it binds.
+              </p>
+
+              <div className="space-y-2.5">
+                <ChoiceCard
+                  selected={signMethod === 'esign'}
+                  onSelect={() => setSignMethod('esign')}
+                  label="eSign"
+                  detail="(We will send the client an electronic signature request)"
                 >
-                  {bill === 'direct' && payBy === 'complete'
-                    ? `Pay ${money2(dueToday)}`
-                    : 'Request to bind'}
-                </PrimaryButton>
-                <span className="text-[12px] text-gray-500">
-                  {bill === 'agency'
-                    ? 'The agency collects the premium — nothing is charged here.'
-                    : payBy === 'send'
-                      ? 'A payment link goes to the insured.'
-                      : `${money2(dueToday)} due today.`}
-                </span>
+                  <div className="sm:max-w-sm">
+                    <Input
+                      label="Insured's email"
+                      required
+                      value={insuredEmail}
+                      onChange={setInsuredEmail}
+                      placeholder="name@company.com"
+                    />
+                  </div>
+                </ChoiceCard>
+
+                <ChoiceCard
+                  selected={signMethod === 'upload'}
+                  onSelect={() => setSignMethod('upload')}
+                  label="Upload or email signed application"
+                  detail="(You will collect the manual signature and upload the signed application)"
+                >
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-2 h-10 px-5 rounded-xl text-[13px] font-semibold transition hover:opacity-90 force-white-text"
+                    style={{ background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
+                  >
+                    Download Binding Application
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" />
+                    </svg>
+                  </button>
+                </ChoiceCard>
               </div>
+
+              {/* The attestation is the last thing asked for, so it gets a
+                  card of its own rather than sitting loose under the
+                  signature choices. */}
+              <QuestionCard className="mt-5">
+                <Checkbox
+                  label="As an agent, I agree that information entered in this application is correct to my knowledge."
+                  checked={attested}
+                  onChange={setAttested}
+                  align="start"
+                />
+                {/* Indented past the box and its gap so the note starts where
+                    the agreement it qualifies starts. */}
+                <p className="text-xs text-gray-400 mt-1 pl-[28px]">
+                  {signMethod === 'upload'
+                    ? 'Nothing binds until the signed application is checked.'
+                    : 'Nothing binds until the insured signs.'}
+                </p>
+              </QuestionCard>
+
+              <button
+                type="button"
+                disabled={!attested}
+                onClick={() => attested && setStep(3)}
+                className="mt-5 inline-flex items-center gap-2 h-10 px-6 rounded-xl text-sm font-bold transition disabled:cursor-not-allowed"
+                style={attested
+                  ? { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
+                  : { background: 'var(--fill-disabled)', color: '#9CA3AF' }}
+              >
+                Request to Bind
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </>
         )}
-
         <StepNav onBack={back} />
 
         {/* A demo control, not part of the flow: three treatments of this one
