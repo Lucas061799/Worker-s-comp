@@ -186,11 +186,7 @@ function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee 
     </div>
   )
   return (
-    /* One white panel, the way the left rail is one white panel — the
-       heading, the progress and the figures are the same surface rather
-       than a card floating on the page beneath a loose title. */
-    <div className="rounded-2xl p-5"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
+    <div>
       <h3 className="text-base font-bold text-navy">Quote in Progress</h3>
       <div className="flex items-center justify-between gap-3 mt-1.5">
         <span className="text-[11.5px] text-gray-400">All progress auto-saved</span>
@@ -570,7 +566,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           /* CBIC keeps the price beside the screen that commits to it, so
              this layout carries its rail. The other two do not — the figures
              are the content of their own panels. */
-          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-start">
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-0 xl:items-stretch">
           <div className="flex-1 min-w-0 space-y-6">
             <div>
               <SectionLabel>Step 1: Review / Edit the Application</SectionLabel>
@@ -730,7 +726,11 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
             </div>
           </div>
 
-          <aside className="w-full xl:w-[300px] shrink-0">
+          {/* A column, not a card: white to the edges and the full height of
+              the step, with a hairline down its left — the way the step rail
+              on the other side is drawn. */}
+          <aside className="w-full xl:w-[316px] shrink-0 rounded-2xl xl:rounded-none p-5 xl:pl-6 xl:-my-5 xl:py-10"
+            style={{ background: 'var(--surface-card)', border: '1px solid var(--line)', borderWidth: '1px' }}>
             <QuoteRail
               carrier={carrier}
               insured={insuredName}
