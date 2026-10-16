@@ -293,7 +293,10 @@ main.wc-surface-white .im-step-back { background: var(--surface-card) !important
   background: var(--surface-card) !important;
   border-color: var(--line-strong) !important;
 }
-main.wc-surface-white .field-fill:hover { border-color: #9CA3AF !important; }
+/* No hover on the field's edge. CBIC changes a fill under the pointer and
+   never a stroke, and a field that darkens its border on the way past says
+   "you are over me" in the same language the focus ring uses for "you are
+   in me". The ring below is the only edge that moves. */
 main.wc-surface-white .field-fill:focus,
 main.wc-surface-white .field-fill:focus-visible {
   border-color: rgba(124,58,237,0.45) !important;
@@ -686,7 +689,6 @@ button.force-white-text,
   background: transparent !important;
 }
 [data-dark="true"] button.border-gray-200:hover {
-  border-color: rgba(166,20,195,0.6) !important;
   background: linear-gradient(88.09deg, rgba(92,46,212,0.15) 0%, rgba(166,20,195,0.15) 100%) !important;
   color: #FFFFFF !important;
 }
@@ -948,7 +950,7 @@ button.force-white-text,
   border: 1.5px solid var(--line);
   transition: border-color 140ms ease, background 140ms ease;
 }
-.im-pick-row:hover { border-color: rgba(92,46,212,0.35); background: rgba(92,46,212,0.03); }
+.im-pick-row:hover { background: rgba(92,46,212,0.03); }
 [data-dark="true"] .im-pick-row,
 [data-dark="true"] .bop-page .im-pick-row {
   background: rgba(255,255,255,0.04) !important;
@@ -956,7 +958,6 @@ button.force-white-text,
 }
 [data-dark="true"] .im-pick-row:hover,
 [data-dark="true"] .bop-page .im-pick-row:hover {
-  border-color: rgba(167,139,250,0.45) !important;
   background: rgba(167,139,250,0.08) !important;
 }
 
@@ -965,7 +966,7 @@ button.force-white-text,
    for — the facts behind it are reference, not a decision. */
 .im-tile-chevron { color: #6B7280; border: 1px solid var(--line-strong); }
 .im-tile-chevron:hover {
-  background: var(--fill-subtle); border-color: #9CA3AF; color: #374151;
+  background: var(--fill-subtle); color: #374151;
 }
 /* Matching the blanket dark `.border` shim's weight so the ring survives it. */
 [data-dark="true"] .im-tile-chevron,
@@ -975,7 +976,6 @@ button.force-white-text,
 [data-dark="true"] .im-tile-chevron:hover,
 [data-dark="true"] .bop-page .im-tile-chevron:hover {
   background: rgba(255,255,255,0.08) !important;
-  border-color: rgba(255,255,255,0.30) !important;
   color: #D1D5DB !important;
 }
 
@@ -1395,7 +1395,7 @@ button.force-white-text,
 .im-sub-stop-a { stop-color: #5C2ED4; }
 .im-sub-stop-b { stop-color: #A614C3; }
 .im-sub-print { border: 1px solid #E5E7EB; background: #FFFFFF; }
-.im-sub-print:hover { background: rgba(92,46,212,0.06); border-color: rgba(92,46,212,0.3); }
+.im-sub-print:hover { background: rgba(92,46,212,0.06); }
 [data-dark="true"] .bop-page .im-sub-card,
 [data-dark="true"] .im-sub-card  { background: #1A1E38 !important; border-color: rgba(255,255,255,0.06) !important; }
 [data-dark="true"] .im-sub-rule  { border-top-color: rgba(255,255,255,0.06) !important; }
@@ -1478,7 +1478,6 @@ html[data-dark="true"] body .print-btn-text {
   background: rgba(255,255,255,0.06) !important;
   border-color: var(--line-strong) !important;
 }
-[data-dark="true"] main.wc-surface-white .field-fill:hover { border-color: rgba(255,255,255,0.24) !important; }
 [data-dark="true"] main.wc-surface-white .field-fill:focus,
 [data-dark="true"] main.wc-surface-white .field-fill:focus-visible {
   border-color: rgba(167,139,250,0.55) !important;
