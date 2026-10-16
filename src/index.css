@@ -939,6 +939,27 @@ button.force-white-text,
 .im-rule-brand { border-top: 1px solid rgba(92,46,212,0.16); }
 [data-dark="true"] .im-rule-brand { border-top-color: rgba(167,139,250,0.30) !important; }
 
+/* A row that is chosen, not typed into — the payment plans. It used to wear
+   `field-fill`, which is the text-field surface, so it took the field's
+   --line-strong edge at rest and the field's grey hover: an input's
+   behaviour on something that is really a card. */
+.im-pick-row {
+  background: var(--surface-card);
+  border: 1.5px solid var(--line);
+  transition: border-color 140ms ease, background 140ms ease;
+}
+.im-pick-row:hover { border-color: rgba(92,46,212,0.35); background: rgba(92,46,212,0.03); }
+[data-dark="true"] .im-pick-row,
+[data-dark="true"] .bop-page .im-pick-row {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+[data-dark="true"] .im-pick-row:hover,
+[data-dark="true"] .bop-page .im-pick-row:hover {
+  border-color: rgba(167,139,250,0.45) !important;
+  background: rgba(167,139,250,0.08) !important;
+}
+
 /* The disclosure on a carrier tile: a hairline ring, so it reads as
    something to press rather than a stray mark. Quiet until it is reached
    for — the facts behind it are reference, not a decision. */

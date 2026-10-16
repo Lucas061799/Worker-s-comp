@@ -398,6 +398,24 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
         </FieldGroup>
 
         <StepNav onBack={back} onContinue={() => setStep(1)} canContinue={allDocsIn} />
+
+        {/* A demo control, not part of the flow: three treatments of the
+            payment step. It is chosen here, on the way in, so the shape is
+            set before the flow is walked rather than swapped underneath it. */}
+        <div className="pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
+          <div style={{ width: 340 }}>
+            <Select
+              label="Payment layout"
+              wideMenu
+              options={PAY_LAYOUTS}
+              value={String(payVariant)}
+              onChange={v => onPayVariantChange && onPayVariantChange(Number(v))}
+            />
+          </div>
+          <p className="text-[11px] text-gray-400 mt-2">
+            Demo only — the figures and the arithmetic are the same in all three.
+          </p>
+        </div>
       </div>
     )
   }
@@ -424,10 +442,15 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                      The chosen one used --surface-soft and the rest were
                      transparent, which is the panel's own colour either way:
                      four rows that were not surfaces at all, only edges. */
-                  className={`w-full text-left rounded-xl px-4 py-3.5 flex items-center gap-3 transition field-fill ${on ? 'im-edge-brand' : ''}`}
-                  style={{ border: `1.5px solid ${on ? '' : 'var(--line)'}` }}>
-                  <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${on ? 'yn-ring' : 'yn-off-ring'}`}>
-                    {on && <span className="w-1.5 h-1.5 rounded-full yn-dot" />}
+                  className={`w-full text-left rounded-xl px-4 py-3.5 flex items-center gap-3 transition ${on ? 'im-choice-on' : 'im-pick-row'}`}>
+                  {/* The same mark the bind cards use: filled when chosen,
+                      with a white centre. */}
+                  <span className="w-4 h-4 rounded-full shrink-0 flex items-center justify-center"
+                    style={{
+                      border: on ? 'none' : '2px solid var(--line-strong)',
+                      background: on ? BRAND_GRADIENT : 'transparent',
+                    }}>
+                    {on && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block text-[13px] font-semibold" style={{ color: 'var(--ink)' }}>{p.name}</span>
@@ -731,24 +754,6 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
           </>
         )}
         <StepNav onBack={back} />
-
-        {/* A demo control, not part of the flow: three treatments of this one
-            step so the shape can be chosen by looking at it. The figures and
-            the arithmetic are the same in all three. */}
-        <div className="pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
-          <div style={{ width: 340 }}>
-            <Select
-              label="Payment layout"
-              wideMenu
-              options={PAY_LAYOUTS}
-              value={String(payVariant)}
-              onChange={v => onPayVariantChange && onPayVariantChange(Number(v))}
-            />
-          </div>
-          <p className="text-[11px] text-gray-400 mt-2">
-            Demo only — the figures and the arithmetic are the same in all three.
-          </p>
-        </div>
 
         {authorising && (
           <Modal
