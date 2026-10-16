@@ -701,6 +701,9 @@ owner_involved: 'yes',
                       effectiveDate={formData.pageZero?.effectiveDate}
                       onBack={() => setBinding(false)}
                       onBound={handleBound}
+                      insuredName={formData.business?.name}
+                      brokerFee={formData.bind?.brokerFee ?? ''}
+                      onBrokerFee={v => updateFormData('bind', { brokerFee: v })}
                     />
                   )}
                 </div>

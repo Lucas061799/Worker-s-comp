@@ -10,6 +10,7 @@ import {
   StepNav,
   InfoPanel,
   QuestionCard,
+  CarrierLogo,
   YesNo,
 } from '../../components/wc/primitives'
 
@@ -171,6 +172,81 @@ function ChoiceRadio({ checked, onChange, label, note }) {
   )
 }
 
+/* CBIC's right-hand rail: what the policy costs, kept beside the screen
+   that commits to it, with the broker fee editable from here. */
+function QuoteRail({ carrier, insured, premium, service, brokerFee, onBrokerFee }) {
+  const fee = Number(String(brokerFee ?? '').replace(/\D/g, '')) || 0
+  const gross = premium + service
+  const totalDue = gross + fee
+  const Row = ({ label, value, bold }) => (
+    <div className="flex items-center justify-between gap-3 py-1.5">
+      <span className={`text-[12.5px] ${bold ? 'font-bold' : ''}`}
+        style={{ color: bold ? 'var(--ink)' : 'var(--ink-2)' }}>{label}</span>
+      <span className="text-[12.5px] font-bold" style={{ color: 'var(--ink)' }}>{value}</span>
+    </div>
+  )
+  return (
+    <div>
+      <h3 className="text-base font-bold text-navy">Quote in Progress</h3>
+      <div className="flex items-center justify-between gap-3 mt-1.5">
+        <span className="text-[11.5px] text-gray-400">All progress auto-saved</span>
+        <span className="text-[11.5px] font-bold text-gradient">75%</span>
+      </div>
+      <div className="im-progress-track h-1.5 rounded-full mt-2 overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: '75%', background: BRAND_GRADIENT }} />
+      </div>
+
+      <div className="rounded-2xl p-5 mt-4"
+        style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
+        <h4 className="text-sm font-bold mb-4" style={{ color: 'var(--ink)' }}>Premium Breakdown</h4>
+
+        <div className="flex items-center gap-3 mb-4">
+          <CarrierLogo carrier={carrier} size={32} />
+          <p className="text-[12px] font-semibold leading-snug min-w-0" style={{ color: 'var(--ink)' }}>
+            {insured || carrier?.name}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <p className="text-[12px] font-semibold" style={{ color: 'var(--ink)' }}>Enter your Broker Fee:</p>
+            <p className="text-[10.5px] text-gray-400">(included in Total Due)</p>
+          </div>
+          <div className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 w-[86px] shrink-0 field-fill"
+            style={{ border: '1px solid var(--line)' }}>
+            <span className="text-[12px] text-gray-400">$</span>
+            <input
+              value={brokerFee ?? ''}
+              onChange={e => onBrokerFee && onBrokerFee(e.target.value.replace(/\D/g, ''))}
+              placeholder="0"
+              className="w-full bg-transparent text-[12.5px] text-right focus:outline-none"
+              style={{ color: 'var(--ink)' }}
+            />
+          </div>
+        </div>
+
+        <Row label="Workers' Comp Premium:" value={money(premium)} />
+        <Row label="BTIS Service Fee:" value={money(service)} />
+        <Row label="Gross Total:" value={money(gross)} bold />
+        <Row label="Broker Fee:" value={money(fee)} />
+        <div className="my-2" style={{ borderTop: '1px solid var(--line)' }} />
+        <Row label="Total Due:" value={money(totalDue)} bold />
+      </div>
+
+      <button
+        type="button"
+        className="w-full mt-3 inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[13px] font-bold transition hover:opacity-90 force-white-text"
+        style={{ background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" />
+        </svg>
+        Download Binding Application
+      </button>
+    </div>
+  )
+}
+
 function DocBox({ title, required, uploaded, onToggle }) {
   return (
     <div>
@@ -206,7 +282,7 @@ function DocBox({ title, required, uploaded, onToggle }) {
   )
 }
 
-export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound }) {
+export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound, insuredName, brokerFee, onBrokerFee }) {
   const [step, setStep] = useState(0)
   const required = DOCS_BY_CARRIER[carrier?.id] ?? []
   const [docs, setDocs] = useState({})
@@ -486,7 +562,11 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                card fields of the other two do not appear here, because they
                do not appear there. ── */}
         {payVariant === 3 && (
-          <>
+          /* CBIC keeps the price beside the screen that commits to it, so
+             this layout carries its rail. The other two do not — the figures
+             are the content of their own panels. */
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 items-start">
+          <div className="flex-1 min-w-0 space-y-6">
             <div>
               <SectionLabel>Step 1: Review / Edit the Application</SectionLabel>
               <FieldGroup>
@@ -643,7 +723,19 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                 </svg>
               </button>
             </div>
-          </>
+          </div>
+
+          <aside className="w-full xl:w-[300px] shrink-0">
+            <QuoteRail
+              carrier={carrier}
+              insured={insuredName}
+              premium={premium}
+              service={fees?.service || 0}
+              brokerFee={brokerFee}
+              onBrokerFee={onBrokerFee}
+            />
+          </aside>
+          </div>
         )}
         <StepNav onBack={back} />
 
