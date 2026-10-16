@@ -735,25 +735,25 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                     : 'Nothing binds until the insured signs.'}
                 </p>
               </QuestionCard>
-
-              <button
-                type="button"
-                disabled={!attested}
-                onClick={() => attested && setStep(3)}
-                className="mt-5 inline-flex items-center gap-2 h-10 px-6 rounded-xl text-sm font-bold transition disabled:cursor-not-allowed"
-                style={attested
-                  ? { background: BRAND_GRADIENT, color: 'white', boxShadow: '0 4px 14px rgba(92,46,212,0.25)' }
-                  : { background: 'var(--fill-disabled)', color: '#9CA3AF' }}
-              >
-                Request to Bind
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
             </div>
           </>
         )}
-        <StepNav onBack={back} />
+        {/* The bind sits in the footer, opposite Back, where every other
+            step puts its primary action. Layouts 1 and 2 advance on being
+            paid instead, from their own Pay button, so they leave it off. */}
+        <StepNav
+          onBack={back}
+          onContinue={payVariant === 3 ? () => setStep(3) : undefined}
+          canContinue={attested}
+          continueLabel={
+            <span className="inline-flex items-center gap-2">
+              Request to Bind
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          }
+        />
 
         {authorising && (
           <Modal
