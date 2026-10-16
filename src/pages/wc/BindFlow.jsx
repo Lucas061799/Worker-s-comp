@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Input, FormGrid, Checkbox } from '../../components/FormField'
+import { Input, FormGrid, Checkbox, Select } from '../../components/FormField'
 import {
   BRAND_GRADIENT,
   Modal,
@@ -21,6 +21,14 @@ const PLANS = [
   { id: '10pay',  name: '10-Pay',  downPct: 0.10, installments: 9 },
   { id: '2pay',   name: '2-Pay',   downPct: 0.50, installments: 1 },
   { id: 'annual', name: 'Annual',  downPct: 1,    installments: 0 },
+]
+
+/* Three treatments of the payment step, offered so the shape can be chosen
+   by looking at it rather than described. */
+const PAY_LAYOUTS = [
+  { value: '1', label: 'Payment 1 — stacked bars' },
+  { value: '2', label: 'Payment 2 — ledger beside the card' },
+  { value: '3', label: "Payment 3 — CBIC's billing cards" },
 ]
 
 /* Documents differ by carrier, and none of them start satisfied: binding is
@@ -556,19 +564,19 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
         {/* A demo control, not part of the flow: three treatments of this one
             step so the shape can be chosen by looking at it. The figures and
             the arithmetic are the same in all three. */}
-        <div className="pt-2" style={{ borderTop: '1px solid var(--line-soft)' }}>
-          <div className="flex items-center gap-2 flex-wrap pt-3">
-            <span className="text-[11px] text-gray-400 mr-1">Layout</span>
-            {[1, 2, 3].map(n => (
-              <button key={n} type="button" onClick={() => setPayVariant(n)}
-                className={`im-chip transition ${payVariant === n ? 'im-chip-brand' : 'im-chip-muted'}`}>
-                Payment {n}
-              </button>
-            ))}
-            <span className="text-[11px] text-gray-400 ml-1">
-              {payVariant === 1 ? 'Stacked bars' : payVariant === 2 ? 'Ledger beside the card' : "CBIC's billing cards"}
-            </span>
+        <div className="pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
+          <div style={{ width: 340 }}>
+            <Select
+              label="Payment layout"
+              wideMenu
+              options={PAY_LAYOUTS}
+              value={String(payVariant)}
+              onChange={v => setPayVariant(Number(v))}
+            />
           </div>
+          <p className="text-[11px] text-gray-400 mt-2">
+            Demo only — the figures and the arithmetic are the same in all three.
+          </p>
         </div>
 
         {authorising && (
