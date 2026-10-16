@@ -9,7 +9,6 @@ import sellMoreBg from '../../assets/sell-more-bg.png'
 import { DemoJump } from '../../components/DemoJump'
 import { premiumForCarrier } from './Indication'
 import CrossSell from '../../components/CrossSell'
-import { Modal, ModalButton } from '../../components/wc/primitives'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -151,16 +150,6 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
 
   useEffect(() => {
     const t = setTimeout(() => setShowConfetti(false), 4500)
-    return () => clearTimeout(t)
-  }, [])
-
-  /* The cross-sell offer arrives as a dialog once the receipt has landed —
-     the moment the agent has finished and the client's details are still
-     warm. It is the same block that stays on the page underneath, so
-     dismissing it loses nothing. */
-  const [crossSellOpen, setCrossSellOpen] = useState(false)
-  useEffect(() => {
-    const t = setTimeout(() => setCrossSellOpen(true), 2200)
     return () => clearTimeout(t)
   }, [])
 
@@ -538,21 +527,6 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                 jungle banner's place: that one's only link led away from the
                 receipt, this one leads to the next sale. */}
             <CrossSell />
-
-      {crossSellOpen && (
-        <Modal
-          width={640}
-          onDismiss={() => setCrossSellOpen(false)}
-          footerAlign="end"
-          footer={
-            <ModalButton variant="secondary" onClick={() => setCrossSellOpen(false)}>
-              Maybe later
-            </ModalButton>
-          }
-        >
-          <CrossSell bare onQuote={() => setCrossSellOpen(false)} />
-        </Modal>
-      )}
 
             <div className="pb-8" />
           </div>

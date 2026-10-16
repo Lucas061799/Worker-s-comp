@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
-  BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoLine, InfoPanel, Tag,
+  BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoLine, InfoPanel,
+  Modal, ModalButton, Tag,
 } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
@@ -71,6 +72,7 @@ export function feesFor(premium, brokerFee = 0) {
    facts that are the same whoever is reading them. */
 function CarrierTile({ carrier, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
+  const [promoOpen, setPromoOpen] = useState(false)
 
   /* The servicing facts, which are the same whoever is reading them. They
      open underneath the tile rather than in a popover over its neighbours:
@@ -159,7 +161,19 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
-              {carrier.promo && <Tag tone="brand">Promo</Tag>}
+              {/* The badge says there is a promotion; it does not say what
+                  one is. Pressing it tells you, rather than leaving the
+                  agent to find out at commission time. */}
+              {carrier.promo && (
+                <button
+                  type="button"
+                  onClick={() => setPromoOpen(true)}
+                  aria-label={`What the ${carrier.name} promotion is`}
+                  className="inline-flex rounded-full transition hover:opacity-80"
+                >
+                  <Tag tone="brand">Promo</Tag>
+                </button>
+              )}
             </div>
 
             {/* Two auto margins — here and above the chips — so a row stays
@@ -190,6 +204,25 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
           </>
         )}
       </div>
+
+      {promoOpen && (
+        <Modal
+          title="Q3 promotion"
+          width={420}
+          onDismiss={() => setPromoOpen(false)}
+          footerAlign="end"
+          footer={<ModalButton onClick={() => setPromoOpen(false)}>Got it</ModalButton>}
+        >
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-2)' }}>
+            <b className="font-semibold text-navy">
+              +2% boosted commission on {carrier.name} binds.
+            </b>{' '}
+            Applies to policies bound with {carrier.name} through BTIS this quarter.
+            Nothing to enrol in — the uplift is applied when the policy binds, on
+            new business and at renewal.
+          </p>
+        </Modal>
+      )}
 
       {open && (
         <dl className="px-5 pt-3.5 pb-4 space-y-2"
