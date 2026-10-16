@@ -13,6 +13,7 @@ import {
   CarrierLogo,
   YesNo,
   BrandText,
+  AlertGlyph,
 } from '../../components/wc/primitives'
 
 const money = (n) => '$' + Math.round(n).toLocaleString()
@@ -171,33 +172,25 @@ const GL_CONSENTS = (service) => [
    — an alert before it is accepted, a check after — so the row changes
    state without changing shape. */
 function GlConsentRow({ item, checked, onChange, open, onToggle }) {
-  const edge = checked ? 'rgba(92,46,212,0.45)' : 'var(--line)'
-  const inner = checked ? 'rgba(92,46,212,0.30)' : 'var(--line-soft)'
+  /* One edge in both states: the rows read as a list of what has to be
+     acknowledged, and nothing about an accepted one is drawn differently
+     from the rest. */
   return (
     <div className="rounded-lg overflow-hidden transition"
-      style={{ background: 'var(--surface-card)', border: `1px solid ${edge}` }}>
+      style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
       <div className="flex items-stretch">
         <button type="button" onClick={() => onChange(!checked)}
           className="im-consent-hit flex-1 flex items-center gap-3 px-3.5 py-3 text-left min-w-0">
           <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
             style={{ background: 'linear-gradient(88.09deg, rgba(92,46,212,0.12) 0%, rgba(166,20,195,0.12) 100%)' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <defs>
-                <linearGradient id={`glConsent-${item.key}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#5C2ED4" className="im-brand-stop-a" />
-                  <stop offset="100%" stopColor="#A614C3" className="im-brand-stop-b" />
-                </linearGradient>
-              </defs>
-              {checked ? (
-                <path d="M5 13l4 4L19 7" stroke={`url(#glConsent-${item.key})`} strokeWidth="2.6" />
-              ) : (
-                <g stroke={`url(#glConsent-${item.key})`} strokeWidth="2.2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </g>
-              )}
-            </svg>
+          {/* One mark in both states — the design system's alert glyph.
+              Accepting a row is said by its edge, which goes brand purple,
+              rather than by swapping the mark underneath it. Drawn by hand
+              as a circle and two <line>s it came out as an empty ring: a
+              gradient stroke resolves against each shape's bounding box,
+              and a vertical line has no width to resolve against.
+              AlertGlyph keeps both strokes in one path, so it paints. */}
+          <AlertGlyph className="w-[13px] h-[13px]" gradient />
           </span>
           <span className="min-w-0 block">
             <span className="block text-[13px] font-semibold leading-tight" style={{ color: 'var(--ink)' }}>
@@ -209,7 +202,7 @@ function GlConsentRow({ item, checked, onChange, open, onToggle }) {
         <button type="button" onClick={onToggle}
           aria-label={open ? 'Hide details' : 'Show details'}
           className="im-consent-hit px-3 flex items-center justify-center"
-          style={{ borderLeft: `1px solid ${inner}` }}>
+          style={{ borderLeft: '1px solid var(--line-soft)' }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"
             strokeLinecap="round" strokeLinejoin="round"
             className="shrink-0 transition-transform"
@@ -219,10 +212,23 @@ function GlConsentRow({ item, checked, onChange, open, onToggle }) {
         </button>
       </div>
       {open && (
-        <div className="px-3.5 pb-3 pt-2.5" style={{ borderTop: `1px solid ${inner}` }}>
+        <div className="px-3.5 pb-3 pt-2.5" style={{ borderTop: '1px solid var(--line-soft)' }}>
           <p className="text-[12px] leading-relaxed text-gray-500">{item.details}</p>
         </div>
       )}
+    </div>
+  )
+}
+
+/* GL-BOP titles a panel from inside it — the label belongs to the card,
+   not to the gap above it. FieldGroup puts the label outside, so the
+   fourth layout's sections are drawn here instead, on the same surface. */
+function GlCard({ label, children, className = '' }) {
+  return (
+    <div className={`im-field-card rounded-xl p-5 sm:p-6 ${className}`}
+      style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+      <SectionLabel className="!mb-3">{label}</SectionLabel>
+      {children}
     </div>
   )
 }
@@ -955,7 +961,9 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                     transparent, and currentColor would inherit that. */}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <defs>
-                    <linearGradient id="glProposalG" x1="0%" y1="0%" x2="100%" y2="0%">
+                    {/* userSpaceOnUse for the same reason — the arrow's
+                        shaft is a zero-width line. */}
+                    <linearGradient id="glProposalG" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0">
                       <stop offset="0%" stopColor="#5C2ED4" className="im-brand-stop-a" />
                       <stop offset="100%" stopColor="#A614C3" className="im-brand-stop-b" />
                     </linearGradient>
@@ -969,7 +977,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               </button>
             </div>
 
-            <FieldGroup label="Payment plan">
+            <GlCard label="Payment plan">
               {/* Two up on a narrow screen, four across once there is room —
                   the cards carry two figures each and get cramped below that. */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1020,9 +1028,9 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                   )
                 })}
               </div>
-            </FieldGroup>
+            </GlCard>
 
-            <FieldGroup label="Fees">
+            <GlCard label="Fees">
               <GlRow label="BTIS Service Fee" value={money2(svcFee)} />
               {/* The broker fee is the one number on this screen the agent
                   sets, so it is typed where it is read rather than in the
@@ -1047,9 +1055,9 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
               <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
                 <GlRow label="Total Fees" value={money2(totalFees)} bold />
               </div>
-            </FieldGroup>
+            </GlCard>
 
-            <FieldGroup label="Payment summary">
+            <GlCard label="Payment summary">
               <InfoPanel lead="Two separate charges">
                 Both go to the same card. BTIS collects its fees; {carrier?.name || 'the carrier'} collects
                 premium.
@@ -1090,9 +1098,9 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                 <span className="text-[13px] font-bold" style={{ color: 'var(--ink-2)' }}>Due today (this card)</span>
                 <span className="text-xl font-bold" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</span>
               </div>
-            </FieldGroup>
+            </GlCard>
 
-            <FieldGroup label="Insured contact">
+            <GlCard label="Insured contact">
               {/* Where the policy and its documents go. Errors only after a
                   pay has been attempted, so the form does not open shouting
                   at fields nobody has reached yet. */}
@@ -1109,7 +1117,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                   onChange={glSetContact('email')} placeholder="name@company.com"
                   error={glTried && !glContact.email} />
               </div>
-            </FieldGroup>
+            </GlCard>
 
             {/* Six acknowledgments behind one row: accept them together, or
                 open the panel and take them one at a time with the full text
