@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import sidebarBg from '../assets/sidebar-bg.png'
 import norbieface from '../assets/norbieface.png'
 import { DemoJump } from './DemoJump'
+import { Select } from './FormField'
+import { PAY_LAYOUTS } from '../pages/wc/BindFlow'
 
 const DARK_JUNGLE_OPACITY = 0.6
 const DARK_BORDER_RIGHT   = '1px solid rgba(255,255,255,0.12)'
@@ -64,6 +66,8 @@ export default function Sidebar({
   onPageZeroClick,
   demoJumps,
   demoActive,
+  payVariant,
+  onPayVariantChange,
 }) {
   const completion = useMemo(() => getCompletion(formData), [formData])
 
@@ -216,6 +220,22 @@ export default function Sidebar({
                 </span>
               </button>
               </div>
+              {/* The payment step draws one of three layouts; the switch sits
+                  under the step it belongs to, and only while that step is
+                  the one on screen. A demo control, like Quick Jump. */}
+              {step.key === 'quote' && isActive && onPayVariantChange && (
+                /* No helper line: the rail is 231px and the nav scrolls,
+                   so the label and the options have to carry it. */
+                <div className="px-3 pt-2 pb-1">
+                  <Select
+                    label="Payment layout"
+                    wideMenu
+                    options={PAY_LAYOUTS}
+                    value={String(payVariant)}
+                    onChange={v => onPayVariantChange(Number(v))}
+                  />
+                </div>
+              )}
             </div>
           )
         })}

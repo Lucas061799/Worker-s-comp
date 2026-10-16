@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Input, FormGrid, Checkbox, Select } from '../../components/FormField'
+import { Input, FormGrid, Checkbox } from '../../components/FormField'
 import {
   BRAND_GRADIENT,
   Modal,
@@ -24,11 +24,12 @@ const PLANS = [
 ]
 
 /* Three treatments of the payment step, offered so the shape can be chosen
-   by looking at it rather than described. */
-const PAY_LAYOUTS = [
-  { value: '1', label: 'Payment 1 — stacked bars' },
-  { value: '2', label: 'Payment 2 — ledger beside the card' },
-  { value: '3', label: "Payment 3 — CBIC's billing cards" },
+   by looking at it rather than described. The switch lives in the rail,
+   under the step it belongs to, with the other demo controls. */
+export const PAY_LAYOUTS = [
+  { value: '1', label: '1 — Stacked bars' },
+  { value: '2', label: '2 — Ledger beside card' },
+  { value: '3', label: "3 — CBIC's cards" },
 ]
 
 /* Documents differ by carrier, and none of them start satisfied: binding is
@@ -195,7 +196,7 @@ function DocBox({ title, required, uploaded, onToggle }) {
   )
 }
 
-export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound }) {
+export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiveDate, onBack, onBound, payVariant = 1 }) {
   const [step, setStep] = useState(0)
   const required = DOCS_BY_CARRIER[carrier?.id] ?? []
   const [docs, setDocs] = useState({})
@@ -211,9 +212,6 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
   /* Bind is the signature, so the terms it stands for are shown before it
      is taken, not after. */
   const [confirming, setConfirming] = useState(false)
-  /* Three treatments of the payment step, switchable on the screen itself so
-     the shape can be chosen by looking at it rather than described. */
-  const [payVariant, setPayVariant] = useState(1)
   const [bill, setBill] = useState('direct')
   const [payBy, setPayBy] = useState('complete')
 
@@ -560,24 +558,6 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
         )}
 
         <StepNav onBack={back} />
-
-        {/* A demo control, not part of the flow: three treatments of this one
-            step so the shape can be chosen by looking at it. The figures and
-            the arithmetic are the same in all three. */}
-        <div className="pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
-          <div style={{ width: 340 }}>
-            <Select
-              label="Payment layout"
-              wideMenu
-              options={PAY_LAYOUTS}
-              value={String(payVariant)}
-              onChange={v => setPayVariant(Number(v))}
-            />
-          </div>
-          <p className="text-[11px] text-gray-400 mt-2">
-            Demo only — the figures and the arithmetic are the same in all three.
-          </p>
-        </div>
 
         {authorising && (
           <Modal
