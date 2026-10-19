@@ -13,7 +13,7 @@ import CoverageHistory from './pages/wc/CoverageHistory'
 import LossDetail from './pages/wc/LossDetail'
 import StateCoverages from './pages/wc/StateCoverages'
 import UnderwritingQuestions from './pages/wc/UnderwritingQuestions'
-import { CARRIERS } from './pages/wc/CarrierSelection'
+import CarrierSelection, { CARRIERS } from './pages/wc/CarrierSelection'
 import Loading, { RATING, FINALIZING, RatingPromo } from './pages/wc/Loading'
 import Locations from './pages/wc/Locations'
 import SubClassCode from './pages/wc/SubClassCode'
@@ -40,7 +40,7 @@ const BASE_STEPS = [
   { id: 9, num: '2c', key: 'locations',   label: 'Locations',              phase: 1, group: 'application', condLocations: true },
   { id: 4, num: '3',  key: 'coverages',   label: 'Coverages',              phase: 1, group: 'application' },
   { id: 5, num: '4',  key: 'questions',   label: 'Credit opportunity',     phase: 1, group: 'application' },
-  { id: 6, num: '5',  key: 'carriers',    label: 'Price indication',       phase: 2, group: 'quote' },
+  { id: 6, num: '5',  key: 'carriers',    label: 'Price indication',       phase: 1, group: 'quote' },
   { id: 7, num: '6',  key: 'carrierflow', label: 'Carrier questions',      phase: 2, group: 'quote' },
   { id: 8, num: '7',  key: 'quote',       label: 'Quote & bind',           phase: 2, group: 'quote' },
 ]
@@ -471,7 +471,7 @@ owner_involved: 'yes',
     locations:   'Locations',
     coverages:   'Coverages',
     questions:   'Credit opportunity',
-    carriers:    'Price indication',
+    carriers:    'Select markets to approach',
     loading:     'Rating',
     finalizing:  'Final price',
     indication:  'Price indication',
@@ -508,9 +508,9 @@ owner_involved: 'yes',
           setAttemptedQuote(true)
           return false
         }}
-        /* There is no market-selection screen any more: continuing from
-           here rates every carrier and lands on the price indication. */
-        onGetIndication={() => { goToStep(6); handleGetIndication() }}
+        /* Continuing lands on the market-selection screen; rating starts
+           from there, once the agent has said which markets to approach. */
+        onGetIndication={() => goToStep(6)}
       />
     ) },
   ]
@@ -643,6 +643,14 @@ owner_involved: 'yes',
                   )}
                   {finalizing && (
                     <Loading plan={FINALIZING} onDone={handleFinalPriceReady} onSkip={handleFinalPriceReady} />
+                  )}
+                  {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carriers' && (
+                    <CarrierSelection
+                      formData={formData}
+                      updateFormData={updateFormData}
+                      onGetIndication={handleGetIndication}
+                      onBack={() => goToStep(5)}
+                    />
                   )}
                   {!rating && !finalizing && !referralStage && showingIndication && (
                     <Indication
