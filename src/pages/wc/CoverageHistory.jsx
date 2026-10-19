@@ -4,6 +4,7 @@ import {
   Segmented,
   YesNo,
   AlertGlyph,
+  CheckGlyph,
   InfoPanel,
 } from '../../components/wc/primitives'
 
@@ -85,20 +86,41 @@ export default function CoverageHistory({ formData, updateFormData }) {
             />
           </PillField>
 
-          {status === 'lapse' && (
-            <FormGrid>
-              <Select
-                label="Reason for lapse"
-                required
-                options={LAPSE_REASONS}
-                value={data.lapseReason}
-                onChange={val => patch({ lapseReason: val })}
-              />
-            </FormGrid>
-          )}
-
+          {/* One grid for all of them, so they pack in order rather than
+              each pair holding a row of its own. A lapse leads with its
+              reason and the odd slot falls at the end; without one, the
+              four fill two rows exactly. The whole set is gated the same
+              way — a new venture and a risk with no prior have no policy
+              to describe. */}
           {hasPriorPolicy && (
             <FormGrid>
+              {status === 'lapse' && (
+                <Select
+                  label="Reason for lapse"
+                  required
+                  options={LAPSE_REASONS}
+                  value={data.lapseReason}
+                  /* Moving off Other drops what was typed under it, so a
+                     changed answer cannot leave its old explanation behind
+                     on the submission. */
+                  onChange={val => patch({
+                    lapseReason: val,
+                    ...(val === 'Other' ? {} : { lapseReasonOther: '' }),
+                  })}
+                />
+              )}
+              {/* Other on its own says nothing an underwriter can use, so
+                  it asks. It lands in the slot beside the reason, which
+                  keeps the row packed. */}
+              {status === 'lapse' && data.lapseReason === 'Other' && (
+                <Input
+                  label="Please specify"
+                  required
+                  value={data.lapseReasonOther}
+                  onChange={val => patch({ lapseReasonOther: val })}
+                  placeholder="Why did coverage lapse?"
+                />
+              )}
               <Select
                 label="How many prior years?"
                 required
@@ -113,11 +135,6 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 onChange={val => patch({ currentCarrier: val })}
                 placeholder="Carrier name"
               />
-            </FormGrid>
-          )}
-
-          {hasPriorPolicy && (
-            <FormGrid>
               <Input
                 label="What is your most recent premium?"
                 required
@@ -125,9 +142,6 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 onChange={val => patch({ currentPremium: val })}
                 placeholder="$"
               />
-              {/* Takes the slot that was standing empty beside the premium.
-                  Gated with the rest: a new venture and a risk with no
-                  prior have no coverage to date. */}
               <DateInput
                 label="Last date of coverage"
                 required
@@ -149,12 +163,19 @@ export default function CoverageHistory({ formData, updateFormData }) {
               placeholder="Briefly describe what the business does day to day (at least 10 words)…"
               rows={3}
             />
-            {/* Satisfied, it is a count rather than a warning — grey, but
-                the same grey the rest of this screen's small print now
-                carries rather than a lighter one. */}
-            <p className="text-[11px] mt-1.5"
-              style={{ color: words >= MIN_WORDS ? '#6B7280' : '#A614C3' }}>
-              {words} word{words === 1 ? '' : 's'} — {MIN_WORDS} minimum
+            {/* Not how many words, only whether there are enough: the
+                running count was a number to do arithmetic on, where the
+                answer wanted is yes or no. The chips are the pair this app
+                already uses for pass and fail, so no new colour appears
+                for this one line. */}
+            <p className="mt-2">
+              <span className={`im-chip ${words >= MIN_WORDS ? 'im-note-pass' : 'im-note-fail'}`}>
+                {words >= MIN_WORDS ? (
+                  <><CheckGlyph className="w-3 h-3" /> Meets the {MIN_WORDS}-word minimum</>
+                ) : (
+                  <><AlertGlyph className="w-3 h-3" /> At least {MIN_WORDS} words</>
+                )}
+              </span>
             </p>
           </div>
         </div>

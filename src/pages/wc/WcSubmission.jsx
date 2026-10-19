@@ -451,7 +451,9 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
 
                   <SectionCard title="Coverage history" isDark={isDark} icon={ICONS.clock}>
                     <Field label="Current status"   value={STATUS_LABELS[history.coverageStatus] || history.coverageStatus} isDark={isDark} />
-                    <Field label="Reason for lapse" value={history.lapseReason} isDark={isDark} />
+                    <Field label="Reason for lapse" value={history.lapseReason === 'Other'
+                      ? (history.lapseReasonOther || 'Other')
+                      : history.lapseReason} isDark={isDark} />
                     <Field label="Prior years"      value={history.priorYears} isDark={isDark} />
                     <Field label="Most recent carrier" value={history.currentCarrier} isDark={isDark} />
                     <Field label="Most recent premium" value={history.currentPremium} isDark={isDark} />

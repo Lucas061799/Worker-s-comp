@@ -1187,10 +1187,29 @@ button.force-white-text,
   background: rgba(245,158,11,0.26) !important; color: #FCD34D !important;
 }
 
-/* A field's own reading of what was typed into it — the ex-mod's credit
-   line. #74C3B7, the design system's second teal, not the darkened ink the
-   panels use for their glyphs — that one carries enough green to read as a
-   different colour. The warn twin already exists as .im-note-warn. */
+/* The pass / fail mark under Description of operations. The colour sits in
+   the hairline and the glyph and the label stays on the neutral ink: the
+   design system's teal as 11px text on its own tint measures 1.84:1, which
+   is not a line anyone can read. This is the treatment the appetite chips
+   were given for the same reason. */
+.im-note-pass { background: var(--surface-card); border: 1px solid rgba(115,201,183,0.55); color: #1F2937; }
+.im-note-pass svg { color: #73C9B7; }
+.im-note-fail { background: var(--surface-card); border: 1px solid rgba(220,38,38,0.40); color: #1F2937; }
+.im-note-fail svg { color: #DC2626; }
+/* At the blanket dark `.border` shim's weight, so the hairlines survive it. */
+[data-dark="true"] .im-note-pass,
+[data-dark="true"] .bop-page .im-note-pass {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(115,201,183,0.45) !important;
+  color: #F9FAFB !important;
+}
+[data-dark="true"] .im-note-fail,
+[data-dark="true"] .bop-page .im-note-fail {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(248,113,113,0.45) !important;
+  color: #F9FAFB !important;
+}
+[data-dark="true"] .im-note-fail svg { color: #FCA5A5 !important; }
 
 
 [data-dark="true"] .im-banner {
