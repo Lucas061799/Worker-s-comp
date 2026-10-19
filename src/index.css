@@ -1040,27 +1040,6 @@ button.force-white-text,
   color: #73C9B7 !important;
 }
 
-/* The appetite check's carrier list. A tonal teal pill vanished against a
-   panel of the same tint, so these are drawn the way the prototype draws
-   them: a white chip on the tint, a teal hairline, and the mark in teal.
-   The label stays on the neutral ink so it is legible at 11px. */
-.im-chip-avail { background: var(--surface-card); border: 1px solid rgba(115,201,183,0.55); color: #1F2937; }
-.im-chip-avail svg { color: #73C9B7; }
-.im-chip-gone  { background: var(--surface-card); border: 1px solid var(--line); color: #9CA3AF; text-decoration: line-through; }
-/* Matching the blanket dark `.border` shim's weight so the teal edge survives it. */
-[data-dark="true"] .im-chip-avail,
-[data-dark="true"] .bop-page .im-chip-avail {
-  background: rgba(255,255,255,0.06) !important;
-  border-color: rgba(115,201,183,0.45) !important;
-  color: #F9FAFB !important;
-}
-[data-dark="true"] .im-chip-gone,
-[data-dark="true"] .bop-page .im-chip-gone {
-  background: rgba(255,255,255,0.04) !important;
-  border-color: rgba(255,255,255,0.12) !important;
-  color: #8B8FA8 !important;
-}
-
 .im-note-warn { color: #B45309; }
 [data-dark="true"] .im-note-warn { color: #FCD34D !important; }
 

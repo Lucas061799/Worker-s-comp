@@ -28,9 +28,9 @@ function FieldHelp({ children }) {
 }
 
 /* Which of the carriers the submission will be shopped to have appetite.
-   Read off the one list Carrier selection uses, so what this screen names
-   and what the agent later sees cannot drift apart. ICW / Zenith is the
-   prototype's standing decline; the real rules land with BRD v2 §7.3,
+   Read off the one list Carrier selection uses, so the count this screen
+   gives and what the agent later sees cannot drift apart. ICW / Zenith is
+   the prototype's standing decline; the real rules land with BRD v2 §7.3,
    alongside DECLINED_APPETITE below. */
 const NO_APPETITE = ['icwzenith']
 
@@ -354,30 +354,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                 {appetite === 'good' && (
                   <InfoPanel
                     tone="good"
-                    footer={
-                      /* One chip per carrier, so "we have a market" is a list
-                         of names rather than a number to take on trust. */
-                      <div className="flex flex-wrap gap-1.5">
-                        {CARRIERS.map(c => {
-                          const no = NO_APPETITE.includes(c.id)
-                          return (
-                            <span
-                              key={c.id}
-                              className={`im-chip ${no ? 'im-chip-gone' : 'im-chip-avail'}`}
-                            >
-                              {!no && (
-                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor"
-                                  strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
-                                  viewBox="0 0 24 24" aria-hidden="true">
-                                  <path d="M5 12l5 5 9-10" />
-                                </svg>
-                              )}
-                              {c.name}
-                            </span>
-                          )
-                        })}
-                      </div>
-                    }
                     lead={<>Good news: {CARRIERS.length - NO_APPETITE.length} of {CARRIERS.length} carriers
                       have appetite for {picked?.code} in {state}.</>}
                     className="mt-3"
