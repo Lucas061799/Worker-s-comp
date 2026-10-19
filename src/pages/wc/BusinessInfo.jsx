@@ -140,6 +140,26 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               placeholder="00-0000000"
               error={err('fein')}
             />
+            {/* The DBA question qualifies the legal name, so it sits
+                directly under it and takes the same two columns rather
+                than running the width of the card. */}
+            <div className="sm:col-span-2">
+              <Checkbox
+                label="Operates under a DBA (doing business as)"
+                checked={!!data.hasDba}
+                onChange={val => updateFormData('business', { hasDba: val, ...(val ? {} : { dbaName: '' }) })}
+              />
+            </div>
+            {data.hasDba && (
+              <Input
+                className="sm:col-span-2"
+                label={fieldLabel('DBA name', { required: true })}
+                value={data.dbaName}
+                onChange={set('dbaName')}
+                placeholder="Name customers know the business by"
+                error={err('dbaName')}
+              />
+            )}
           </div>
 
           {/* What the business is, how long it has been it, and how long the
@@ -192,27 +212,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
                 value={data.motorCarrierNumber}
                 onChange={set('motorCarrierNumber')}
                 placeholder="Permit number"
-              />
-            </FormGrid>
-          )}
-
-          {/* The DBA question qualifies the legal name, so it stands on its
-              own line under the company's identity rather than competing for
-              a column with the website. */}
-          <Checkbox
-            label="Operates under a DBA (doing business as)"
-            checked={!!data.hasDba}
-            onChange={val => updateFormData('business', { hasDba: val, ...(val ? {} : { dbaName: '' }) })}
-          />
-
-          {data.hasDba && (
-            <FormGrid>
-              <Input
-                label={fieldLabel('DBA name', { required: true })}
-                value={data.dbaName}
-                onChange={set('dbaName')}
-                placeholder="Name customers know the business by"
-                error={err('dbaName')}
               />
             </FormGrid>
           )}
