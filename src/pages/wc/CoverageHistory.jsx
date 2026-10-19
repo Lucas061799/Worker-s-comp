@@ -168,14 +168,13 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 answer wanted is yes or no. The chips are the pair this app
                 already uses for pass and fail, so no new colour appears
                 for this one line. */}
-            <p className="mt-2">
-              <span className={`im-chip ${words >= MIN_WORDS ? 'im-note-pass' : 'im-note-fail'}`}>
-                {words >= MIN_WORDS ? (
-                  <><CheckGlyph className="w-3 h-3" /> Meets the {MIN_WORDS}-word minimum</>
-                ) : (
-                  <><AlertGlyph className="w-3 h-3" /> At least {MIN_WORDS} words</>
-                )}
-              </span>
+            <p className={`text-[11px] mt-1.5 flex items-center gap-1.5 text-gray-500 ${
+              words >= MIN_WORDS ? 'im-mark-pass' : 'im-mark-fail'}`}>
+              {words >= MIN_WORDS ? (
+                <><CheckGlyph className="w-3.5 h-3.5 shrink-0" /> Meets the {MIN_WORDS}-word minimum</>
+              ) : (
+                <><AlertGlyph className="w-3.5 h-3.5 shrink-0" /> At least {MIN_WORDS} words</>
+              )}
             </p>
           </div>
         </div>
@@ -205,9 +204,6 @@ export default function CoverageHistory({ formData, updateFormData }) {
               digits
               maxLength={3}
             />
-            <p className="text-xs text-gray-500 mt-1.5">
-              You'll list each claim on Loss history.
-            </p>
           </div>
         )}
       </FieldGroup>

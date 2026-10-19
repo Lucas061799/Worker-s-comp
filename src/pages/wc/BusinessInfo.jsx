@@ -172,7 +172,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               value={data.entityType || 'corp'}
               onChange={set('entityType')}
               error={err('entityType')}
-              help="Sets the owner and officer rules on Coverages."
             />
             <div>
               <Input
@@ -307,9 +306,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
             required
             value={data.additionalLocations || 'no'}
             onChange={set('additionalLocations')}
-            help={data.additionalLocations === 'yes'
-              ? "You'll list each one on the Locations step."
-              : 'Only the physical address above will be used.'}
           />
         </div>
       </FieldGroup>
