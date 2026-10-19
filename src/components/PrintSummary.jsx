@@ -209,6 +209,7 @@ export default function PrintSummary({ formData, visible, onClose, onEdit }) {
                   <Row label="Prior Years" value={hist.priorYears} />
                   <Row label="Most Recent Carrier" value={hist.currentCarrier} />
                   <Row label="Most Recent Premium" value={hist.currentPremium} />
+                  <Row label="Last Date of Coverage" value={hist.lastCoverageDate} />
                   <Row label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
                   {losses.filter(l => l.date).map((l, i) => (
                     <Row key={i} label={`Claim ${i + 1} · ${l.type || ''}`} value={l.amount} />

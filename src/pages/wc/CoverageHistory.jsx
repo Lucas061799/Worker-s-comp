@@ -1,4 +1,4 @@
-import { Input, Select, Textarea, FormGrid } from '../../components/FormField'
+import { Input, Select, Textarea, FormGrid, DateInput } from '../../components/FormField'
 import {
   FieldGroup,
   Segmented,
@@ -113,7 +113,15 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 onChange={val => patch({ currentPremium: val })}
                 placeholder="$"
               />
-              <div />
+              {/* Takes the slot that was standing empty beside the premium.
+                  Gated with the rest: a new venture and a risk with no
+                  prior have no coverage to date. */}
+              <DateInput
+                label="Last date of coverage"
+                required
+                value={data.lastCoverageDate}
+                onChange={val => patch({ lastCoverageDate: val })}
+              />
             </FormGrid>
           )}
 

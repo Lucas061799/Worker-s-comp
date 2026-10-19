@@ -455,6 +455,7 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                     <Field label="Prior years"      value={history.priorYears} isDark={isDark} />
                     <Field label="Most recent carrier" value={history.currentCarrier} isDark={isDark} />
                     <Field label="Most recent premium" value={history.currentPremium} isDark={isDark} />
+                    <Field label="Last date of coverage" value={history.lastCoverageDate} isDark={isDark} />
                     <Field label="Operations"       value={history.operations} isDark={isDark} />
                   </SectionCard>
 
