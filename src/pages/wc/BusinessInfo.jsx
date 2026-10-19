@@ -223,14 +223,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               onChange={set('website')}
               placeholder="e.g. www.sierraridgeplumbing.com"
             />
-            <Input
-              label={fieldLabel('Business phone', { required: true })}
-              type="tel"
-              value={data.businessPhone}
-              onChange={set('businessPhone')}
-              placeholder="(555) 000-0000"
-              error={err('businessPhone')}
-            />
           </FormGrid>
         </div>
       </FieldGroup>
@@ -322,8 +314,20 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
         </div>
       </FieldGroup>
 
-      <FieldGroup label="Contact info">
+      <FieldGroup label="Insured contact info">
         <div className="space-y-5">
+          {/* The business's own number leads: the three fields under it are
+              the person to call, not the company. */}
+          <FormGrid>
+            <Input
+              label={fieldLabel('Business phone', { required: true })}
+              type="tel"
+              value={data.businessPhone}
+              onChange={set('businessPhone')}
+              placeholder="(555) 000-0000"
+              error={err('businessPhone')}
+            />
+          </FormGrid>
           <FormGrid>
             <Input
               label={fieldLabel('First name', { required: true })}
@@ -348,7 +352,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               onChange={set('phone')}
               placeholder="(555) 123-4567"
               error={err('phone')}
-              help="Best number to reach this contact."
             />
             <Input
               label={fieldLabel('Email', { required: true })}
@@ -357,7 +360,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               onChange={set('email')}
               placeholder="e.g. owner@business.com"
               error={err('email')}
-              help="Quotes and policy documents go here."
             />
           </FormGrid>
         </div>
