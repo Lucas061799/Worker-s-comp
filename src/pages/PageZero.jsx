@@ -19,14 +19,6 @@ export const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI'
 /* The prototype's own nine demo codes, verbatim — including 5187, the
    dual-wage twin of 5183 that the Coverages popover tells the agent to
    enter but that was not selectable here. */
-/* The design system's field helper: 11px / 400, 4px under the box. It says
-   what belongs in the field, which an ⓘ only says to whoever thinks to
-   hover it. On the muted grey rather than the sub grey — these lines are
-   meant to be read, not just available. */
-function FieldHelp({ children }) {
-  return <p className="text-[11px] leading-[16.5px] mt-1" style={{ color: '#6B7280' }}>{children}</p>
-}
-
 /* Which of the carriers the submission will be shopped to have appetite.
    Read off the one list Carrier selection uses, so the count this screen
    gives and what the agent later sees cannot drift apart. ICW / Zenith is
@@ -274,9 +266,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                       </div>
                     )}
                   </div>
-                  <FieldHelp>
-                    The class with the most payroll. You can add other classes on Coverages.
-                  </FieldHelp>
                 </div>
 
                 <div>
@@ -292,9 +281,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     onChange={val => { setPayroll(val); setAppetite(null) }}
                     placeholder="$"
                   />
-                  <FieldHelp>
-                    All employees, before taxes. Include officers who will be covered.
-                  </FieldHelp>
                 </div>
 
                 {/* The prototype shows this box only for contracting classes.
@@ -319,9 +305,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                     digits
                     maxLength={8}
                   />
-                  <FieldHelp>
-                    CA license numbers prefill business details from CSLB.
-                  </FieldHelp>
                 </div>
               </div>
 
@@ -386,15 +369,6 @@ export default function PageZero({ onStart, onCancel, initial, isDark = false })
                   </InfoPanel>
                 )}
 
-                {/* A demo affordance, not product copy: the two branches off
-                    this screen are reachable only through a class nobody
-                    would guess at, so the page says which ones. */}
-                <p className="text-[11px] leading-[16.5px] mt-3.5" style={{ color: '#6B7280' }}>
-                  Tip: class <b className="font-semibold" style={{ color: '#1F2937' }}>7228 · Trucking — long haul</b>{' '}
-                  shows the no-appetite message.{' '}
-                  <b className="font-semibold" style={{ color: '#1F2937' }}>7229 · Trucking — local hauling</b>{' '}
-                  adds the PUC and Motor Carrier Permit fields on Business info.
-                </p>
               </div>
 
               {/* Nothing to start until appetite has answered, and a disabled
