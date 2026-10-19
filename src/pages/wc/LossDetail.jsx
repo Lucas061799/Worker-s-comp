@@ -31,7 +31,7 @@ export default function LossDetail({ formData, updateFormData }) {
         Please enter any claims or work-related injuries during the last 4 years.
       </p>
 
-      <FieldGroup label={`Claims (${losses.length})`}>
+      <FieldGroup label="Claims">
         <div className="space-y-3">
           {losses.map((row, idx) => (
             <div key={idx} className="grid grid-cols-[150px_140px_130px_1fr_40px] gap-3 items-end">
