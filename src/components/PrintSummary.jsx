@@ -207,8 +207,8 @@ export default function PrintSummary({ formData, visible, onClose, onEdit }) {
                 <Panel title="Coverage History" icon="clock" onEdit={edit(2)}>
                   <Row label="Coverage Status" value={COVERAGE_STATUS_LABELS[hist.coverageStatus] || '—'} />
                   <Row label="Prior Years" value={hist.priorYears} />
-                  <Row label="Current Carrier" value={hist.currentCarrier} />
-                  <Row label="Current Premium" value={hist.currentPremium} />
+                  <Row label="Most Recent Carrier" value={hist.currentCarrier} />
+                  <Row label="Most Recent Premium" value={hist.currentPremium} />
                   <Row label="Claims (4 yrs)" value={hist.claimCount ?? 0} />
                   {losses.filter(l => l.date).map((l, i) => (
                     <Row key={i} label={`Claim ${i + 1} · ${l.type || ''}`} value={l.amount} />

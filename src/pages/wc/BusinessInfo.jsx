@@ -316,18 +316,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
 
       <FieldGroup label="Insured contact info">
         <div className="space-y-5">
-          {/* The business's own number leads: the three fields under it are
-              the person to call, not the company. */}
-          <FormGrid>
-            <Input
-              label={fieldLabel('Business phone', { required: true })}
-              type="tel"
-              value={data.businessPhone}
-              onChange={set('businessPhone')}
-              placeholder="(555) 000-0000"
-              error={err('businessPhone')}
-            />
-          </FormGrid>
           <FormGrid>
             <Input
               label={fieldLabel('First name', { required: true })}
@@ -344,7 +332,18 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               error={err('lastName')}
             />
           </FormGrid>
+          {/* The two numbers share a row, so the company's and the
+              contact's are read against each other rather than a column
+              apart. */}
           <FormGrid>
+            <Input
+              label={fieldLabel('Business phone', { required: true })}
+              type="tel"
+              value={data.businessPhone}
+              onChange={set('businessPhone')}
+              placeholder="(555) 000-0000"
+              error={err('businessPhone')}
+            />
             <Input
               label={fieldLabel('Phone', { required: true })}
               type="tel"
@@ -353,6 +352,8 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               placeholder="(555) 123-4567"
               error={err('phone')}
             />
+          </FormGrid>
+          <FormGrid>
             <Input
               label={fieldLabel('Email', { required: true })}
               type="email"

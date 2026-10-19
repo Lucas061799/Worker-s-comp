@@ -95,7 +95,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 onChange={val => patch({ priorYears: val })}
               />
               <Input
-                label="What is your current carrier?"
+                label="What is your most recent carrier?"
                 required
                 value={data.currentCarrier}
                 onChange={val => patch({ currentCarrier: val })}
@@ -107,7 +107,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
           {hasPriorPolicy && (
             <FormGrid>
               <Input
-                label="What is your current premium?"
+                label="What is your most recent premium?"
                 required
                 value={data.currentPremium}
                 onChange={val => patch({ currentPremium: val })}
