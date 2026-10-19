@@ -19,6 +19,16 @@ const COVERAGE_STATUS = [
 
 const PRIOR_YEARS = ['1', '2', '3', '4+']
 
+/* The reasons underwriting actually sorts a lapse by. Typed free, the same
+   four answers arrived in a dozen wordings and none of them counted. */
+const LAPSE_REASONS = [
+  'Non-payment',
+  'Prior policy non-renewed',
+  'No employees',
+  'Business temporarily closed',
+  'Other',
+]
+
 /* Label above a pill answer — the shape Business info uses for its
    mailing-address and additional-locations questions. */
 function PillField({ label, required, children }) {
@@ -76,13 +86,15 @@ export default function CoverageHistory({ formData, updateFormData }) {
           </PillField>
 
           {status === 'lapse' && (
-            <Input
-              label="Reason for lapse"
-              required
-              value={data.lapseReason}
-              onChange={val => patch({ lapseReason: val })}
-              placeholder="Why did coverage lapse?"
-            />
+            <FormGrid>
+              <Select
+                label="Reason for lapse"
+                required
+                options={LAPSE_REASONS}
+                value={data.lapseReason}
+                onChange={val => patch({ lapseReason: val })}
+              />
+            </FormGrid>
           )}
 
           {hasPriorPolicy && (
