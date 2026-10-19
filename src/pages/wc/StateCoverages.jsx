@@ -194,7 +194,10 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         <div className="space-y-3">
           {officers.map((row, idx) => (
             <div key={idx}>
-              <div className="grid grid-cols-[1fr_150px] lg:grid-cols-[1fr_170px_210px_40px] gap-3 items-end">
+              {/* Name and Title share what is left after Status and the
+                  remove button, so the two read as a pair rather than a
+                  long box beside a short one. */}
+              <div className="grid grid-cols-[1fr_150px] lg:grid-cols-[1fr_1fr_210px_40px] gap-3 items-end">
                 <Input
                   label={idx === 0 ? 'Name' : undefined}
                   value={row.name}
@@ -271,7 +274,11 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
       >
         <div className="space-y-3">
           {classes.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-2 sm:grid-cols-[126px_minmax(0,1fr)_102px_62px_62px_32px] gap-2.5 items-end">
+            <div key={idx} /* Location carries "Loc 1 — 1420 Prospect Rd, Saratoga" and was
+                 clipped to "Loc 1 — 1…" at 126px, while the class code —
+                 whose longest value measures 227px — had 412px to spread
+                 into. The 124px moves from one to the other. */
+              className="grid grid-cols-2 sm:grid-cols-[250px_minmax(0,1fr)_102px_62px_62px_32px] gap-2.5 items-end">
               <Select
                 label={idx === 0 ? 'Location' : undefined}
                 options={locationOptions}
