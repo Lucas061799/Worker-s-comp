@@ -415,7 +415,6 @@ owner_involved: 'yes',
              left without changing any of them. There is nothing behind it
              on the first run, so neither applies then. */
           initial={formData.pageZero}
-          onCancel={formData.pageZero ? () => setPageZeroDone(true) : undefined}
           onStart={(data) => {
             updateFormData('pageZero', data)
             setPageZeroDone(true)
