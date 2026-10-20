@@ -195,7 +195,11 @@ export default function Sidebar({
                       : { background: isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6', color: isDark ? '#6B7280' : '#9CA3AF' }
                   }
                 >
-                  {isDone ? '✓' : step.num}
+                  {/* The badge counts the rail as it stands: `num` orders
+                      the list, including the conditional steps that slot in
+                      as 2b and 2c, but what is shown is the position, so a
+                      step that drops out does not leave a gap or a letter. */}
+                  {isDone ? '✓' : i + 1}
                 </span>
                 <span
                   className={`text-xs truncate ${isActive ? 'font-semibold' : isDone ? 'font-medium' : ''}`}

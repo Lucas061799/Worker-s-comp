@@ -33,6 +33,9 @@ import WcSubmission from './pages/wc/WcSubmission'
 // `phase`, which is about what unlocks when — Price indication is reachable
 // in phase 1 but belongs under Quote, because that is the screen the price
 // arrives on.
+/* `num` is the sort key only — it is what slots the conditional steps
+   between their neighbours. The rail numbers the badges by position, so
+   nothing carries a letter on screen. */
 const BASE_STEPS = [
   { id: 1, num: '1',  key: 'business',    label: 'Business info',          phase: 1, group: 'application' },
   { id: 2, num: '2',  key: 'history',     label: 'Coverage history',       phase: 1, group: 'application' },
