@@ -335,7 +335,7 @@ export default function PageZero({ onStart, initial, isDark = false }) {
 
                 {appetite === 'limited' && (
                   <InfoPanel
-                    lead={<>Limited appetite for {picked?.code} in {state} at this payroll — likely referral.</>}
+                    lead={<>Limited appetite for {picked?.code} in {state} — likely referral.</>}
                     className="mt-3"
                   >
                     You can continue; the start is recorded either way.
@@ -350,10 +350,14 @@ export default function PageZero({ onStart, initial, isDark = false }) {
                       <circle cx="12" cy="12" r="10" />
                       <path strokeLinecap="round" d="M8.5 8.5l7 7M15.5 8.5l-7 7" />
                       </svg>}
-                    lead={<>Outside appetite for {picked?.code} in {state} at this payroll.</>}
+                    /* Counted the same way the good news is, so the two
+                       answers read as the same sentence with a different
+                       number in it. */
+                    lead={<>No market: 0 of {CARRIERS.length} carriers have appetite
+                      for {picked?.code} in {state}.</>}
                   >
-                    We have no carrier for this risk, so there is nothing to quote.
-                    Try a different class or state, or call us on 877.649.6682 to talk it through.
+                    There is nothing to quote for this risk. Try a different class or state,
+                    or call us on 877.649.6682 to talk it through.
                   </InfoPanel>
                 )}
 
