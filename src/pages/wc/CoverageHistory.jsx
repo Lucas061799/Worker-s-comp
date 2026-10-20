@@ -168,7 +168,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 answer wanted is yes or no. The chips are the pair this app
                 already uses for pass and fail, so no new colour appears
                 for this one line. */}
-            <p className={`text-[11px] mt-1.5 flex items-center gap-1.5 text-gray-500 ${
+            <p className={`text-[11px] mt-1.5 flex items-center justify-center gap-1.5 text-gray-500 ${
               words >= MIN_WORDS ? 'im-mark-pass' : 'im-mark-fail'}`}>
               {words >= MIN_WORDS ? (
                 <><CheckGlyph className="w-3.5 h-3.5 shrink-0" /> Meets the {MIN_WORDS}-word minimum</>
