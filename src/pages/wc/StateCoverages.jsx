@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Input, Select } from '../../components/FormField'
 import {
+  RowGroup,
+  AnswerRow,
   SectionLabel,
   RemoveButton,
   AddAnother,
@@ -98,7 +100,7 @@ function officerRule(st, entityType) {
    its subcontractors. There is no "add state" control — a state arrives
    here by having a location added to it on Locations, which is the only
    place the address behind it is captured. */
-function StateCard({ st, locs, entityType, sd, patch, mod, setMod, elLimits, setElLimits }) {
+function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
   const officers = sd.officers || []
   const classes  = sd.classes  || []
   const rule = officerRule(st, entityType)
@@ -134,11 +136,10 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod, elLimits, set
         <Tag tone="brand" shape="chip">{st}</Tag>
         <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
       </div>
-      {/* The state's terms: what the bureau says the risk is worth, whether
-          the policy waives subrogation across the board, and the liability
-          limits it carries. The limits are one value for the whole policy
-          rather than this state's own, so editing them on any card moves
-          them on all of them. */}
+      {/* The two state-level terms, side by side: what the state's bureau
+          says the risk is worth, and whether the policy waives subrogation
+          across the board. The liability limits are back above the tabs —
+          they belong to the policy, not to whichever state is open. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mt-5">
         <div>
           <Input
@@ -165,15 +166,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod, elLimits, set
               name={`Blanket waiver of subrogation in ${st}`}
             />
           </div>
-        </div>
-
-        <div>
-          <FieldLabel>Employer's liability limits</FieldLabel>
-          <Select
-            options={EL_LIMITS}
-            value={elLimits || EL_LIMITS[1]}
-            onChange={setElLimits}
-          />
         </div>
       </div>
 
@@ -387,6 +379,15 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
     ...(formData.locations?.list || []).map(l => l.state).filter(Boolean),
   ])]
 
+  /* Which state's section is open. The policy-level row above the tabs
+     does not move with it — only everything below does. */
+  const [activeState, setActiveState] = useState(states[0])
+  const active = states.includes(activeState) ? activeState : states[0]
+  useEffect(() => {
+    if (!states.includes(activeState)) setActiveState(states[0])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [states.join(',')])
+
   /* Payroll scheduled against a state that has since lost its last location
      would still be rated. Drop it when the state goes — `elLimits` lives in
      this section too, so only two-letter keys are considered. */
@@ -461,27 +462,57 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
 
   return (
     <div className="w-full space-y-6">
-      {/* One label for the run of state cards, matching the policy-level
-          group above it — the cards were the only thing on this screen
-          standing without a heading to say what they are. */}
+      {/* Everything the policy carries whatever states it touches. It sits
+          above the tabs because it does not change when they do. */}
+      <RowGroup label="Policy-level coverage">
+        <AnswerRow label="Employer's liability limits">
+          <div style={{ width: 220 }}>
+            <Select
+              options={EL_LIMITS}
+              value={data.elLimits || EL_LIMITS[1]}
+              onChange={val => updateFormData('coverage', { ...data, elLimits: val })}
+            />
+          </div>
+        </AnswerRow>
+      </RowGroup>
+
       <div>
         <SectionLabel>State-level coverage</SectionLabel>
-        <div className="space-y-6">
-          {states.map(st => (
-            <StateCard
-              key={st}
-              st={st}
-              locs={allLocations.filter(l => l.state === st)}
-              entityType={entityType}
-              sd={stateDataFor(st)}
-              patch={patchState(st)}
-              mod={modOf(st)}
-              setMod={setModOf(st)}
-              elLimits={data.elLimits}
-              setElLimits={val => updateFormData('coverage', { ...data, elLimits: val })}
-            />
-          ))}
-        </div>
+        {/* One tab per state, and only the open one's card below — the
+            states are answered one at a time, and stacking every card made
+            a page long enough that which answers belonged to which state
+            stopped being obvious. A single-state submission has nothing to
+            switch between, so the rail stays off. */}
+        {states.length > 1 && (
+          <div role="tablist" aria-label="States on this policy" className="flex flex-wrap items-center gap-2 mb-3">
+            {states.map(st => {
+              const on = st === active
+              return (
+                <button
+                  key={st}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setActiveState(st)}
+                  className={`im-state-tab${on ? ' im-state-tab-on' : ''} inline-flex items-center gap-2 h-8 px-3 rounded-lg text-xs font-semibold`}
+                >
+                  <span className="font-bold tracking-[0.06em]">{st}</span>
+                  {STATE_NAMES[st] || st}
+                </button>
+              )
+            })}
+          </div>
+        )}
+        <StateCard
+          key={active}
+          st={active}
+          locs={allLocations.filter(l => l.state === active)}
+          entityType={entityType}
+          sd={stateDataFor(active)}
+          patch={patchState(active)}
+          mod={modOf(active)}
+          setMod={setModOf(active)}
+        />
       </div>
     </div>
   )

@@ -1485,3 +1485,34 @@ html[data-dark="true"] body .print-btn-text {
 .im-consent-hit { background: transparent; transition: background 140ms; }
 .im-consent-hit:hover { background: rgba(0,0,0,0.02); }
 [data-dark="true"] .im-consent-hit:hover { background: rgba(255,255,255,0.05); }
+
+/* The state tabs on Coverages. The open one wears the same brand tint its
+   state chip does; the rest stay quiet. Hover moves the fill and leaves the
+   stroke alone, like everything else on the page. */
+.im-state-tab {
+  background: var(--surface-card);
+  border: 1px solid var(--line);
+  color: #6B7280;
+  transition: background 140ms, color 140ms;
+}
+.im-state-tab:hover { background: rgba(92,46,212,0.04); }
+.im-state-tab-on,
+.im-state-tab-on:hover {
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.10) 0%, rgba(166,20,195,0.10) 100%);
+  border-color: rgba(92,46,212,0.28);
+  color: #5C2ED4;
+}
+/* At the blanket dark `.border` shim's weight so the tab keeps its edge. */
+[data-dark="true"] .im-state-tab,
+[data-dark="true"] .bop-page .im-state-tab {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #8B8FA8 !important;
+}
+[data-dark="true"] .im-state-tab:hover { background: rgba(255,255,255,0.08) !important; }
+[data-dark="true"] .im-state-tab-on,
+[data-dark="true"] .bop-page .im-state-tab-on {
+  background: rgba(167,139,250,0.18) !important;
+  border-color: rgba(167,139,250,0.40) !important;
+  color: #E9D5FF !important;
+}

@@ -303,12 +303,19 @@ function App() {
       website: 'www.sierraridgeplumbing.com',
       hasDba: false,
       mailSame: true,
-      additionalLocations: 'no',
+      additionalLocations: 'yes',
       yearEstablished: '2014',
       industryExperience: '10+',
       businessPhone: '(408) 555-0142',
       phone: '(408) 555-1234',
       email: 'ops@sierraridgeplumbing.com',
+    })
+    /* A second site, in another state — the submission is multi-state, so
+       Coverages has two tabs to answer rather than one card. */
+    updateFormData('locations', {
+      list: [
+        { address: '2100 W Osborn Rd', suite: 'Unit B', city: 'Phoenix', state: 'AZ', zip: '85015' },
+      ],
     })
     updateFormData('history', {
       coverageStatus: 'inforce',
