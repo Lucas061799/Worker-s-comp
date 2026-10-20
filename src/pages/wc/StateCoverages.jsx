@@ -157,7 +157,7 @@ function FieldLabel({ children, required }) {
 
 /* A heading inside a state card. The rule above it is what separates one
    subsection from the next — the card itself is the state. */
-function SubSection({ title, sub, aside, children }) {
+function SubSection({ title, sub, aside, gap, children }) {
   return (
     /* 28 above the rule and 28 below it. The heading is 11px where the
        column labels under it are 13px, so proximity has to carry the
@@ -175,8 +175,12 @@ function SubSection({ title, sub, aside, children }) {
       {/* 20px from the heading block to the fields either way. A section
           with a sub-line measures that from the sub-line; one without it
           was measuring 8 + 20 from the heading itself, which left the
-          11px label of a section like Subcontractors stranded. */}
-      <div className={sub ? 'mt-5' : 'mt-3'}>{children}</div>
+          11px label of a section like Subcontractors stranded.
+
+          `gap` overrides it for a section whose first content is itself a
+          row of labels: column headers carry about as much weight as the
+          section heading, so at 12px the two read as one block. */}
+      <div className={gap || (sub ? 'mt-5' : 'mt-3')}>{children}</div>
     </div>
   )
 }
@@ -388,6 +392,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
 
       <SubSection
         title="Classes &amp; payroll"
+        gap="mt-6"
         aside={st === 'CA' ? (
           <button type="button" onClick={() => setWagePanel(true)}
             className="im-wage-link text-[11.5px] font-semibold shrink-0">
