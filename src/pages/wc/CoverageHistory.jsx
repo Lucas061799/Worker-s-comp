@@ -227,7 +227,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
             </svg>}
           lead={<>{claimCount} claims reported.</>}
         >
-          Please email currently valued loss runs to <b className="font-semibold text-navy">comp@btisinc.com</b>, and upload them as a
+          Please email currently valued loss runs to <b className="font-semibold text-navy">comp@btisinc.com</b>, or upload them as a
           required document when this submission is referred to underwriting. Be sure to
           reference the quote number above.
         </InfoPanel>
