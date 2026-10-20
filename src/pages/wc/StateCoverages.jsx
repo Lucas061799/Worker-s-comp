@@ -146,11 +146,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         <Tag tone="brand" shape="chip">{st}</Tag>
         <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
       </div>
-      <p className="text-[12.5px] text-gray-500 leading-relaxed mt-2">
-        {locs.length} location{locs.length === 1 ? '' : 's'}:{' '}
-        {locs.map(l => `Loc ${l.n} · ${l.street || '—'}`).join('  ·  ')}
-      </p>
-
       {/* The two state-level terms, side by side: what the state's bureau
           says the risk is worth, and whether the policy waives subrogation
           across the board. */}
