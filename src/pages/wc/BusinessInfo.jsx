@@ -49,16 +49,6 @@ function PillField({ label, required, value, onChange, help }) {
   )
 }
 
-/* The year reads itself back as a count, so an agent who typed 2018 does not
-   have to work out that it means eight years in business. */
-function yearsInBusiness(year) {
-  const y = Number(String(year || '').replace(/\D/g, ''))
-  const now = new Date().getFullYear()
-  if (String(y).length !== 4 || y > now || y < 1900) return null
-  const n = now - y
-  return n < 1 ? 'New this year' : `${n} year${n === 1 ? '' : 's'} in business`
-}
-
 export default function BusinessInfo({ formData, updateFormData, showErrors = false }) {
   const data = formData.business || {}
   const pageZero = formData.pageZero || {}
@@ -105,8 +95,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
     }, 900)
     return () => clearTimeout(t)
   }, [data.fein, isCA, formData.underwriting?.experienceMod, updateFormData])
-
-  const years = yearsInBusiness(data.yearEstablished)
 
   return (
     <div className="w-full space-y-6">
@@ -173,27 +161,21 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               onChange={set('entityType')}
               error={err('entityType')}
             />
-            <div>
-              <Input
-                label={fieldLabel('Year business was established', { required: true })}
-                value={data.yearEstablished}
-                onChange={set('yearEstablished')}
-                placeholder="e.g. 2014"
-                digits
-                maxLength={4}
-                error={err('yearEstablished')}
-              />
-              {years && !err('yearEstablished') && (
-                <p className="text-xs mt-1.5 im-note-brand">{years}</p>
-              )}
-            </div>
+            <Input
+              label={fieldLabel('Year business was established', { required: true })}
+              value={data.yearEstablished}
+              onChange={set('yearEstablished')}
+              placeholder="e.g. 2014"
+              digits
+              maxLength={4}
+              error={err('yearEstablished')}
+            />
             <Select
               label={fieldLabel('Years of industry experience', { required: true })}
               options={EXPERIENCE_OPTIONS}
               value={data.industryExperience}
               onChange={set('industryExperience')}
               error={err('industryExperience')}
-              help="Owner's experience in this trade, including before this business."
             />
           </FormGrid>
 
