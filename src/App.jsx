@@ -647,12 +647,10 @@ owner_involved: 'yes',
                 </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
-                    <Loading plan={RATING} isDark={darkMode}
-                      onDone={handleRatingDone} onSkip={handleRatingDone} />
+                    <Loading plan={RATING} isDark={darkMode} onDone={handleRatingDone} />
                   )}
                   {finalizing && (
-                    <Loading plan={FINALIZING} isDark={darkMode}
-                      onDone={handleFinalPriceReady} onSkip={handleFinalPriceReady} />
+                    <Loading plan={FINALIZING} isDark={darkMode} onDone={handleFinalPriceReady} />
                   )}
                   {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carriers' && (
                     <CarrierSelection

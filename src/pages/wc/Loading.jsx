@@ -11,7 +11,7 @@ import NorbieLoader from '../../components/NorbieLoader'
 export const RATING = { ms: 4300 }
 export const FINALIZING = { ms: 2700 }
 
-export default function Loading({ plan = RATING, onDone, onSkip, isDark = false }) {
+export default function Loading({ plan = RATING, onDone, isDark = false }) {
   const { ms } = plan
 
   useEffect(() => {
@@ -20,8 +20,12 @@ export default function Loading({ plan = RATING, onDone, onSkip, isDark = false 
   }, [ms, onDone])
 
   return (
+    /* Absolute inside <main>, which is the positioned ancestor, so the
+       wait covers the work and leaves the rail alone — the agent can still
+       see where they are while the call is out. Nothing is scrollable
+       behind it on either of these two screens. */
     <div
-      className="fixed inset-0 z-[70] flex flex-col items-center justify-center"
+      className="absolute inset-0 z-[70] flex flex-col items-center justify-center"
       style={{
         background: isDark ? 'rgba(19,22,41,0.82)' : 'rgba(255,255,255,0.82)',
         backdropFilter: 'blur(3px)',
@@ -32,18 +36,6 @@ export default function Loading({ plan = RATING, onDone, onSkip, isDark = false 
       <div className="w-[130px] h-[130px]">
         <NorbieLoader dark={isDark} />
       </div>
-
-      {/* Not CBIC's — demo plumbing, so the wait can be cut short when the
-          flow is being walked through rather than watched. */}
-      {onSkip && (
-        <button
-          type="button"
-          onClick={onSkip}
-          className="mt-6 text-xs text-gray-400 underline hover:text-gray-600"
-        >
-          Skip the wait (demo only)
-        </button>
-      )}
     </div>
   )
 }
