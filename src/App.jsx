@@ -14,7 +14,7 @@ import LossDetail from './pages/wc/LossDetail'
 import StateCoverages from './pages/wc/StateCoverages'
 import UnderwritingQuestions from './pages/wc/UnderwritingQuestions'
 import CarrierSelection, { CARRIERS } from './pages/wc/CarrierSelection'
-import Loading, { RATING, FINALIZING, RatingPromo } from './pages/wc/Loading'
+import Loading, { RATING, FINALIZING } from './pages/wc/Loading'
 import Locations from './pages/wc/Locations'
 import SubClassCode from './pages/wc/SubClassCode'
 import Referral, { ReferralSubmitted } from './pages/wc/Referral'
@@ -647,12 +647,12 @@ owner_involved: 'yes',
                 </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
-                    <Loading plan={RATING} onDone={handleRatingDone} onSkip={handleRatingDone}>
-                      <RatingPromo />
-                    </Loading>
+                    <Loading plan={RATING} isDark={darkMode}
+                      onDone={handleRatingDone} onSkip={handleRatingDone} />
                   )}
                   {finalizing && (
-                    <Loading plan={FINALIZING} onDone={handleFinalPriceReady} onSkip={handleFinalPriceReady} />
+                    <Loading plan={FINALIZING} isDark={darkMode}
+                      onDone={handleFinalPriceReady} onSkip={handleFinalPriceReady} />
                   )}
                   {!rating && !finalizing && !showingIndication && !referralStage && currentKey === 'carriers' && (
                     <CarrierSelection
