@@ -68,10 +68,14 @@ function FieldLabel({ children, required }) {
    subsection from the next — the card itself is the state. */
 function SubSection({ title, sub, children }) {
   return (
-    <div className="mt-6 pt-6 border-t" style={{ borderColor: 'var(--line)' }}>
+    /* 28 above the rule and 28 below it. The heading is 11px where the
+       column labels under it are 13px, so proximity has to carry the
+       hierarchy that type size does not: the gap between sections is now
+       comfortably larger than any gap inside one. */
+    <div className="mt-7 pt-7 border-t" style={{ borderColor: 'var(--line)' }}>
       <SectionLabel className="!mb-2 flex items-center gap-1.5">{title}</SectionLabel>
       {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed">{sub}</p>}
-      <div className="mt-4">{children}</div>
+      <div className="mt-5">{children}</div>
     </div>
   )
 }
@@ -176,7 +180,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
            different kinds of note. */
         sub={<><span className="font-bold">{rule.lead}</span> {rule.body}</>}
       >
-        <div className="space-y-3">
+        <div className="space-y-4">
           {officers.map((row, idx) => (
             <div key={idx}>
               {/* Name and Title share what is left after Status and the
@@ -257,13 +261,13 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         }
         sub="One line per class code at each location. Annual payroll, before taxes."
       >
-        <div className="space-y-3">
+        <div className="space-y-4">
           {classes.map((row, idx) => (
             <div key={idx} /* Location carries "Loc 1 — 1420 Prospect Rd, Saratoga" and was
                  clipped to "Loc 1 — 1…" at 126px, while the class code —
                  whose longest value measures 227px — had 412px to spread
                  into. The 124px moves from one to the other. */
-              className="grid grid-cols-2 sm:grid-cols-[250px_minmax(0,1fr)_102px_62px_62px_32px] gap-2.5 items-end">
+              className="grid grid-cols-2 sm:grid-cols-[250px_minmax(0,1fr)_102px_62px_62px_32px] gap-3 items-end">
               <Select
                 label={idx === 0 ? 'Location' : undefined}
                 options={locationOptions}
