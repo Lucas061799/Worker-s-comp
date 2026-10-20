@@ -1521,3 +1521,25 @@ html[data-dark="true"] body .print-btn-text {
   background: rgba(255,255,255,0.12) !important;
   box-shadow: none !important;
 }
+
+/* The dual-wage classifications panel: a floating card over the class rows,
+   lifted off them by its shadow rather than by a heavier border. */
+.im-wage-pop {
+  background: var(--surface-card);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 32px rgba(16,24,40,0.12), 0 2px 6px rgba(16,24,40,0.06);
+}
+[data-dark="true"] .im-wage-pop,
+[data-dark="true"] .bop-page .im-wage-pop {
+  background: #1E2240 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45) !important;
+}
+.im-wage-close { color: #9CA3AF; transition: background 140ms, color 140ms; }
+.im-wage-close:hover { background: var(--fill-subtle); color: #4B5563; }
+[data-dark="true"] .im-wage-close:hover { background: rgba(255,255,255,0.10) !important; color: #E5E7EB !important; }
+/* The way back to the panel once it has been put away. */
+.im-wage-link { color: #6B7280; transition: color 140ms; }
+.im-wage-link:hover { color: #A614C3; }
+[data-dark="true"] .im-wage-link { color: #8B8FA8 !important; }
+[data-dark="true"] .im-wage-link:hover { color: #E879F9 !important; }

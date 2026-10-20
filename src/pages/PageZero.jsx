@@ -27,8 +27,11 @@ export const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI'
 const NO_APPETITE = ['icwzenith']
 
 const CLASSES = [
-  { code: '5183', desc: 'Plumbing — shop & outside (≥ $31/hr)', contractor: true },
-  { code: '5187', desc: 'Plumbing — shop & outside (< $31/hr)', contractor: true },
+  /* The dual-wage pair: the marketplace's table lists the low-wage code
+     first, so 5183 is the one below the split and 5187 the one at or
+     above it. Coverages names them the same way when it adds the twin. */
+  { code: '5183', desc: 'Plumbing — low wage',  contractor: true },
+  { code: '5187', desc: 'Plumbing — high wage', contractor: true },
   { code: '5645', desc: 'Carpentry — detached dwellings',       contractor: true },
   { code: '5474', desc: 'Painting or decorating',               contractor: true },
   { code: '9079', desc: 'Restaurant / food service' },

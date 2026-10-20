@@ -42,63 +42,93 @@ const STATE_NAMES = {
 }
 
 /* Reference only — the agent enters the correct twin code themselves. */
-/* California's dual-wage classes: one trade, two codes, split at an hourly
-   wage. Payroll either side of the line is reported separately, so entering
-   one code brings its twin onto the sheet rather than leaving the agent to
-   remember it. `high` is the code for wages at or above the threshold.
+/* California's dual-wage classes, off the marketplace's own table. One
+   trade, two codes, split at an hourly wage: the first of each pair is the
+   low-wage code and the second the high-wage one, which is the order the
+   marketplace lists and names them in. Payroll either side of the line is
+   reported separately, so entering one brings its twin onto the sheet.
 
-   The plumbing pair is the one the class list on page zero already states.
-   The rest stand in for the bureau's published table and are the first
-   thing to replace with real data. */
+   Four cutoffs are missing because the reference they were read from had
+   them behind a scrollbar. The pairs are right, so the twin still arrives;
+   only the figure is blank until someone fills it in. */
+const DUAL_WAGE_EFFECTIVE = '9/1/26'
+
 const DUAL_WAGE = [
-  { trade: 'Plumbing',          cutoff: '$31/hr', high: '5183', low: '5187' },
-  { trade: 'Electrical wiring', cutoff: '$34/hr', high: '5140', low: '5190' },
-  { trade: 'Carpentry',         cutoff: '$39/hr', high: '5432', low: '5403' },
-  { trade: 'Wallboard',         cutoff: '$38/hr', high: '5446', low: '5447' },
+  { low: '5027', high: '5028', trade: 'Masonry', cutoff: '$37' },
+  { low: '5190', high: '5140', trade: 'Electrical Wiring', cutoff: '$40' },
+  { low: '5183', high: '5187', trade: 'Plumbing / Refrigeration / Heating or Air Conditioning Equipment', cutoff: '$35' },
+  { low: '5185', high: '5186', trade: 'Automatic Sprinkler Installation', cutoff: '$36' },
+  { low: '5201', high: '5205', trade: 'Concrete or Cement Work', cutoff: '$36' },
+  { low: '5403', high: '5432', trade: 'Carpentry', cutoff: '$46' },
+  { low: '5446', high: '5447', trade: 'Wallboard Installation', cutoff: '$45' },
+  { low: '5467', high: '5470', trade: 'Glaziers', cutoff: '$43' },
+  { low: '5474', high: '5482', trade: 'Painting / Waterproofing', cutoff: '$36' },
+  { low: '5484', high: '5485', trade: 'Plastering or Stucco Work', cutoff: '$42' },
+  { low: '5538', high: '5542', trade: 'Sheet Metal Work / Heating or Air Conditioning Ductwork', cutoff: '$37' },
+  { low: '5552', high: '5553', trade: 'Roofing', cutoff: '$33' },
+  { low: '5632', high: '5633', trade: 'Steel Framing', cutoff: null },
+  { low: '6218', high: '6220', trade: 'Excavation / Grading / Land Leveling', cutoff: null },
+  { low: '6307', high: '6308', trade: 'Sewer Construction', cutoff: null },
+  { low: '6315', high: '6316', trade: 'Water / Gas Mains', cutoff: null },
 ]
 
-const DUAL_DESC = {
-  '5183': 'Plumbing (\u2265 $31/hr)',          '5187': 'Plumbing (< $31/hr)',
-  '5140': 'Electrical wiring (\u2265 $34/hr)', '5190': 'Electrical wiring (< $34/hr)',
-  '5432': 'Carpentry (\u2265 $39/hr)',         '5403': 'Carpentry (< $39/hr)',
-  '5446': 'Wallboard (\u2265 $38/hr)',         '5447': 'Wallboard (< $38/hr)',
+const pairFor = (code) => DUAL_WAGE.find(d => d.low === code || d.high === code)
+
+/* The marketplace names them "Masonry\u2013low wage" and "Masonry\u2013high wage",
+   so the row the agent did not type reads the same as the one they did. */
+function dualLabel(code) {
+  const d = pairFor(code)
+  if (!d) return null
+  return `${d.trade} \u2014 ${d.low === code ? 'low' : 'high'} wage`
 }
 
-const twinOf = (code) => {
-  const d = DUAL_WAGE.find(x => x.high === code || x.low === code)
-  return d ? (d.high === code ? d.low : d.high) : null
-}
-
-/* The thresholds, as a table rather than a tooltip — the agent needs it
-   while typing codes, not after hunting for an icon. */
-function WageTable() {
+/* The classifications panel. It arrives with the twin \u2014 the moment the
+   sheet gains a row nobody typed is the moment to say why \u2014 and can be
+   put away and called back. Floating rather than inline: it is reference
+   for the rows beside it, not another section of the form. */
+function DualWagePanel({ onClose }) {
   return (
-    <div className="rounded-xl overflow-hidden"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
-      <div className="px-3.5 py-2 im-section-label !mb-0"
-        style={{ borderBottom: '1px solid var(--line-soft)' }}>
-        Dual-wage thresholds
+    <div className="im-wage-pop absolute right-0 top-0 z-20 w-[380px] max-w-full rounded-xl overflow-hidden">
+      <div className="flex items-start gap-3 px-4 pt-3.5 pb-2">
+        <div className="im-section-label !mb-0 flex-1">Dual wage classifications</div>
+        <button type="button" onClick={onClose} aria-label="Close"
+          className="im-wage-close w-5 h-5 rounded-full flex items-center justify-center shrink-0 -mt-0.5">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
+          </svg>
+        </button>
       </div>
-      <table className="text-[11.5px]">
-        <thead>
-          <tr className="text-gray-500">
-            <th className="font-semibold text-left px-3.5 py-1.5">Trade</th>
-            <th className="font-semibold text-right px-3.5 py-1.5">Threshold</th>
-            <th className="font-semibold text-right px-3.5 py-1.5">&ge;</th>
-            <th className="font-semibold text-right px-3.5 py-1.5">&lt;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {DUAL_WAGE.map(d => (
-            <tr key={d.trade} style={{ borderTop: '1px solid var(--line-soft)' }}>
-              <td className="px-3.5 py-1.5 text-gray-500 whitespace-nowrap">{d.trade}</td>
-              <td className="px-3.5 py-1.5 text-right text-gray-500 whitespace-nowrap">{d.cutoff}</td>
-              <td className="px-3.5 py-1.5 text-right font-semibold whitespace-nowrap" style={{ color: 'var(--ink)' }}>{d.high}</td>
-              <td className="px-3.5 py-1.5 text-right font-semibold whitespace-nowrap" style={{ color: 'var(--ink)' }}>{d.low}</td>
+      <p className="px-4 pb-3 text-[11.5px] leading-[17px] text-gray-500">
+        In California some construction operations split into two classifications on the
+        hourly wage paid. Both codes go on the submission, so the policy binds with each.
+        The splits below are the ones in force for this policy&rsquo;s effective date.
+      </p>
+      <div className="max-h-[260px] overflow-y-auto custom-scroll"
+        style={{ borderTop: '1px solid var(--line-soft)' }}>
+        <table className="w-full text-[11.5px]">
+          <thead>
+            <tr className="text-gray-400">
+              <th className="font-semibold text-left px-4 py-1.5 whitespace-nowrap">Code</th>
+              <th className="font-semibold text-left px-2 py-1.5">Title</th>
+              <th className="font-semibold text-right px-4 py-1.5 whitespace-nowrap">{DUAL_WAGE_EFFECTIVE}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {DUAL_WAGE.map(d => (
+              <tr key={d.low} style={{ borderTop: '1px solid var(--line-soft)' }}>
+                <td className="px-4 py-1.5 whitespace-nowrap font-semibold" style={{ color: 'var(--ink)' }}>
+                  {d.low} / {d.high}
+                </td>
+                <td className="px-2 py-1.5 text-gray-500 leading-snug">{d.trade}</td>
+                <td className="px-4 py-1.5 text-right whitespace-nowrap font-semibold"
+                  style={{ color: d.cutoff ? 'var(--ink)' : '#9CA3AF' }}>
+                  {d.cutoff || '\u2014'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
@@ -164,6 +194,8 @@ function officerRule(st, entityType) {
    here by having a location added to it on Locations, which is the only
    place the address behind it is captured. */
 function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
+  /* Shown when a twin arrives, and whenever the agent asks for it back. */
+  const [wagePanel, setWagePanel] = useState(false)
   const officers = sd.officers || []
   const classes  = sd.classes  || []
   const rule = officerRule(st, entityType)
@@ -201,20 +233,28 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
   /* Leaving a dual-wage code puts its twin on the sheet, at the same
      location, with the payroll left empty — splitting it is the agent's
      call, but remembering the other code should not be. Nothing happens
-     if that pair is already down for the location. */
+     if that pair is already down for the location.
+
+     California only: the split is that state's, and a code typed on
+     another state's card means something else there. */
   const addTwinFor = (idx) => {
+    if (st !== 'CA') return
     const row = classes[idx]
     if (!row) return
-    const twin = twinOf((row.code || '').trim())
-    if (!twin) return
+    const code = (row.code || '').trim()
+    const d = pairFor(code)
+    if (!d) return
+    const twin = d.low === code ? d.high : d.low
     const loc = shownLocation(row)
     if (classes.some(r => (r.code || '').trim() === twin && shownLocation(r) === loc)) return
     setClasses([...classes, {
       ...emptyClass(),
       location: loc,
       code: twin,
-      description: DUAL_DESC[twin] || '',
+      description: dualLabel(twin) || '',
     }])
+    /* The sheet just gained a row nobody typed, so the panel says why. */
+    setWagePanel(true)
   }
 
   return (
@@ -336,6 +376,10 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
       </SubSection>
 
       <SubSection title="Classes &amp; payroll">
+        {/* The panel floats over this block rather than pushing it down —
+            it is reference for the rows, not another part of the form. */}
+        <div className="relative">
+        {wagePanel && st === 'CA' && <DualWagePanel onClose={() => setWagePanel(false)} />}
         <div className="space-y-4">
           {classes.map((row, idx) => (
             <div key={idx} /* Location carries "Loc 1 — 1420 Prospect Rd, Saratoga" and was
@@ -398,9 +442,15 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
           ))}
         </div>
 
-        <div className="mt-5 flex justify-end">
-          <WageTable />
         </div>
+
+        {st === 'CA' && (
+          <div className="mt-4 flex justify-end">
+            <button type="button" onClick={() => setWagePanel(true)} className="im-wage-link text-[11.5px] font-semibold">
+              Dual wage classifications
+            </button>
+          </div>
+        )}
 
         <div className="mt-5">
           <AddAnother onClick={() => setClasses([...classes, emptyClass()])}>Add class</AddAnother>
