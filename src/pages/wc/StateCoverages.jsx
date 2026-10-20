@@ -7,7 +7,6 @@ import {
   AddAnother,
   Segmented,
   YesNo,
-  InfoDot,
   InfoPanel,
   Tag,
 } from '../../components/wc/primitives'
@@ -43,9 +42,66 @@ const STATE_NAMES = {
 }
 
 /* Reference only — the agent enters the correct twin code themselves. */
+/* California's dual-wage classes: one trade, two codes, split at an hourly
+   wage. Payroll either side of the line is reported separately, so entering
+   one code brings its twin onto the sheet rather than leaving the agent to
+   remember it. `high` is the code for wages at or above the threshold.
+
+   The plumbing pair is the one the class list on page zero already states.
+   The rest stand in for the bureau's published table and are the first
+   thing to replace with real data. */
 const DUAL_WAGE = [
-  { pair: '5183 / 5187', trade: 'Plumbing', cutoff: '$31/hr' },
+  { trade: 'Plumbing',          cutoff: '$31/hr', high: '5183', low: '5187' },
+  { trade: 'Electrical wiring', cutoff: '$34/hr', high: '5140', low: '5190' },
+  { trade: 'Carpentry',         cutoff: '$39/hr', high: '5432', low: '5403' },
+  { trade: 'Wallboard',         cutoff: '$38/hr', high: '5446', low: '5447' },
 ]
+
+const DUAL_DESC = {
+  '5183': 'Plumbing (\u2265 $31/hr)',          '5187': 'Plumbing (< $31/hr)',
+  '5140': 'Electrical wiring (\u2265 $34/hr)', '5190': 'Electrical wiring (< $34/hr)',
+  '5432': 'Carpentry (\u2265 $39/hr)',         '5403': 'Carpentry (< $39/hr)',
+  '5446': 'Wallboard (\u2265 $38/hr)',         '5447': 'Wallboard (< $38/hr)',
+}
+
+const twinOf = (code) => {
+  const d = DUAL_WAGE.find(x => x.high === code || x.low === code)
+  return d ? (d.high === code ? d.low : d.high) : null
+}
+
+/* The thresholds, as a table rather than a tooltip — the agent needs it
+   while typing codes, not after hunting for an icon. */
+function WageTable() {
+  return (
+    <div className="rounded-xl overflow-hidden"
+      style={{ background: 'var(--surface-card)', border: '1px solid var(--line)' }}>
+      <div className="px-3.5 py-2 im-section-label !mb-0"
+        style={{ borderBottom: '1px solid var(--line-soft)' }}>
+        Dual-wage thresholds
+      </div>
+      <table className="text-[11.5px]">
+        <thead>
+          <tr className="text-gray-500">
+            <th className="font-semibold text-left px-3.5 py-1.5">Trade</th>
+            <th className="font-semibold text-right px-3.5 py-1.5">Threshold</th>
+            <th className="font-semibold text-right px-3.5 py-1.5">&ge;</th>
+            <th className="font-semibold text-right px-3.5 py-1.5">&lt;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {DUAL_WAGE.map(d => (
+            <tr key={d.trade} style={{ borderTop: '1px solid var(--line-soft)' }}>
+              <td className="px-3.5 py-1.5 text-gray-500 whitespace-nowrap">{d.trade}</td>
+              <td className="px-3.5 py-1.5 text-right text-gray-500 whitespace-nowrap">{d.cutoff}</td>
+              <td className="px-3.5 py-1.5 text-right font-semibold whitespace-nowrap" style={{ color: 'var(--ink)' }}>{d.high}</td>
+              <td className="px-3.5 py-1.5 text-right font-semibold whitespace-nowrap" style={{ color: 'var(--ink)' }}>{d.low}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
 const emptyClass  = () => ({ location: '', code: '', description: '', payroll: '', ftEmployees: '', ptEmployees: '' })
 const emptyOfficer = () => ({ name: '', title: '', status: 'include' })
@@ -134,6 +190,32 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
   const setClasses = (next) => patch({ classes: next })
   const updateClass = (idx, partial) =>
     setClasses(classes.map((row, i) => i === idx ? { ...row, ...partial } : row))
+
+  /* A row shows the first location when the one it holds is not on this
+     state's list, so the twin has to be filed against what is on screen
+     rather than what is stored. */
+  const shownLocation = (row) => locationOptions.some(o => o.value === row.location)
+    ? row.location
+    : locationOptions[0]?.value || ''
+
+  /* Leaving a dual-wage code puts its twin on the sheet, at the same
+     location, with the payroll left empty — splitting it is the agent's
+     call, but remembering the other code should not be. Nothing happens
+     if that pair is already down for the location. */
+  const addTwinFor = (idx) => {
+    const row = classes[idx]
+    if (!row) return
+    const twin = twinOf((row.code || '').trim())
+    if (!twin) return
+    const loc = shownLocation(row)
+    if (classes.some(r => (r.code || '').trim() === twin && shownLocation(r) === loc)) return
+    setClasses([...classes, {
+      ...emptyClass(),
+      location: loc,
+      code: twin,
+      description: DUAL_DESC[twin] || '',
+    }])
+  }
 
   return (
     <div className="im-field-card rounded-xl p-5 sm:p-6"
@@ -253,25 +335,14 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         )}
       </SubSection>
 
-      <SubSection
-        title={
-          <>
-            Classes &amp; payroll
-            <InfoDot
-              title="Dual-wage classes in this quote"
-              text={`Enter the correct twin class code directly on the row based on the average hourly wage for that class. ${DUAL_WAGE.map(d => `${d.pair} (${d.trade}) — ${d.cutoff}`).join('; ')}.`}
-            />
-          </>
-        }
-        sub="One line per class code at each location. Annual payroll, before taxes."
-      >
+      <SubSection title="Classes &amp; payroll">
         <div className="space-y-4">
           {classes.map((row, idx) => (
             <div key={idx} /* Location carries "Loc 1 — 1420 Prospect Rd, Saratoga" and was
                  clipped to "Loc 1 — 1…" at 126px, while the class code —
                  whose longest value measures 227px — had 412px to spread
                  into. The 124px moves from one to the other. */
-              className="grid grid-cols-2 sm:grid-cols-[250px_minmax(0,1fr)_102px_62px_62px_32px] gap-3 items-end">
+              className="grid grid-cols-2 sm:grid-cols-[290px_minmax(0,1fr)_102px_52px_52px_32px] gap-3 items-end">
               <Select
                 label={idx === 0 ? 'Location' : undefined}
                 options={locationOptions}
@@ -293,6 +364,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                   const [code, ...rest] = val.split('—')
                   updateClass(idx, { code: code.trim(), description: rest.join('—').trim() })
                 }}
+                onBlur={() => addTwinFor(idx)}
                 placeholder="e.g. 8810 or clerical"
               />
               <Input
@@ -324,6 +396,10 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-5 flex justify-end">
+          <WageTable />
         </div>
 
         <div className="mt-5">
