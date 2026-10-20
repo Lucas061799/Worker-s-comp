@@ -74,21 +74,26 @@ const DUAL_WAGE = [
 
 const pairFor = (code) => DUAL_WAGE.find(d => d.low === code || d.high === code)
 
-/* The marketplace names them "Masonry\u2013low wage" and "Masonry\u2013high wage",
+/* The marketplace names them "Masonry–low wage" and "Masonry–high wage",
    so the row the agent did not type reads the same as the one they did. */
 function dualLabel(code) {
   const d = pairFor(code)
   if (!d) return null
-  return `${d.trade} \u2014 ${d.low === code ? 'low' : 'high'} wage`
+  return `${d.trade} — ${d.low === code ? 'low' : 'high'} wage`
 }
 
-/* The classifications panel. It arrives with the twin \u2014 the moment the
-   sheet gains a row nobody typed is the moment to say why \u2014 and can be
-   put away and called back. Floating rather than inline: it is reference
-   for the rows beside it, not another section of the form. */
+/* The classifications panel. It arrives with the twin — the moment the
+   sheet gains a row nobody typed is the moment to say why — and can be
+   put away and called back.
+
+   Pinned to the corner of the window rather than to the section. The
+   table is long: anchored to the rows it either covered them or had to
+   be cut short to stay clear of them. Down here it can run to most of
+   the window's height and the form stays readable behind it. */
 function DualWagePanel({ onClose }) {
   return (
-    <div className="im-wage-pop absolute right-0 top-0 z-20 w-[380px] max-w-full rounded-xl overflow-hidden">
+    <div className="im-wage-pop fixed bottom-6 right-6 z-40 w-[400px] max-w-[calc(100vw-3rem)] rounded-xl overflow-hidden flex flex-col"
+      style={{ maxHeight: 'calc(100vh - 3rem)' }}>
       <div className="flex items-start gap-3 px-4 pt-3.5 pb-2">
         <div className="im-section-label !mb-0 flex-1">Dual wage classifications</div>
         <button type="button" onClick={onClose} aria-label="Close"
@@ -103,7 +108,7 @@ function DualWagePanel({ onClose }) {
         hourly wage paid. Both codes go on the submission, so the policy binds with each.
         The splits below are the ones in force for this policy&rsquo;s effective date.
       </p>
-      <div className="max-h-[260px] overflow-y-auto custom-scroll"
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scroll"
         style={{ borderTop: '1px solid var(--line-soft)' }}>
         <table className="w-full text-[11.5px]">
           <thead>
@@ -122,7 +127,7 @@ function DualWagePanel({ onClose }) {
                 <td className="px-2 py-1.5 text-gray-500 leading-snug">{d.trade}</td>
                 <td className="px-4 py-1.5 text-right whitespace-nowrap font-semibold"
                   style={{ color: d.cutoff ? 'var(--ink)' : '#9CA3AF' }}>
-                  {d.cutoff || '\u2014'}
+                  {d.cutoff || '—'}
                 </td>
               </tr>
             ))}
@@ -376,9 +381,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
       </SubSection>
 
       <SubSection title="Classes &amp; payroll">
-        {/* The panel floats over this block rather than pushing it down —
-            it is reference for the rows, not another part of the form. */}
-        <div className="relative">
+        <div>
         {wagePanel && st === 'CA' && <DualWagePanel onClose={() => setWagePanel(false)} />}
         <div className="space-y-4">
           {classes.map((row, idx) => (
