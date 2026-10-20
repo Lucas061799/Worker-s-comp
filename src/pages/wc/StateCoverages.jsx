@@ -80,15 +80,6 @@ function SubSection({ title, sub, children }) {
 /* The mod reads itself back: a mod is only meaningful as the credit or
    debit it represents, and an agent who typed 0.87 should not have to work
    out that it is 13% off. */
-function modNote(value) {
-  const n = parseFloat(value)
-  if (!n) return ['Pre-filled from the FEIN lookup when available — enter 1.00 if the insured has no mod.', 'text-gray-500']
-  const pct = Math.round(Math.abs(1 - n) * 100)
-  if (n < 1) return [`${pct}% credit: better-than-average loss experience`, 'im-note-brand']
-  if (n > 1) return [`${pct}% debit: worse-than-average loss experience`, 'im-note-warn']
-  return ['Unity mod: no credit or debit', 'text-gray-500']
-}
-
 /* Who is covered by default is a state-and-entity rule, so it is stated on
    the state's own card rather than once for the submission. */
 function officerRule(st, entityType) {
@@ -113,7 +104,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
   const officers = sd.officers || []
   const classes  = sd.classes  || []
   const rule = officerRule(st, entityType)
-  const [note, noteTone] = modNote(mod)
 
   // Only an included officer has payroll to schedule.
   const anyIncluded = officers.some(o => o.status !== 'exclude')
@@ -162,7 +152,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
             onChange={setMod}
             placeholder="e.g. 1.00"
           />
-          <p className={`text-xs mt-1.5 ${noteTone}`}>{note}</p>
         </div>
 
         <div>
@@ -176,9 +165,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               name={`Blanket waiver of subrogation in ${st}`}
             />
           </div>
-          <p className="text-xs text-gray-500 mt-1.5">
-            Common when contracts with general contractors require it.
-          </p>
         </div>
       </div>
 
