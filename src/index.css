@@ -1499,8 +1499,7 @@ html[data-dark="true"] body .print-btn-text {
 .im-state-tab-on,
 .im-state-tab-on:hover {
   background: linear-gradient(88.09deg, rgba(92,46,212,0.10) 0%, rgba(166,20,195,0.10) 100%);
-  border-color: rgba(92,46,212,0.28);
-  color: #5C2ED4;
+  border-color: rgba(92,46,212,0.35);
 }
 /* At the blanket dark `.border` shim's weight so the tab keeps its edge. */
 [data-dark="true"] .im-state-tab,
@@ -1513,6 +1512,5 @@ html[data-dark="true"] body .print-btn-text {
 [data-dark="true"] .im-state-tab-on,
 [data-dark="true"] .bop-page .im-state-tab-on {
   background: rgba(167,139,250,0.18) !important;
-  border-color: rgba(167,139,250,0.40) !important;
-  color: #E9D5FF !important;
+  border-color: rgba(167,139,250,0.45) !important;
 }

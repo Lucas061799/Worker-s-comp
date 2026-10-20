@@ -497,8 +497,13 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
                   onClick={() => setActiveState(st)}
                   className={`im-state-tab${on ? ' im-state-tab-on' : ''} inline-flex items-center gap-2 h-8 px-3 rounded-lg text-xs font-semibold`}
                 >
-                  <span className="font-bold tracking-[0.06em]">{st}</span>
-                  {STATE_NAMES[st] || st}
+                  {/* The open tab names itself in the brand gradient, the
+                      way the active step in the rail does — one treatment
+                      for "this is the one you are on". */}
+                  <span className={`inline-flex items-center gap-2${on ? ' text-gradient' : ''}`}>
+                    <span className="font-bold tracking-[0.06em]">{st}</span>
+                    {STATE_NAMES[st] || st}
+                  </span>
                 </button>
               )
             })}
