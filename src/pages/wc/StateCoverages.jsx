@@ -472,7 +472,10 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
       </SubSection>
 
       <SubSection title="Subcontractors">
-        <FieldLabel required>Does the business use subcontractors in {st}?</FieldLabel>
+        {/* The card is already the state's, so the question does not name
+            it. The radiogroup still does, since two cards are on the page
+            and their names have to differ. */}
+        <FieldLabel required>Does this business use subcontractors?</FieldLabel>
         <YesNo
           value={sd.usesSubs || 'no'}
           onChange={val => patch({ usesSubs: val })}
@@ -480,22 +483,22 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         />
 
         {sd.usesSubs === 'yes' && (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mt-5">
-              <div>
-                <Input
-                  label="% of work subcontracted"
-                  required
-                  value={sd.subPercent}
-                  onChange={val => patch({ subPercent: val })}
-                  placeholder="%"
-                />
-                <p className={`text-xs mt-1.5 ${subPct > 25 ? 'im-note-warn' : 'text-gray-500'}`}>
-                  {subPct > 25
-                    ? 'Over 25%: some carriers decline'
-                    : 'Share of total work done by subs'}
-                </p>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mt-5">
+            <div>
+              <Input
+                label="% of work subcontracted"
+                required
+                value={sd.subPercent}
+                onChange={val => patch({ subPercent: val })}
+                placeholder="%"
+              />
+              <p className={`text-xs mt-1.5 ${subPct > 25 ? 'im-note-warn' : 'text-gray-500'}`}>
+                {subPct > 25
+                  ? 'Over 25%: some carriers decline'
+                  : 'Share of total work done by subs'}
+              </p>
+            </div>
+            <div>
               <Select
                 label="Certificates collected for all subs?"
                 required
@@ -503,8 +506,18 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                 value={sd.subCertificates}
                 onChange={val => patch({ subCertificates: val })}
               />
+              {/* The answer that costs money said nothing back. A sub
+                  without a certificate is rated as an employee, so the
+                  payroll above has to carry them. */}
+              {(sd.subCertificates === 'No' || sd.subCertificates === 'Sometimes') && (
+                <p className="text-xs mt-1.5 im-note-warn">
+                  {sd.subCertificates === 'No'
+                    ? 'Uninsured subs are rated as employees — include their pay in the class codes above.'
+                    : 'Any sub without a certificate is rated as an employee — include their pay above.'}
+                </p>
+              )}
             </div>
-          </>
+          </div>
         )}
       </SubSection>
     </div>
