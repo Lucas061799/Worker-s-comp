@@ -23,9 +23,9 @@ const PRIOR_YEARS = ['1', '2', '3', '4+']
 /* The reasons underwriting actually sorts a lapse by. Typed free, the same
    four answers arrived in a dozen wordings and none of them counted. */
 const LAPSE_REASONS = [
-  'Non-payment',
-  'Prior policy non-renewed',
-  'No employees',
+  'Non-payment of premium',
+  'Prior policy non-renewed and not replaced',
+  'No employees for a period of time',
   'Business temporarily closed',
   'Other',
 ]
