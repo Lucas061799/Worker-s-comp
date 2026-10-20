@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Input, Select } from '../../components/FormField'
+import { Input, Select, FormGrid } from '../../components/FormField'
 import {
-  RowGroup,
-  AnswerRow,
+  FieldGroup,
   SectionLabel,
   RemoveButton,
   AddAnother,
@@ -464,17 +463,19 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
     <div className="w-full space-y-6">
       {/* Everything the policy carries whatever states it touches. It sits
           above the tabs because it does not change when they do. */}
-      <RowGroup label="Policy-level coverage">
-        <AnswerRow label="Employer's liability limits">
-          <div style={{ width: 220 }}>
-            <Select
-              options={EL_LIMITS}
-              value={data.elLimits || EL_LIMITS[1]}
-              onChange={val => updateFormData('coverage', { ...data, elLimits: val })}
-            />
-          </div>
-        </AnswerRow>
-      </RowGroup>
+      <FieldGroup label="Policy-level coverage">
+        {/* Label above its control, like every other field on the flow —
+            the label-left row read as a settings line rather than a
+            question being answered. */}
+        <FormGrid>
+          <Select
+            label="Employer's liability limits"
+            options={EL_LIMITS}
+            value={data.elLimits || EL_LIMITS[1]}
+            onChange={val => updateFormData('coverage', { ...data, elLimits: val })}
+          />
+        </FormGrid>
+      </FieldGroup>
 
       <div>
         <SectionLabel>State-level coverage</SectionLabel>
