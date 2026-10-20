@@ -493,7 +493,8 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
             stopped being obvious. A single-state submission has nothing to
             switch between, so the rail stays off. */}
         {states.length > 1 && (
-          <div role="tablist" aria-label="States on this policy" className="flex flex-wrap items-center gap-2 mb-3">
+          <div role="tablist" aria-label="States on this policy"
+            className="im-state-track inline-flex flex-wrap items-center gap-1 mb-3">
             {states.map(st => {
               const on = st === active
               return (
@@ -505,13 +506,11 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
                   onClick={() => setActiveState(st)}
                   className={`im-state-tab${on ? ' im-state-tab-on' : ''} inline-flex items-center gap-2 h-8 px-3 rounded-lg text-xs font-semibold`}
                 >
-                  {/* The open tab names itself in the brand gradient, the
-                      way the active step in the rail does — one treatment
-                      for "this is the one you are on". */}
-                  <span className={`inline-flex items-center gap-2${on ? ' text-gradient' : ''}`}>
-                    <span className="font-bold tracking-[0.06em]">{st}</span>
-                    {STATE_NAMES[st] || st}
-                  </span>
+                  {/* The code reads as the segment's mark and takes the
+                      brand gradient when open; the name goes to full ink
+                      beside it. Closed, both stay on the track's grey. */}
+                  <span className={`font-bold tracking-[0.06em]${on ? ' text-gradient' : ''}`}>{st}</span>
+                  <span className={on ? 'im-state-tab-name' : ''}>{STATE_NAMES[st] || st}</span>
                 </button>
               )
             })}

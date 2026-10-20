@@ -1486,31 +1486,38 @@ html[data-dark="true"] body .print-btn-text {
 .im-consent-hit:hover { background: rgba(0,0,0,0.02); }
 [data-dark="true"] .im-consent-hit:hover { background: rgba(255,255,255,0.05); }
 
-/* The state tabs on Coverages. The open one wears the same brand tint its
-   state chip does; the rest stay quiet. Hover moves the fill and leaves the
-   stroke alone, like everything else on the page. */
+/* The state tabs on Coverages, as a segmented control: one recessed track
+   holding the states, and the open one lifted out of it on a white pill.
+   The track is what says these are alternatives rather than a row of
+   separate buttons. */
+.im-state-track {
+  background: var(--fill-subtle);
+  border: 1px solid var(--line-soft);
+  border-radius: 10px;
+  padding: 3px;
+}
 .im-state-tab {
-  background: var(--surface-card);
-  border: 1px solid var(--line);
+  background: transparent;
+  border: none;
   color: #6B7280;
   transition: background 140ms, color 140ms;
 }
-.im-state-tab:hover { background: rgba(92,46,212,0.04); }
+.im-state-tab:hover { color: #4B5563; }
 .im-state-tab-on,
 .im-state-tab-on:hover {
-  background: linear-gradient(88.09deg, rgba(92,46,212,0.10) 0%, rgba(166,20,195,0.10) 100%);
-  border-color: rgba(92,46,212,0.35);
+  background: var(--surface-card);
+  box-shadow: 0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10);
 }
-/* At the blanket dark `.border` shim's weight so the tab keeps its edge. */
-[data-dark="true"] .im-state-tab,
-[data-dark="true"] .bop-page .im-state-tab {
-  background: rgba(255,255,255,0.04) !important;
-  border-color: rgba(255,255,255,0.12) !important;
-  color: #8B8FA8 !important;
+.im-state-tab-name { color: var(--ink); }
+[data-dark="true"] .im-state-track,
+[data-dark="true"] .bop-page .im-state-track {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.08) !important;
 }
-[data-dark="true"] .im-state-tab:hover { background: rgba(255,255,255,0.08) !important; }
+[data-dark="true"] .im-state-tab { color: #8B8FA8 !important; }
+[data-dark="true"] .im-state-tab:hover { color: #D1D5DB !important; }
 [data-dark="true"] .im-state-tab-on,
 [data-dark="true"] .bop-page .im-state-tab-on {
-  background: rgba(167,139,250,0.18) !important;
-  border-color: rgba(167,139,250,0.45) !important;
+  background: rgba(255,255,255,0.12) !important;
+  box-shadow: none !important;
 }
