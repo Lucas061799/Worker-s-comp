@@ -323,15 +323,14 @@ export function InfoPanel({ children, icon, lead, tone = 'info', footer, classNa
   const variant = info ? '' : ` im-info-panel--${tone}`
   return (
     <div className={`im-info-panel${variant} rounded-xl p-4 flex items-start gap-3 ${className}`}>
-      {/* The neutral alert carries no disc — the DS draws its mark straight
-          onto the surface, and a tint behind a 2px stroke ate the outline.
-          A toned panel keeps the disc it has always had: its mark is a flat
-          colour, which a disc helps rather than hides. */}
-      <span className={info
-        ? 'im-panel-mark w-5 h-5 flex items-center justify-center shrink-0'
-        : `im-panel-icon im-panel-icon--${tone} w-7 h-7 rounded-full flex items-center justify-center shrink-0`}>
+      {/* Every panel's mark sits in a tinted disc, the neutral one included:
+          the brand wash for info, the tone's own for the rest. The neutral
+          mark used to float bare at 20px with a gradient stroke; in the disc
+          it takes the flat brand purple at 14px, like its toned siblings,
+          since a gradient inside a gradient wash reads as neither. */}
+      <span className={`im-panel-icon${info ? '' : ` im-panel-icon--${tone}`} w-7 h-7 rounded-full flex items-center justify-center shrink-0`}>
         {icon || (info
-          ? <AlertGlyph className="w-5 h-5" gradient />
+          ? <AlertGlyph />
           : tone === 'good'
             ? <CheckGlyph />
             : <WarnGlyph />)}
