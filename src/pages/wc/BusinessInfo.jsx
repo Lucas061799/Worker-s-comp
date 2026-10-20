@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Input, Select, Checkbox, FormGrid } from '../../components/FormField'
 import AddressAutocomplete from '../../components/AddressAutocomplete'
-import { FieldGroup, YesNo, InfoPanel, Tag } from '../../components/wc/primitives'
+import { FieldGroup, YesNo, InfoPanel, Tag, InfoDot } from '../../components/wc/primitives'
 import { US_STATES } from '../PageZero'
 
 const ENTITY_OPTIONS = [
@@ -17,10 +17,11 @@ const EXPERIENCE_OPTIONS = Array.from({ length: 11 }, (_, i) =>
 )
 
 /* A field label that can carry more than its own name: the required mark, an
-   "Optional" marker, and the CSLB chip that says where a prefilled answer
-   came from. Passed to Input/Select as the label, so one definition keeps
-   every column on the same baseline. */
-function fieldLabel(text, { required, optional, tag } = {}) {
+   "Optional" marker, the CSLB chip that says where a prefilled answer came
+   from, and an ⓘ for the fields that need a sentence of explanation the
+   column has no room to print. Passed to Input/Select as the label, so one
+   definition keeps every column on the same baseline. */
+function fieldLabel(text, { required, optional, tag, info } = {}) {
   return (
     <span className="flex items-center gap-2 min-h-5">
       <span>
@@ -29,6 +30,7 @@ function fieldLabel(text, { required, optional, tag } = {}) {
         {optional && <span className="font-medium ml-1.5" style={{ color: '#9CA3AF' }}>Optional</span>}
       </span>
       {tag && <Tag size="sm" tone="teal">{tag}</Tag>}
+      {info && <InfoDot title={info.title} text={info.text} />}
     </span>
   )
 }
@@ -171,7 +173,13 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               error={err('yearEstablished')}
             />
             <Select
-              label={fieldLabel('Years of industry experience', { required: true })}
+              label={fieldLabel('Years of industry experience', {
+                required: true,
+                info: {
+                  title: 'Years of industry experience',
+                  text: "Owner's experience in this trade, including before this business.",
+                },
+              })}
               options={EXPERIENCE_OPTIONS}
               value={data.industryExperience}
               onChange={set('industryExperience')}
