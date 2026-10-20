@@ -1,8 +1,6 @@
 import { useEffect } from 'react'
 import { Input, Select } from '../../components/FormField'
 import {
-  RowGroup,
-  AnswerRow,
   SectionLabel,
   RemoveButton,
   AddAnother,
@@ -100,7 +98,7 @@ function officerRule(st, entityType) {
    its subcontractors. There is no "add state" control — a state arrives
    here by having a location added to it on Locations, which is the only
    place the address behind it is captured. */
-function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
+function StateCard({ st, locs, entityType, sd, patch, mod, setMod, elLimits, setElLimits }) {
   const officers = sd.officers || []
   const classes  = sd.classes  || []
   const rule = officerRule(st, entityType)
@@ -136,9 +134,11 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         <Tag tone="brand" shape="chip">{st}</Tag>
         <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
       </div>
-      {/* The two state-level terms, side by side: what the state's bureau
-          says the risk is worth, and whether the policy waives subrogation
-          across the board. */}
+      {/* The state's terms: what the bureau says the risk is worth, whether
+          the policy waives subrogation across the board, and the liability
+          limits it carries. The limits are one value for the whole policy
+          rather than this state's own, so editing them on any card moves
+          them on all of them. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mt-5">
         <div>
           <Input
@@ -165,6 +165,15 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               name={`Blanket waiver of subrogation in ${st}`}
             />
           </div>
+        </div>
+
+        <div>
+          <FieldLabel>Employer's liability limits</FieldLabel>
+          <Select
+            options={EL_LIMITS}
+            value={elLimits || EL_LIMITS[1]}
+            onChange={setElLimits}
+          />
         </div>
       </div>
 
@@ -448,30 +457,28 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
 
   return (
     <div className="w-full space-y-6">
-      <RowGroup label="Policy-level coverage">
-        <AnswerRow label="Employer's liability limits">
-          <div style={{ width: 220 }}>
-            <Select
-              options={EL_LIMITS}
-              value={data.elLimits || EL_LIMITS[1]}
-              onChange={val => updateFormData('coverage', { ...data, elLimits: val })}
+      {/* One label for the run of state cards, matching the policy-level
+          group above it — the cards were the only thing on this screen
+          standing without a heading to say what they are. */}
+      <div>
+        <SectionLabel>State-level coverage</SectionLabel>
+        <div className="space-y-6">
+          {states.map(st => (
+            <StateCard
+              key={st}
+              st={st}
+              locs={allLocations.filter(l => l.state === st)}
+              entityType={entityType}
+              sd={stateDataFor(st)}
+              patch={patchState(st)}
+              mod={modOf(st)}
+              setMod={setModOf(st)}
+              elLimits={data.elLimits}
+              setElLimits={val => updateFormData('coverage', { ...data, elLimits: val })}
             />
-          </div>
-        </AnswerRow>
-      </RowGroup>
-
-      {states.map(st => (
-        <StateCard
-          key={st}
-          st={st}
-          locs={allLocations.filter(l => l.state === st)}
-          entityType={entityType}
-          sd={stateDataFor(st)}
-          patch={patchState(st)}
-          mod={modOf(st)}
-          setMod={setModOf(st)}
-        />
-      ))}
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
