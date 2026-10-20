@@ -233,9 +233,11 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               error={err('address') ? 'This field is required' : ''}
             />
             <Input
-              label={fieldLabel('Suite / unit', { optional: true })}
+              label={fieldLabel('Suite / unit')}
               value={data.suite}
               onChange={set('suite')}
+              /* The placeholder carries "optional" on its own now that the
+                 marker beside the label is gone. */
               placeholder="Suite (optional)"
             />
           </div>
