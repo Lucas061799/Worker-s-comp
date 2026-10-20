@@ -157,14 +157,20 @@ function FieldLabel({ children, required }) {
 
 /* A heading inside a state card. The rule above it is what separates one
    subsection from the next — the card itself is the state. */
-function SubSection({ title, sub, children }) {
+function SubSection({ title, sub, aside, children }) {
   return (
     /* 28 above the rule and 28 below it. The heading is 11px where the
        column labels under it are 13px, so proximity has to carry the
        hierarchy that type size does not: the gap between sections is now
        comfortably larger than any gap inside one. */
     <div className="mt-7 pt-7 border-t" style={{ borderColor: 'var(--line)' }}>
-      <SectionLabel className="!mb-2 flex items-center gap-1.5">{title}</SectionLabel>
+      {/* Anything that acts on the whole section — the classifications
+          panel, say — rides on the heading's own line, at the far end of
+          it, rather than loose among the rows. */}
+      <div className="flex items-center justify-between gap-4 mb-2">
+        <SectionLabel className="!mb-0 flex items-center gap-1.5">{title}</SectionLabel>
+        {aside}
+      </div>
       {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed">{sub}</p>}
       {/* 20px from the heading block to the fields either way. A section
           with a sub-line measures that from the sub-line; one without it
@@ -380,7 +386,15 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         )}
       </SubSection>
 
-      <SubSection title="Classes &amp; payroll">
+      <SubSection
+        title="Classes &amp; payroll"
+        aside={st === 'CA' ? (
+          <button type="button" onClick={() => setWagePanel(true)}
+            className="im-wage-link text-[11.5px] font-semibold shrink-0">
+            Dual wage classifications
+          </button>
+        ) : null}
+      >
         <div>
         {wagePanel && st === 'CA' && <DualWagePanel onClose={() => setWagePanel(false)} />}
         <div className="space-y-4">
@@ -446,14 +460,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         </div>
 
         </div>
-
-        {st === 'CA' && (
-          <div className="mt-4 flex justify-end">
-            <button type="button" onClick={() => setWagePanel(true)} className="im-wage-link text-[11.5px] font-semibold">
-              Dual wage classifications
-            </button>
-          </div>
-        )}
 
         <div className="mt-5">
           <AddAnother onClick={() => setClasses([...classes, emptyClass()])}>Add class</AddAnother>
