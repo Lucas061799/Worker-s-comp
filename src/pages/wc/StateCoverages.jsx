@@ -179,7 +179,11 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod, elLimits, set
 
       <SubSection
         title="Owners & officers"
-        sub={<><span className="font-bold text-navy">{rule.lead}</span> {rule.body}</>}
+        /* The lead keeps its weight but not its navy: the sub-line under
+           Classes & payroll is one flat grey, and two sub-lines in the
+           same card reading in different colours looked like two
+           different kinds of note. */
+        sub={<><span className="font-bold">{rule.lead}</span> {rule.body}</>}
       >
         <div className="space-y-3">
           {officers.map((row, idx) => (
