@@ -75,7 +75,11 @@ function SubSection({ title, sub, children }) {
     <div className="mt-7 pt-7 border-t" style={{ borderColor: 'var(--line)' }}>
       <SectionLabel className="!mb-2 flex items-center gap-1.5">{title}</SectionLabel>
       {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed">{sub}</p>}
-      <div className="mt-5">{children}</div>
+      {/* 20px from the heading block to the fields either way. A section
+          with a sub-line measures that from the sub-line; one without it
+          was measuring 8 + 20 from the heading itself, which left the
+          11px label of a section like Subcontractors stranded. */}
+      <div className={sub ? 'mt-5' : 'mt-3'}>{children}</div>
     </div>
   )
 }
