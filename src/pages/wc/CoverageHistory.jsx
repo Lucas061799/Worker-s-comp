@@ -173,22 +173,15 @@ export default function CoverageHistory({ formData, updateFormData }) {
               {/* The label is its own span, not a bare text node: a text
                   node becomes an anonymous flex item, which is a fragile
                   thing to hang items-center on. The literal space goes with
-                  it — gap-1.5 already sets the distance.
-
-                  The glyph is 10px, not the 14px the panels use. Their text
-                  is 13px; this line is 11px, whose ink measures 8.2px tall,
-                  and a 14px glyph inks 12.8px — half again as tall as the
-                  words beside it. Centred to 0.05px it still read as sitting
-                  low, because a ring that much bigger hangs past the text
-                  top and bottom. At 10px it inks 9.2px and the two match. */}
+                  it — gap-1.5 already sets the distance. */}
               {words >= MIN_WORDS ? (
                 <>
-                  <CheckGlyph className="w-2.5 h-2.5 shrink-0" />
+                  <CheckGlyph className="w-3.5 h-3.5 shrink-0" />
                   <span>Meets the {MIN_WORDS}-word minimum</span>
                 </>
               ) : (
                 <>
-                  <AlertGlyph className="w-2.5 h-2.5 shrink-0" />
+                  <AlertGlyph className="w-3.5 h-3.5 shrink-0" />
                   <span>At least {MIN_WORDS} words</span>
                 </>
               )}
