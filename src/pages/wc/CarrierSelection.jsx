@@ -117,33 +117,6 @@ function InfoPop({ carrier, onClose }) {
   )
 }
 
-function ApproachModal({ carriers, onCancel, onConfirm }) {
-  return (
-    <Modal
-      title="APPROACH THESE MARKETS?"
-      width={460}
-      onDismiss={onCancel}
-      footer={
-        <>
-          <ModalButton variant="ghost" onClick={onCancel}>Go back</ModalButton>
-          <ModalButton onClick={onConfirm}>Yes — approach carriers</ModalButton>
-        </>
-      }
-    >
-      <p className="text-[14px] text-gray-600 leading-relaxed mb-4">
-        BTIS will submit this risk to the carriers below and be registered as your
-        broker with each.{' '}
-        <b className="text-navy">These markets then can't be approached directly for this risk.</b>
-      </p>
-      <ul className="list-disc pl-5 space-y-1">
-        {carriers.map(c => (
-          <li key={c.id} className="text-[14px] text-gray-700">{c.name}</li>
-        ))}
-      </ul>
-    </Modal>
-  )
-}
-
 /* The prototype is careful here: this is a heads-up, not a nudge. Our version
    warned the promotion "won't apply", which reads as pressure to keep the
    carrier checked — theirs says plainly that removing them is the agent's call
@@ -175,7 +148,6 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
   const checked = data.checked || Object.fromEntries(CARRIERS.map(c => [c.id, true]))
 
   const [openInfo, setOpenInfo] = useState(null)
-  const [showApproach, setShowApproach] = useState(false)
   const [showPromo, setShowPromo] = useState(false)
 
   // Persist the default all-checked state so downstream screens see it.
@@ -343,7 +315,11 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
         <button
           type="button"
           disabled={selected.length === 0}
-          onClick={() => setShowApproach(true)}
+          /* Straight to the rating. The confirmation listed the markets
+             back and offered a way out of them, which is an invitation to
+             uncheck one on the way past — the screen above already says
+             which are checked and why. */
+          onClick={() => onGetIndication && onGetIndication()}
           className="btn-gradient force-white-text px-8 py-3 rounded-xl text-sm font-bold transition-all"
           style={{
             background: selected.length ? BRAND_GRADIENT : 'var(--fill-disabled)',
@@ -355,13 +331,6 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
         </button>
       </div>
 
-      {showApproach && (
-        <ApproachModal
-          carriers={selected}
-          onCancel={() => setShowApproach(false)}
-          onConfirm={() => { setShowApproach(false); onGetIndication && onGetIndication() }}
-        />
-      )}
       {showPromo && (
         <PromoModal
           onKeep={() => setShowPromo(false)}

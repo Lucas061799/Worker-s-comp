@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
-  BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoLine, InfoPanel,
+  BRAND_GRADIENT, CarrierLogo, InfoDot, InfoPanel,
   Modal, ModalButton, Tag,
 } from '../../components/wc/primitives'
 
@@ -148,8 +148,10 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
                 its own. The fee total is on the quote, where it is the
                 number being paid — here it only competed with the price. */}
             <p className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-2xl font-bold leading-none">
-                <BrandText>{money(carrier.price)}</BrandText>
+              {/* Solid, not the brand gradient. The gradient made the one
+                  number on the tile the decorative thing on it. */}
+              <span className="text-2xl font-bold leading-none" style={{ color: 'var(--ink)' }}>
+                {money(carrier.price)}
               </span>
               <span className="text-[11px] text-gray-400">/ yr indication</span>
             </p>
@@ -280,11 +282,7 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
 
   return (
     <div className="w-full">
-      <p className="text-sm text-gray-500 -mt-2">
-        {quoted.length} market{quoted.length === 1 ? '' : 's'} returned a price. Sorted by annual premium.
-      </p>
-
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
         {results.map(r => (
           <CarrierTile
             key={r.id}
@@ -339,9 +337,14 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
         </InfoPanel>
       )}
 
-      <InfoLine className="mt-6">
-        Indications on the payroll and mod on file — the carrier's own questions come next.
-      </InfoLine>
+      {/* The one thing on this screen worth a footnote is the badge, since
+          it decides whether an underwriter sees the submission at all. */}
+      <p className="text-[11.5px] text-gray-500 leading-relaxed mt-6 pt-5"
+        style={{ borderTop: '1px solid var(--line-soft)' }}>
+        <b className="font-semibold text-navy">*INSTANT BIND</b> — This risk qualifies for instant
+        binding. Complete the carrier-specific questions to confirm eligibility and bind without
+        underwriting referral required.
+      </p>
 
     </div>
   )
