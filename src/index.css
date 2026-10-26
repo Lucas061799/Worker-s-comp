@@ -1539,7 +1539,9 @@ html[data-dark="true"] body .print-btn-text {
 .im-wage-close:hover { background: var(--fill-subtle); color: #4B5563; }
 [data-dark="true"] .im-wage-close:hover { background: rgba(255,255,255,0.10) !important; color: #E5E7EB !important; }
 /* The way back to the panel once it has been put away. */
-.im-wage-link { color: #6B7280; transition: color 140ms; }
-.im-wage-link:hover { color: #A614C3; }
-[data-dark="true"] .im-wage-link { color: #8B8FA8 !important; }
-[data-dark="true"] .im-wage-link:hover { color: #E879F9 !important; }
+/* Underlined and in the brand's magenta, because grey text that happens to
+   be a button is not read as one. */
+.im-wage-link { color: #A614C3; transition: color 140ms; }
+.im-wage-link:hover { color: #5C2ED4; }
+[data-dark="true"] .im-wage-link { color: #E879F9 !important; }
+[data-dark="true"] .im-wage-link:hover { color: #C4B5FD !important; }

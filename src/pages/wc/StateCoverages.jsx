@@ -3,6 +3,7 @@ import { Input, Select, FormGrid } from '../../components/FormField'
 import {
   FieldGroup,
   SectionLabel,
+  InfoDot,
   RemoveButton,
   AddAnother,
   Segmented,
@@ -139,7 +140,7 @@ function DualWagePanel({ onClose }) {
 }
 
 const emptyClass  = () => ({ location: '', code: '', description: '', payroll: '', ftEmployees: '', ptEmployees: '' })
-const emptyOfficer = () => ({ name: '', title: '', status: 'include' })
+const emptyOfficer = () => ({ name: '', title: '', ownership: '', status: 'include' })
 
 /* FormField's label, for the hand-built controls that sit beside an Input
    and have to line up with it. */
@@ -167,8 +168,12 @@ function SubSection({ title, sub, aside, gap, children }) {
       {/* Anything that acts on the whole section — the classifications
           panel, say — rides on the heading's own line, at the far end of
           it, rather than loose among the rows. */}
+      {/* 14px semibold navy, not the 11px grey caption it was. The field
+          labels beneath are 13px semibold, so at 11px the heading was the
+          smallest thing in its own section and the sections ran together.
+          The ladder now reads: card title 15, section 14, field 13. */}
       <div className="flex items-center justify-between gap-4 mb-2">
-        <SectionLabel className="!mb-0 flex items-center gap-1.5">{title}</SectionLabel>
+        <h4 className="text-[14px] font-semibold text-navy flex items-center gap-1.5 flex-1 min-w-0">{title}</h4>
         {aside}
       </div>
       {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed">{sub}</p>}
@@ -313,21 +318,28 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         </div>
       </div>
 
-      <SubSection
-        title="Owners & officers"
-        /* The lead keeps its weight but not its navy: the sub-line under
-           Classes & payroll is one flat grey, and two sub-lines in the
-           same card reading in different colours looked like two
-           different kinds of note. */
-        sub={<><span className="font-bold">{rule.lead}</span> {rule.body}</>}
-      >
+      <SubSection title="Owners & officers">
+        {/* One callout, not three. The entity rule was a grey sub-line, the
+            payroll guidance an amber panel and the exclusion note a small
+            orange line — three weights for what is all the same kind of
+            thing. The section's own rules go in one neutral panel, written
+            as the appetite answers are: bold opening, then the sentence.
+            Only the per-row consequence stays beside its row. */}
+        <InfoPanel className="mb-5">
+          <b className="font-semibold text-navy">{rule.lead}</b> {rule.body}
+          {anyIncluded && (
+            <> Schedule an included officer&rsquo;s payroll in Classes &amp; payroll at no less
+              than the {STATE_NAMES[st] || st} minimum and no more than the maximum.</>
+          )}
+        </InfoPanel>
+
         <div className="space-y-4">
           {officers.map((row, idx) => (
             <div key={idx}>
               {/* Name and Title share what is left after Status and the
                   remove button, so the two read as a pair rather than a
                   long box beside a short one. */}
-              <div className="grid grid-cols-[1fr_150px] lg:grid-cols-[1fr_1fr_210px_40px] gap-3 items-end">
+              <div className="grid grid-cols-[1fr_150px] lg:grid-cols-[1fr_1fr_120px_210px_40px] gap-3 items-end">
                 <Input
                   label={idx === 0 ? 'Name' : undefined}
                   value={row.name}
@@ -339,6 +351,18 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                   options={OFFICER_TITLES}
                   value={row.title}
                   onChange={val => updateOfficer(idx, { title: val })}
+                />
+                {/* Whole percents only, and never above 100 — a share of a
+                    company has nowhere else to go. */}
+                <Input
+                  label={idx === 0 ? 'Ownership %' : undefined}
+                  align="right"
+                  value={row.ownership}
+                  onChange={val => {
+                    const n = val.replace(/\D/g, '').slice(0, 3).replace(/^0+/, '')
+                    updateOfficer(idx, { ownership: n && Number(n) > 100 ? '100' : n })
+                  }}
+                  placeholder="%"
                 />
                 <div>
                   {idx === 0 && <FieldLabel>Status</FieldLabel>}
@@ -378,16 +402,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
           </AddAnother>
         </div>
 
-        {anyIncluded && (
-          <InfoPanel
-            tone="warn"
-            className="mt-5"
-            lead={`Schedule officer payroll according to ${STATE_NAMES[st] || st} minimum/maximum guidelines.`}
-          >
-            Included officers go in Classes &amp; payroll below at no less than the state
-            minimum and no more than the maximum. [Current {st} min / max]
-          </InfoPanel>
-        )}
       </SubSection>
 
       <SubSection
@@ -395,7 +409,11 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         gap="mt-6"
         aside={st === 'CA' ? (
           <button type="button" onClick={() => setWagePanel(true)}
-            className="im-wage-link text-[11.5px] font-semibold shrink-0">
+            className="im-wage-link text-[12px] font-semibold shrink-0 inline-flex items-center gap-1.5 underline underline-offset-2">
+            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M3 10h18M9 10v10" />
+            </svg>
             Dual wage classifications
           </button>
         ) : null}
@@ -485,18 +503,26 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         {sd.usesSubs === 'yes' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mt-5">
             <div>
+              {/* What the number means moves into the ⓘ; the line below
+                  the field is kept for the one thing worth interrupting
+                  for, which is a share high enough to lose markets. */}
               <Input
-                label="% of work subcontracted"
-                required
+                label={
+                  <span className="flex items-center gap-1.5">
+                    % of work subcontracted<span className="text-red-400">*</span>
+                    <InfoDot
+                      title="% of work subcontracted"
+                      text="Share of total work done by subs, across this state's operations."
+                    />
+                  </span>
+                }
                 value={sd.subPercent}
                 onChange={val => patch({ subPercent: val })}
                 placeholder="%"
               />
-              <p className={`text-xs mt-1.5 ${subPct > 25 ? 'im-note-warn' : 'text-gray-500'}`}>
-                {subPct > 25
-                  ? 'Over 25%: some carriers decline'
-                  : 'Share of total work done by subs'}
-              </p>
+              {subPct > 25 && (
+                <p className="text-xs mt-1.5 im-note-warn">Over 25%: some carriers decline</p>
+              )}
             </div>
             <div>
               <Select
@@ -631,6 +657,7 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
         <FormGrid>
           <Select
             label="Employer's liability limits"
+            required
             options={EL_LIMITS}
             value={data.elLimits || EL_LIMITS[1]}
             onChange={val => updateFormData('coverage', { ...data, elLimits: val })}
