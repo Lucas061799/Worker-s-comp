@@ -310,6 +310,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               columns sit level whichever one is taller. */}
           <div className="h-[42px] flex items-center">
             <YesNo
+              size="field"
               value={sd.blanketWaiver ? 'yes' : 'no'}
               onChange={v => patch({ blanketWaiver: v === 'yes' })}
               name={`Blanket waiver of subrogation in ${st}`}
@@ -368,6 +369,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                   {idx === 0 && <FieldLabel>Status</FieldLabel>}
                   <div className="h-[42px] flex items-center flex-nowrap">
                     <Segmented
+                      size="field"
                       className="flex-nowrap"
                       options={OFFICER_STATUS}
                       value={row.status || 'include'}

@@ -553,7 +553,7 @@ export function Toggle({ checked, onChange, ariaLabel }) {
    on the right, a purple ring and a light tinted fill when on. */
 /* The house radio pill, in a row. YesNo is the two-option case; pass
    `options` for anything wider (coverage status, claim type). */
-export function Segmented({ options, value, onChange, name, className = '' }) {
+export function Segmented({ options, value, onChange, name, className = '', size = 'pill' }) {
   return (
     <div className={`flex flex-wrap gap-2.5 ${className}`} role="radiogroup" aria-label={name}>
       {options.map(opt => {
@@ -567,13 +567,15 @@ export function Segmented({ options, value, onChange, name, className = '' }) {
             role="radio"
             aria-checked={on}
             onClick={() => onChange && onChange(v)}
-            /* 42px and the field's own 14px side padding: a pill standing
-               beside an Input is answering the same row's question, and at
-               30px it read as a chip dropped next to a control rather than
-               a control of its own. */
-            className={`h-[42px] inline-flex items-center gap-2 px-3.5 rounded-lg border transition-all text-xs font-medium ${
-              on ? 'yn-on' : 'yn-off'
-            }`}
+            /* Two sizes. A question that stands on its own under its
+               label keeps the pill's own 30px — at 42px a lone Yes/No pair
+               looks like two buttons rather than one answer. Beside an
+               Input it takes the field's 42px and side padding, because
+               there it is answering the same row and a short pill next to
+               a tall box reads as a chip dropped in. */
+            className={`inline-flex items-center gap-2 rounded-lg border transition-all text-xs font-medium ${
+              size === 'field' ? 'h-[42px] px-3.5' : 'px-3 py-1.5'
+            } ${on ? 'yn-on' : 'yn-off'}`}
           >
             <span
               className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -592,13 +594,14 @@ export function Segmented({ options, value, onChange, name, className = '' }) {
 
 const YES_NO = [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]
 
-export function YesNo({ value, onChange, name, className = '' }) {
+export function YesNo({ value, onChange, name, className = '', size = 'pill' }) {
   return (
     <Segmented
       options={YES_NO}
       value={value}
       onChange={onChange}
       name={name}
+      size={size}
       className={`gap-4 ${className}`}
     />
   )
