@@ -567,7 +567,11 @@ export function Segmented({ options, value, onChange, name, className = '' }) {
             role="radio"
             aria-checked={on}
             onClick={() => onChange && onChange(v)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium ${
+            /* 42px and the field's own 14px side padding: a pill standing
+               beside an Input is answering the same row's question, and at
+               30px it read as a chip dropped next to a control rather than
+               a control of its own. */
+            className={`h-[42px] inline-flex items-center gap-2 px-3.5 rounded-lg border transition-all text-xs font-medium ${
               on ? 'yn-on' : 'yn-off'
             }`}
           >
