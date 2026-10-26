@@ -6,7 +6,6 @@ import {
   SectionLabel,
   RemoveButton,
   AddAnother,
-  InfoLine,
   StepNav,
 } from '../../components/wc/primitives'
 
@@ -14,8 +13,8 @@ const STATES = ['CA', 'AZ', 'NV', 'PA', 'DE']
 
 const BLANK = { address: '', suite: '', city: '', state: 'CA', zip: '' }
 
-/* Location 1 is the physical address from General Info — it is already on the
-   submission, so it is listed rather than asked for again. */
+/* Location 1 is the physical address from Business Info — it is already on
+   the submission, so it is listed rather than asked for again. */
 function primaryFrom(business) {
   return {
     address: business.address || '',
@@ -57,7 +56,7 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
     <div className="w-full space-y-6">
       <FieldGroup label="Locations">
         <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
-          Your physical address carries over from General Info as Location 1.
+          Your physical address carries over from Business Info.
           Add any additional locations below.
         </p>
 
@@ -150,9 +149,6 @@ export default function Locations({ formData, updateFormData, onBack, onContinue
           </div>
         )}
 
-        <InfoLine className="mt-5">
-          Employee counts are captured per class on Classes &amp; payroll, not here.
-        </InfoLine>
       </FieldGroup>
 
       <StepNav onBack={onBack} onContinue={onContinue} />
