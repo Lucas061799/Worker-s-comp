@@ -207,7 +207,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
 
           <FormGrid>
             <Input
-              label={fieldLabel('Website', { optional: true })}
+              label={fieldLabel('Website')}
               value={data.website}
               onChange={set('website')}
               placeholder="e.g. www.sierraridgeplumbing.com"
@@ -275,21 +275,63 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
             onChange={val => set('mailSame')(val === 'yes')}
           />
 
+          {/* Type-ahead on the street, as before, but what it fills is
+              on screen and editable — a suite or apartment never comes back
+              from a lookup, and a mailing address is the one most likely to
+              need correcting by hand. The same shape the physical address
+              above uses. */}
           {data.mailSame === false && (
-            <AddressAutocomplete
-              label={fieldLabel('Mailing address', { required: true })}
-              value={data.mailAddress || ''}
-              onChange={set('mailAddress')}
-              onSelect={({ address, city, state, zip }) =>
-                updateFormData('business', {
-                  mailAddress: address,
-                  mailCity: city,
-                  mailState: state,
-                  mailZip: zip,
-                })
-              }
-              error={err('mailAddress') ? 'This field is required' : ''}
-            />
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-5">
+                <AddressAutocomplete
+                  className="sm:col-span-2"
+                  label={fieldLabel('Mailing address', { required: true })}
+                  value={data.mailAddress || ''}
+                  onChange={set('mailAddress')}
+                  onSelect={({ address, city, state, zip }) =>
+                    updateFormData('business', {
+                      mailAddress: address,
+                      mailCity: city,
+                      mailState: state,
+                      mailZip: zip,
+                    })
+                  }
+                  error={err('mailAddress') ? 'This field is required' : ''}
+                />
+                <Input
+                  label={fieldLabel('Suite / unit')}
+                  value={data.mailSuite}
+                  onChange={set('mailSuite')}
+                  placeholder="Suite (optional)"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-x-6 gap-y-5">
+                <Input
+                  label={fieldLabel('City', { required: true })}
+                  value={data.mailCity}
+                  onChange={set('mailCity')}
+                  placeholder="City"
+                  error={err('mailCity')}
+                />
+                <Select
+                  label={fieldLabel('State', { required: true })}
+                  options={US_STATES}
+                  value={data.mailState}
+                  onChange={set('mailState')}
+                  error={err('mailState')}
+                />
+                <Input
+                  label={fieldLabel('ZIP', { required: true })}
+                  value={data.mailZip}
+                  onChange={set('mailZip')}
+                  placeholder="00000"
+                  digits
+                  maxLength={5}
+                  error={err('mailZip')}
+                />
+              </div>
+            </>
           )}
 
           {/* Answering Yes adds the Locations step to the sidebar. */}
@@ -320,18 +362,10 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               error={err('lastName')}
             />
           </FormGrid>
-          {/* The two numbers share a row, so the company's and the
-              contact's are read against each other rather than a column
-              apart. */}
+          {/* One number, not two: the business phone and the contact's were
+              the same question asked twice. Phone and email now pair on a
+              row the way the names do above them. */}
           <FormGrid>
-            <Input
-              label={fieldLabel('Business phone', { required: true })}
-              type="tel"
-              value={data.businessPhone}
-              onChange={set('businessPhone')}
-              placeholder="(555) 000-0000"
-              error={err('businessPhone')}
-            />
             <Input
               label={fieldLabel('Phone', { required: true })}
               type="tel"
@@ -340,8 +374,6 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
               placeholder="(555) 123-4567"
               error={err('phone')}
             />
-          </FormGrid>
-          <FormGrid>
             <Input
               label={fieldLabel('Email', { required: true })}
               type="email"

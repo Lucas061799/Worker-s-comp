@@ -306,7 +306,6 @@ function App() {
       additionalLocations: 'yes',
       yearEstablished: '2014',
       industryExperience: '10+',
-      businessPhone: '(408) 555-0142',
       phone: '(408) 555-1234',
       email: 'ops@sierraridgeplumbing.com',
     })
