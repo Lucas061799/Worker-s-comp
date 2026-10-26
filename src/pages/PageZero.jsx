@@ -7,7 +7,6 @@ import heroImg from '../assets/wc-hero.png'
 import jungleImg from '../assets/jungle.png'
 import { Input, Select, DateInput } from '../components/FormField'
 import {InfoDot, AlertGlyph, InfoPanel } from '../components/wc/primitives'
-import { CARRIERS } from './wc/CarrierSelection'
 
 const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -19,13 +18,6 @@ export const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI'
 /* The prototype's own nine demo codes, verbatim — including 5187, the
    dual-wage twin of 5183 that the Coverages popover tells the agent to
    enter but that was not selectable here. */
-/* Which of the carriers the submission will be shopped to have appetite.
-   Read off the one list Carrier selection uses, so the count this screen
-   gives and what the agent later sees cannot drift apart. ICW / Zenith is
-   the prototype's standing decline; the real rules land with BRD v2 §7.3,
-   alongside DECLINED_APPETITE below. */
-const NO_APPETITE = ['icwzenith']
-
 const CLASSES = [
   /* The dual-wage pair: the marketplace's table lists the low-wage code
      first, so 5183 is the one below the split and 5187 the one at or
@@ -322,14 +314,16 @@ export default function PageZero({ onStart, initial, isDark = false }) {
                   {checking ? 'Checking…' : appetite ? 'Re-run Appetite' : 'Run Appetite'}
                 </button>
 
+                {/* No carrier count, either way. How many markets took the
+                    risk is not a number the agent acts on and reads as a
+                    score; whether there is a market at all is. */}
                 {appetite === 'good' && (
                   <InfoPanel
                     tone="good"
-                    lead={<>Good news: {CARRIERS.length - NO_APPETITE.length} of {CARRIERS.length} carriers
-                      have appetite for {picked?.code} in {state}.</>}
+                    lead={'Good news! Based on class, state and payroll, we have at least 1 carrier available.'}
                     className="mt-3"
                   >
-                    Final approval depends on the full application.
+                    Final approval is subject to full risk characteristics.
                   </InfoPanel>
                 )}
 
@@ -350,11 +344,9 @@ export default function PageZero({ onStart, initial, isDark = false }) {
                       <circle cx="12" cy="12" r="10" />
                       <path strokeLinecap="round" d="M8.5 8.5l7 7M15.5 8.5l-7 7" />
                       </svg>}
-                    /* Counted the same way the good news is, so the two
-                       answers read as the same sentence with a different
-                       number in it. */
-                    lead={<>No market: 0 of {CARRIERS.length} carriers have appetite
-                      for {picked?.code} in {state}.</>}
+                    /* Built on the good news's sentence, so the two answers
+                       differ in what they say rather than in how they say it. */
+                    lead={'No market. Based on class, state and payroll, we have no carrier available.'}
                   >
                     There is nothing to quote for this risk. Try a different class or state,
                     or call us on 877.649.6682 to talk it through.
