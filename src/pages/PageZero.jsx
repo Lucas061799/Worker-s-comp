@@ -317,22 +317,22 @@ export default function PageZero({ onStart, initial, isDark = false }) {
                 {/* No carrier count, either way. How many markets took the
                     risk is not a number the agent acts on and reads as a
                     score; whether there is a market at all is. */}
+                {/* One paragraph with a bold opening, not a heading over a
+                    sub-line: the whole answer is one sentence of news and
+                    only the first two words are the emphasis. */}
                 {appetite === 'good' && (
-                  <InfoPanel
-                    tone="good"
-                    lead={'Good news! Based on class, state and payroll, we have at least 1 carrier available.'}
-                    className="mt-3"
-                  >
-                    Final approval is subject to full risk characteristics.
+                  <InfoPanel tone="good" className="mt-3">
+                    <b className="font-semibold text-navy">Good news!</b> Based on class, state and
+                    payroll, we have at least 1 carrier available. Final approval is subject to full
+                    risk characteristics.
                   </InfoPanel>
                 )}
 
                 {appetite === 'limited' && (
-                  <InfoPanel
-                    lead={<>Limited appetite for {picked?.code} in {state} — likely referral.</>}
-                    className="mt-3"
-                  >
-                    You can continue; the start is recorded either way.
+                  <InfoPanel className="mt-3">
+                    <b className="font-semibold text-navy">Limited appetite.</b> Based on class, state
+                    and payroll, this one is likely to go to an underwriter. You can continue; the
+                    start is recorded either way.
                   </InfoPanel>
                 )}
 
@@ -344,12 +344,12 @@ export default function PageZero({ onStart, initial, isDark = false }) {
                       <circle cx="12" cy="12" r="10" />
                       <path strokeLinecap="round" d="M8.5 8.5l7 7M15.5 8.5l-7 7" />
                       </svg>}
-                    /* Built on the good news's sentence, so the two answers
-                       differ in what they say rather than in how they say it. */
-                    lead={'No market. Based on class, state and payroll, we have no carrier available.'}
                   >
-                    There is nothing to quote for this risk. Try a different class or state,
-                    or call us on 877.649.6682 to talk it through.
+                    {/* Built on the good news's sentence, so the two answers
+                        differ in what they say rather than in how they say it. */}
+                    <b className="font-semibold text-navy">No market.</b> Based on class, state and
+                    payroll, we have no carrier available. Try a different class or state, or call us
+                    on 877.649.6682 to talk it through.
                   </InfoPanel>
                 )}
 
