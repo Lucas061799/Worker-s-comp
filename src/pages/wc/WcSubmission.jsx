@@ -455,9 +455,15 @@ export default function WcSubmission({ formData, summary, onBack, isDark = false
                       ? (history.lapseReasonOther || 'Other')
                       : history.lapseReason} isDark={isDark} />
                     <Field label="Prior years"      value={history.priorYears} isDark={isDark} />
-                    <Field label="Most recent carrier" value={history.currentCarrier} isDark={isDark} />
-                    <Field label="Most recent premium" value={history.currentPremium} isDark={isDark} />
-                    <Field label="Last date of coverage" value={history.lastCoverageDate} isDark={isDark} />
+                    {/* Named as Coverage history named them: a policy still
+                        in force has a current carrier and no end date. */}
+                    <Field label={history.coverageStatus === 'inforce' ? 'Current carrier' : 'Most recent carrier'}
+                      value={history.currentCarrier} isDark={isDark} />
+                    <Field label={history.coverageStatus === 'inforce' ? 'Current premium' : 'Most recent premium'}
+                      value={history.currentPremium} isDark={isDark} />
+                    {history.coverageStatus !== 'inforce' && (
+                      <Field label="Last date of coverage" value={history.lastCoverageDate} isDark={isDark} />
+                    )}
                     <Field label="Operations"       value={history.operations} isDark={isDark} />
                   </SectionCard>
 

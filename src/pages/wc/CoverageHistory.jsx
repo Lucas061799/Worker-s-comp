@@ -58,6 +58,18 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   // Only a risk with a current or recently-lapsed policy has these.
   const hasPriorPolicy = status === 'inforce' || status === 'lapse'
+  /* A policy still in force has a current carrier and premium, and no last
+     date to give — the cover has not ended. A lapsed one has the same two
+     facts in the past tense, and the date the cover stopped. */
+  const inForce = status === 'inforce'
+
+  /* Changing the status drops what the new one does not ask for, so an
+     answer given under the old one cannot ride along on the submission. */
+  const setStatus = (val) => patch({
+    coverageStatus: val,
+    ...(val === 'lapse' ? {} : { lapseReason: '', lapseReasonOther: '' }),
+    ...(val === 'inforce' ? { lastCoverageDate: '' } : {}),
+  })
 
   const setClaims = (val) => {
     /* Yes starts the count at one, as the prototype's field does: the Loss
@@ -81,7 +93,7 @@ export default function CoverageHistory({ formData, updateFormData }) {
             <Segmented
               options={COVERAGE_STATUS}
               value={status}
-              onChange={val => patch({ coverageStatus: val })}
+              onChange={setStatus}
               name="Current coverage"
             />
           </PillField>
@@ -129,25 +141,27 @@ export default function CoverageHistory({ formData, updateFormData }) {
                 onChange={val => patch({ priorYears: val })}
               />
               <Input
-                label="What is your most recent carrier?"
+                label={`What is your ${inForce ? 'current' : 'most recent'} carrier?`}
                 required
                 value={data.currentCarrier}
                 onChange={val => patch({ currentCarrier: val })}
                 placeholder="Carrier name"
               />
               <Input
-                label="What is your most recent premium?"
+                label={`What is your ${inForce ? 'current' : 'most recent'} premium?`}
                 required
                 value={data.currentPremium}
                 onChange={val => patch({ currentPremium: val })}
                 placeholder="$"
               />
-              <DateInput
-                label="Last date of coverage"
-                required
-                value={data.lastCoverageDate}
-                onChange={val => patch({ lastCoverageDate: val })}
-              />
+              {!inForce && (
+                <DateInput
+                  label="Last date of coverage"
+                  required
+                  value={data.lastCoverageDate}
+                  onChange={val => patch({ lastCoverageDate: val })}
+                />
+              )}
             </FormGrid>
           )}
 
