@@ -71,15 +71,16 @@ export function feesFor(premium, brokerFee = 0) {
    this grid is comparing numbers, not looking a carrier up. What decides what
    happens after Select is a tab on the card's top edge, so it is read before
    the price rather than found underneath it. */
-function CarrierTile({ carrier, onSelect, open }) {
+function CarrierTile({ carrier, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
   const [promoOpen, setPromoOpen] = useState(false)
 
   /* What is left once the two turnarounds are on the face: the servicing
-     facts, which are the same whoever is reading them. One switch opens them
-     across the whole grid and sits above it — these rows exist to be read
-     across carriers, and a chevron on every card promised a per-card panel it
-     never was. */
+     facts, which are the same whoever is reading them. Every card carries the
+     switch and every card answers it: these rows exist to be read across
+     carriers, and opening them together also keeps the grid level — a single
+     tile growing stretches its row-mates and opens a gap above their
+     buttons. */
   const details = [
     ['Billing', carrier.billing],
     ['Servicing', carrier.own],
@@ -113,6 +114,24 @@ function CarrierTile({ carrier, onSelect, open }) {
             {carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}
           </span>
         )}
+
+        {/* The corner, because the price owns the centre line now. One
+            press opens the panel on every card — these rows are here to be
+            read across the grid, and opening them together is also what
+            keeps a row level. */}
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-label={`${carrier.name} servicing details`}
+          className="im-tile-chevron absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition"
+        >
+          <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            style={{ transform: open ? 'rotate(180deg)' : 'none' }} aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
 
         {quoted ? (
           <>
@@ -293,25 +312,6 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
 
   return (
     <div className="w-full">
-      {/* The switch sits above the grid because that is what it does: one
-          press opens the panel on every card. Seven chevrons promised seven
-          separate panels and delivered one. */}
-      <div className="flex justify-end mb-3.5">
-        <button
-          type="button"
-          onClick={() => setDetailsOpen(o => !o)}
-          aria-expanded={detailsOpen}
-          className="im-link-razz inline-flex items-center gap-1.5 text-[12px] font-semibold transition"
-        >
-          {detailsOpen ? 'Hide servicing details' : 'Show servicing details'}
-          <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            style={{ transform: detailsOpen ? 'rotate(180deg)' : 'none' }} aria-hidden="true">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-      </div>
-
       {/* The rows are set wider apart than the columns because the status tab
           hangs over each card's top edge — at a even 12px gap it came within a
           couple of pixels of the Select button on the card above. */}
@@ -324,6 +324,7 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
                carrier's own questions, as the prototype's tiles do. */
             onSelect={() => onPickCarrier(r)}
             open={detailsOpen}
+            onToggle={() => setDetailsOpen(o => !o)}
           />
         ))}
       </div>

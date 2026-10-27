@@ -1546,12 +1546,6 @@ html[data-dark="true"] body .print-btn-text {
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
-/* The same Razz link, where the thing being opened is not a wage table. */
-.im-link-razz { color: #A614C3; transition: color 140ms; }
-.im-link-razz:hover { color: #5C2ED4; }
-[data-dark="true"] .im-link-razz { color: #E879F9 !important; }
-[data-dark="true"] .im-link-razz:hover { color: #C4B5FD !important; }
-
 /* The status tab on a price tile. It straddles the card's top edge, so what
    decides whether an underwriter ever sees the submission is read before the
    price rather than after it. Instant bind gets the brand gradient; a referral
