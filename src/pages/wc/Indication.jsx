@@ -74,18 +74,16 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
   const [promoOpen, setPromoOpen] = useState(false)
 
-  /* The servicing facts, which are the same whoever is reading them. They
-     open underneath the tile rather than in a popover over its neighbours:
-     a floating card covered the two tiles beside it, and these are meant to
-     be compared.
+  /* What is left once the two turnarounds are on the face: the servicing
+     facts, which are the same whoever is reading them. They open underneath
+     the tile rather than in a popover over its neighbours — a floating card
+     covered the two tiles beside it, and these are meant to be compared.
 
      One switch for the whole grid, not one per tile. The point of these
      rows is to read them across carriers, and opening them together also
      keeps the grid level — a single tile growing stretches its row-mates
      and opens a gap above their buttons. */
   const details = [
-    ['Quote SLA', carrier.sla],
-    ['Endorsement SLA', carrier.endorsementSla],
     ['Billing', carrier.billing],
     ['Servicing', carrier.own],
     ['Underwriting', carrier.reco ? 'BTIS authority' : 'Carrier'],
@@ -155,6 +153,25 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
               </span>
               <span className="text-[11px] text-gray-400">/ yr indication</span>
             </p>
+
+            {/* How fast the market moves, beside what it costs. These were
+                behind the chevron, which made the one fact an agent trades
+                price against the one fact they had to go looking for. Two
+                rows on every tile, so the grid stays level and the figures
+                line up to be read across it. */}
+            <dl className="mt-3.5 pt-3 space-y-1.5"
+              style={{ borderTop: '1px solid var(--line-soft)' }}>
+              {[
+                ['Quote', carrier.slaShort || carrier.sla],
+                ['Endorsement', carrier.endorsementSla],
+              ].map(([label, value]) => (
+                <div key={label}
+                  className="flex items-baseline justify-between gap-3 text-[11.5px] leading-snug">
+                  <dt className="text-gray-500 shrink-0">{label}</dt>
+                  <dd className="font-semibold text-right text-navy">{value}</dd>
+                </div>
+              ))}
+            </dl>
 
             {/* What the carrier will do with this submission leads — it is
                 the thing that changes what happens next. What the price is

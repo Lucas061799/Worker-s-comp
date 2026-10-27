@@ -16,6 +16,10 @@ export const CARRIERS = [
     tagline: 'Instant on eligible classes',
     promo: true,
     sla: 'Instant on eligible classes',
+    /* The tile face shows the turnaround beside a 24px price, so the one
+       carrier whose quote SLA is a sentence carries a face-length form of
+       it too. Everything else fits as written. */
+    slaShort: 'Instant',
     own: 'Turnaround in BTIS control',
     billing: 'Agency bill only',
     endorsementSla: '24 hrs',
@@ -66,7 +70,7 @@ export const CARRIERS = [
     id: 'employers',  name: 'Employers',
     sub: 'Direct bill only',
     tagline: 'Strong small-business appetite',
-    sla: '1-2 business days',
+    sla: '1–2 business days',
     own: 'Carrier-controlled turnaround',
     billing: 'Direct bill only',
     endorsementSla: '3 business days',
@@ -79,7 +83,7 @@ export const CARRIERS = [
     sla: '2 business days',
     own: 'Carrier-controlled turnaround',
     billing: 'Direct bill only',
-    endorsementSla: '3-5 business days',
+    endorsementSla: '3–5 business days',
     why: 'Combined ICW and Zenith appetite.',
   },
 ]
