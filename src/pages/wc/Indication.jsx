@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
-  BRAND_GRADIENT, CarrierLogo, InfoDot, InfoPanel,
+  CarrierLogo, InfoDot, InfoPanel,
   Modal, ModalButton, Tag,
 } from '../../components/wc/primitives'
 
@@ -66,23 +66,20 @@ export function feesFor(premium, brokerFee = 0) {
   }
 }
 
-/* One carrier, one tile — the prototype's grid rather than a stacked
-   accordion, so every market and its price is on screen at once. What the
-   accordion hid behind a chevron is behind the ⓘ instead: the servicing
-   facts that are the same whoever is reading them. */
-function CarrierTile({ carrier, onSelect, open, onToggle }) {
+/* One carrier, one tile. The price leads and the carrier signs the bottom,
+   which is the order the production screen puts them in — an agent reading
+   this grid is comparing numbers, not looking a carrier up. What decides what
+   happens after Select is a tab on the card's top edge, so it is read before
+   the price rather than found underneath it. */
+function CarrierTile({ carrier, onSelect, open }) {
   const quoted = !carrier.noquote
   const [promoOpen, setPromoOpen] = useState(false)
 
   /* What is left once the two turnarounds are on the face: the servicing
-     facts, which are the same whoever is reading them. They open underneath
-     the tile rather than in a popover over its neighbours — a floating card
-     covered the two tiles beside it, and these are meant to be compared.
-
-     One switch for the whole grid, not one per tile. The point of these
-     rows is to read them across carriers, and opening them together also
-     keeps the grid level — a single tile growing stretches its row-mates
-     and opens a gap above their buttons. */
+     facts, which are the same whoever is reading them. One switch opens them
+     across the whole grid and sits above it — these rows exist to be read
+     across carriers, and a chevron on every card promised a per-card panel it
+     never was. */
   const details = [
     ['Billing', carrier.billing],
     ['Servicing', carrier.own],
@@ -93,134 +90,131 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
     <div
       /* Every tile is drawn the same. The cheapest used to carry a brand
          edge and a glow, which read as a market already chosen rather than
-         the one that happens to be first in a list sorted by price. */
-      className="rounded-2xl overflow-hidden flex flex-col transition"
+         the one that happens to be first in a list sorted by price.
+
+         No overflow clip any more: the status tab has to hang over the top
+         edge, so the banner and the detail panel round their own corners. */
+      className="rounded-2xl relative flex flex-col transition"
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: '1.5px solid var(--line)',
       }}
     >
-      {/* The carrier BTIS writes itself gets a banner across the top rather
-          than a badge in the row, as the prototype has it. */}
-      {carrier.reco && quoted && (
-        <div className="im-reco-banner px-3 py-1.5 flex items-center justify-center gap-1.5">
-          <span className="text-[10px] font-bold tracking-wide">★ BTIS Recommended</span>
-          <InfoDot
-            title="Why BTIS Recommended?"
-            label="Why BTIS Recommended?"
-            text="BTIS holds full authority with this carrier for all processing — quicker quoting, faster endorsement turnaround, and in-house billing that collects your broker fee at new business and at renewal."
-          />
-        </div>
-      )}
-
-      <div className="p-5 flex-1 flex flex-col">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          {/* The name sits beside its mark rather than under it — they are
-              one piece of identification, and it buys the tile a line. */}
-          <span className="flex items-center gap-2.5 min-w-0">
-            <CarrierLogo carrier={carrier} size={40} />
-            <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
-              {carrier.name}
-            </span>
+      <div className="relative px-5 pb-5 pt-7 flex-1 flex flex-col">
+        {/* The tab straddles the card's own top edge. A referral is stated
+            rather than left to be inferred from a missing tab, so every card
+            in the row reads the same way. */}
+        {quoted && (
+          <span
+            className={`absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-[3px] rounded-md text-[9.5px] font-extrabold tracking-[0.08em] ${
+              carrier.bind ? 'im-bind-tab' : 'im-bind-tab-soft'
+            }`}
+          >
+            {carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}
           </span>
-          <span className="flex items-center gap-1.5 shrink-0 self-start mt-1">
-            <button
-              type="button"
-              onClick={onToggle}
-              aria-expanded={open}
-              aria-label={`${carrier.name} servicing details`}
-              className="im-tile-chevron w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
-            >
-              <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                style={{ transform: open ? 'rotate(180deg)' : 'none' }} aria-hidden="true">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </button>
-          </span>
-        </div>
+        )}
 
         {quoted ? (
           <>
-            {/* The unit rides with the figure rather than taking a line of
-                its own. The fee total is on the quote, where it is the
-                number being paid — here it only competed with the price. */}
-            <p className="flex items-baseline gap-1.5 flex-wrap">
-              {/* Solid, not the brand gradient. The gradient made the one
-                  number on the tile the decorative thing on it. */}
-              <span className="text-2xl font-bold leading-none" style={{ color: 'var(--ink)' }}>
-                {money(carrier.price)}
-              </span>
-              <span className="text-[11px] text-gray-400">/ yr indication</span>
+            {/* Solid, not the brand gradient. The gradient made the one
+                number on the tile the decorative thing on it. */}
+            <p className="text-center text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
+              {money(carrier.price)}
             </p>
-
-            {/* How fast the market moves, beside what it costs. These were
-                behind the chevron, which made the one fact an agent trades
-                price against the one fact they had to go looking for. Two
-                rows on every tile, so the grid stays level and the figures
-                line up to be read across it. */}
-            <dl className="mt-3.5 pt-3 space-y-1.5"
-              style={{ borderTop: '1px solid var(--line-soft)' }}>
-              {[
-                ['Quote', carrier.slaShort || carrier.sla],
-                ['Endorsement', carrier.endorsementSla],
-              ].map(([label, value]) => (
-                <div key={label}
-                  className="flex items-baseline justify-between gap-3 text-[11.5px] leading-snug">
-                  <dt className="text-gray-500 shrink-0">{label}</dt>
-                  <dd className="font-semibold text-right text-navy">{value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            {/* What the carrier will do with this submission leads — it is
-                the thing that changes what happens next. What the price is
-                worth, and what is on offer, follow it. */}
-            <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
-              <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
-                {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
-              </span>
-              {/* The badge says there is a promotion; it does not say what
-                  one is. Pressing it tells you, rather than leaving the
-                  agent to find out at commission time. */}
-              {carrier.promo && (
-                <button
-                  type="button"
-                  onClick={() => setPromoOpen(true)}
-                  aria-label={`What the ${carrier.name} promotion is`}
-                  className="inline-flex rounded-full transition hover:opacity-80"
-                >
-                  <Tag tone="brand">Promo</Tag>
-                </button>
-              )}
-            </div>
-
-            {/* Two auto margins — here and above the chips — so a row stays
-                level and the height the recommended banner adds to one tile
-                is shared between its siblings' gaps instead of opening a
-                hole in one of them. The padding is on the wrapper because an
-                auto margin collapses to nothing on the tallest tile, which
-                left the button sitting on the chips. */}
-            <div className="mt-auto pt-5">
-              {/* Outlined, not filled. Six solid gradient buttons in a grid
-                  read as six carriers already chosen; the choice has not
-                  been made yet, and filling in is what Bind does. */}
-              <button
-                type="button"
-                onClick={onSelect}
-                className="im-btn-outline w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
-              >
-                Select
-              </button>
-            </div>
+            <p className="text-center text-[11px] text-gray-500 mt-1.5">Est. annual</p>
           </>
         ) : (
           <>
-            {/* Muted, because the tile is not an option — but a step
-                darker than it was: it still has to be read. */}
-            <p className="text-[13px] font-semibold text-gray-700">Carrier declined this risk</p>
-            <p className="text-[12px] text-gray-500 leading-relaxed mt-1.5">{carrier.noquote}.</p>
+            {/* Where the price would be, so the card still lines up with the
+                row it sits in. */}
+            <p className="text-center text-[17px] font-bold leading-none text-gray-700">Not available</p>
+            <p className="text-center text-[11px] text-gray-500 mt-1.5">Carrier declined this risk</p>
           </>
+        )}
+
+        {quoted ? (
+          /* How fast the market moves, beside what it costs. These were
+             behind the chevron, which made the one fact an agent trades
+             price against the one fact they had to go looking for. */
+          <dl className="mt-4 pt-3.5 space-y-1.5" style={{ borderTop: '1px solid var(--line)' }}>
+            {[
+              ['Quote', carrier.slaShort || carrier.sla],
+              ['Endorsement', carrier.endorsementSla],
+            ].map(([label, value]) => (
+              <div key={label}
+                className="flex items-baseline justify-between gap-3 text-[11.5px] leading-snug">
+                <dt className="text-gray-500 shrink-0">{label}</dt>
+                <dd className="font-semibold text-right text-navy">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p className="mt-4 pt-3.5 text-center text-[11.5px] leading-relaxed text-gray-500"
+            style={{ borderTop: '1px solid var(--line)' }}>
+            {carrier.noquote}.
+          </p>
+        )}
+
+        {/* The carrier signs the card: the logo on its own line, as the
+            production card has it, and the name under it with whatever marks
+            that carrier carries. Stacked rather than strung along one row
+            because the recommended chip and a name together ran past the
+            card and wrapped, which lifted that logo clear of its row-mates'.
+            The floor is the stack's own height, so a name that wraps —
+            Berkshire Hathaway GUARD — still leaves the row level. */}
+        <div className="mt-auto pt-5 flex flex-col items-center gap-2 min-h-[75px]">
+          <CarrierLogo carrier={carrier} size={40} />
+          {/* The floor is the tallest mark a name can carry, so the cards
+              that carry one keep their logo on the same line as the cards
+              that do not. */}
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 min-h-[27px]">
+          <span className={`text-[13px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
+            {carrier.name}
+          </span>
+          {/* The carrier BTIS writes itself. This was a banner across the
+              top of the card, which is the one place the status tab now
+              needs — and which gave that one tile a taller head, dropping
+              its price a line below its row-mates'. */}
+          {carrier.reco && quoted && (
+            <span className="im-reco-mark">
+              ★ BTIS RECOMMENDED
+              <InfoDot
+                title="Why BTIS Recommended?"
+                label="Why BTIS Recommended?"
+                text="BTIS holds full authority with this carrier for all processing — quicker quoting, faster endorsement turnaround, and in-house billing that collects your broker fee at new business and at renewal."
+              />
+            </span>
+          )}
+          {/* The badge says there is a promotion; it does not say what one
+              is. Pressing it tells you, rather than leaving the agent to
+              find out at commission time. It signs on with the carrier,
+              because that is what it is a fact about — not this price. */}
+          {carrier.promo && quoted && (
+            <button
+              type="button"
+              onClick={() => setPromoOpen(true)}
+              aria-label={`What the ${carrier.name} promotion is`}
+              className="inline-flex rounded-full transition hover:opacity-80"
+            >
+              <Tag tone="brand">Promo</Tag>
+            </button>
+          )}
+          </div>
+        </div>
+
+        {quoted && (
+          <div className="pt-4">
+            {/* Outlined, not filled. Six solid gradient buttons in a grid
+                read as six carriers already chosen; the choice has not
+                been made yet, and filling in is what Bind does. */}
+            <button
+              type="button"
+              onClick={onSelect}
+              className="im-btn-outline w-full h-10 inline-flex items-center justify-center rounded-xl text-sm font-bold transition"
+            >
+              Select
+            </button>
+          </div>
         )}
       </div>
 
@@ -244,8 +238,8 @@ function CarrierTile({ carrier, onSelect, open, onToggle }) {
       )}
 
       {open && (
-        <dl className="px-5 pt-3.5 pb-4 space-y-2"
-          style={{ borderTop: '1px solid var(--line-soft)', background: 'var(--surface-soft)' }}>
+        <dl className="rounded-b-2xl px-5 pt-3.5 pb-4 space-y-2"
+          style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-soft)' }}>
           {details.map(([label, value]) => (
             <div key={label} className="flex justify-between gap-4 text-[11.5px] leading-snug">
               <dt className="font-semibold shrink-0 text-navy">{label}</dt>
@@ -299,7 +293,29 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
+      {/* The switch sits above the grid because that is what it does: one
+          press opens the panel on every card. Seven chevrons promised seven
+          separate panels and delivered one. */}
+      <div className="flex justify-end mb-3.5">
+        <button
+          type="button"
+          onClick={() => setDetailsOpen(o => !o)}
+          aria-expanded={detailsOpen}
+          className="im-link-razz inline-flex items-center gap-1.5 text-[12px] font-semibold transition"
+        >
+          {detailsOpen ? 'Hide servicing details' : 'Show servicing details'}
+          <svg className="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+            style={{ transform: detailsOpen ? 'rotate(180deg)' : 'none' }} aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+      </div>
+
+      {/* The rows are set wider apart than the columns because the status tab
+          hangs over each card's top edge — at a even 12px gap it came within a
+          couple of pixels of the Select button on the card above. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-3 gap-y-7 items-stretch">
         {results.map(r => (
           <CarrierTile
             key={r.id}
@@ -308,7 +324,6 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
                carrier's own questions, as the prototype's tiles do. */
             onSelect={() => onPickCarrier(r)}
             open={detailsOpen}
-            onToggle={() => setDetailsOpen(o => !o)}
           />
         ))}
       </div>
@@ -356,8 +371,10 @@ export default function Indication({ formData, onPickCarrier, onRefer, referralI
 
       {/* The one thing on this screen worth a footnote is the badge, since
           it decides whether an underwriter sees the submission at all. */}
+      {/* The card rule, not the soft one: this line sits on the page's own
+          background rather than on a card, and --line-soft is a shade off it. */}
       <p className="text-[11.5px] text-gray-500 leading-relaxed mt-6 pt-5"
-        style={{ borderTop: '1px solid var(--line-soft)' }}>
+        style={{ borderTop: '1px solid var(--line)' }}>
         <b className="font-semibold text-navy">*INSTANT BIND</b> — This risk qualifies for instant
         binding. Complete the carrier-specific questions to confirm eligibility and bind without
         underwriting referral required.

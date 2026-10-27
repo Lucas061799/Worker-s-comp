@@ -996,32 +996,37 @@ button.force-white-text,
    competing with the price and the Select button. */
 /* BTIS's own purple, #3A2968 — the brand sheet's digital value, not the
    gradient's start. White on it is about 11:1. */
-.im-reco-banner {
+/* It signs on with the carrier rather than banding the top of the card: a
+   banner there added its own height to one tile, which dropped that tile's
+   price a line below its row-mates' in a grid whose whole job is comparing
+   prices across a row. */
+.im-reco-mark {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px 3px 9px; border-radius: 9999px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
   background: #3A2968;
-  border-bottom: 1px solid #3A2968;
   color: #FFFFFF;
 }
-[data-dark="true"] .im-reco-banner {
+[data-dark="true"] .im-reco-mark {
   background: #3A2968 !important;
-  border-bottom-color: #3A2968 !important;
   color: #FFFFFF !important;
 }
 /* The dot rides on the fill, so it is white at low alpha rather than a
    second colour. */
-.im-reco-banner .im-info-dot {
+.im-reco-mark .im-info-dot {
   background: rgba(255,255,255,0.30);
   color: #FFFFFF;
 }
-.im-reco-banner .im-info-dot:hover,
-.im-reco-banner .im-info-dot[data-open="true"] {
+.im-reco-mark .im-info-dot:hover,
+.im-reco-mark .im-info-dot[data-open="true"] {
   background: rgba(255,255,255,0.48);
 }
-[data-dark="true"] .im-reco-banner .im-info-dot {
+[data-dark="true"] .im-reco-mark .im-info-dot {
   background: rgba(255,255,255,0.30) !important;
   color: #FFFFFF !important;
 }
-[data-dark="true"] .im-reco-banner .im-info-dot:hover,
-[data-dark="true"] .im-reco-banner .im-info-dot[data-open="true"] {
+[data-dark="true"] .im-reco-mark .im-info-dot:hover,
+[data-dark="true"] .im-reco-mark .im-info-dot[data-open="true"] {
   background: rgba(255,255,255,0.48) !important;
 }
 
@@ -1541,6 +1546,38 @@ html[data-dark="true"] body .print-btn-text {
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
+/* The same Razz link, where the thing being opened is not a wage table. */
+.im-link-razz { color: #A614C3; transition: color 140ms; }
+.im-link-razz:hover { color: #5C2ED4; }
+[data-dark="true"] .im-link-razz { color: #E879F9 !important; }
+[data-dark="true"] .im-link-razz:hover { color: #C4B5FD !important; }
+
+/* The status tab on a price tile. It straddles the card's top edge, so what
+   decides whether an underwriter ever sees the submission is read before the
+   price rather than after it. Instant bind gets the brand gradient; a referral
+   gets the card's own colour and a border, which reads as a notch in the edge
+   rather than a second claim on the eye. */
+/* The ring is the card's own colour, so the tab cuts a clean notch in the
+   edge it straddles — and on the one card that carries a banner, it keeps a
+   gradient tab off a purple bar it would otherwise blend into. */
+.im-bind-tab {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
+  color: #FFFFFF;
+  box-shadow: 0 0 0 2.5px var(--surface-card);
+}
+.im-bind-tab-soft {
+  background: var(--surface-card);
+  border: 1px solid var(--line-strong);
+  color: #6B7280;
+  box-shadow: 0 0 0 2.5px var(--surface-card);
+}
+[data-dark="true"] .im-bind-tab-soft,
+[data-dark="true"] .bop-page .im-bind-tab-soft {
+  background: #1A1E38 !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #9CA3AF !important;
+}
+
 .im-wage-link { color: #A614C3; transition: color 140ms; }
 .im-wage-link:hover { color: #5C2ED4; }
 [data-dark="true"] .im-wage-link { color: #E879F9 !important; }
