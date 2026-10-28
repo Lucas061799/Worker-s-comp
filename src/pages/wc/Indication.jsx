@@ -116,7 +116,7 @@ function SlaRows({ carrier, className = '' }) {
 /* The badge says there is a promotion; it does not say what one is. Pressing
    it tells you, rather than leaving the agent to find out at commission
    time. */
-function PromoBadge({ carrier }) {
+function PromoBadge({ carrier, tab = false }) {
   const [open, setOpen] = useState(false)
   return (
     <>
@@ -124,9 +124,9 @@ function PromoBadge({ carrier }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`What the ${carrier.name} promotion is`}
-        className="inline-flex rounded-full transition hover:opacity-80"
+        className={tab ? 'im-promo-tab' : 'inline-flex rounded-full transition hover:opacity-80'}
       >
-        <Tag tone="brand">Promo</Tag>
+        {tab ? 'PROMO' : <Tag tone="brand">Promo</Tag>}
       </button>
       {open && (
         <Modal
@@ -295,7 +295,10 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
         border: '1.5px solid var(--line)',
       }}
     >
-      <div className="relative px-5 pb-7 pt-7 flex-1 flex flex-col">
+      {/* The extra headroom is for the promo tab: beside the price it reached
+            under the chevron, and the price line is the one thing on this card
+            that cannot move sideways. */}
+      <div className="relative px-5 pb-7 pt-9 flex-1 flex flex-col">
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
@@ -315,9 +318,15 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
           <>
             {/* Solid, not the brand gradient. The gradient made the one
                 number on the tile the decorative thing on it. */}
-            <p className="text-center text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
-              {money(carrier.price)}
-            </p>
+            <div className="grid items-center" style={{ gridTemplateColumns: '1fr auto 1fr' }}>
+              <span aria-hidden="true" />
+              <p className="text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
+                {money(carrier.price)}
+              </p>
+              <span className="justify-self-start pl-2">
+                {carrier.promo && <PromoBadge carrier={carrier} tab />}
+              </span>
+            </div>
             <p className="text-center text-[11px] text-gray-500 mt-1.5">Est. annual</p>
           </>
         ) : (
@@ -352,13 +361,12 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
         )}
 
         {/* The other edge. The top one says what happens after Select; this
-            one says what is particular about the carrier. Worn rather than
-            stacked, so it costs the card no height and no card has to
-            reserve a line for a mark it does not carry. */}
-        {quoted && (carrier.reco || carrier.promo) && (
-          <span className="im-edge-mark absolute -bottom-[11px] left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full">
-            {carrier.reco && <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>}
-            {carrier.promo && <PromoBadge carrier={carrier} />}
+            one says the house backs this carrier. Worn rather than stacked,
+            so it costs the card no height and no card has to reserve a line
+            for a mark it does not carry. */}
+        {quoted && carrier.reco && (
+          <span className="im-edge-mark absolute -bottom-[11px] left-1/2 -translate-x-1/2 inline-flex rounded-full">
+            <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
           </span>
         )}
       </div>

@@ -1577,6 +1577,29 @@ html[data-dark="true"] body .print-btn-text {
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
+/* The promotion, as a tab rather than a chip, so it can ride beside the
+   price at the price's own weight. Tinted rather than filled: the status tab
+   on the top edge is the filled one, and two gradient fills on one card
+   compete for the same job. */
+.im-promo-tab {
+  display: inline-flex; align-items: center;
+  padding: 3px 8px; border-radius: 9999px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
+  background: rgba(92,46,212,0.10);
+  border: 1px solid rgba(92,46,212,0.20);
+  color: #A614C3;
+  white-space: nowrap;
+  transition: background 140ms;
+}
+.im-promo-tab:hover { background: rgba(92,46,212,0.18); }
+[data-dark="true"] .im-promo-tab,
+[data-dark="true"] .bop-page .im-promo-tab {
+  background: rgba(167,139,250,0.18) !important;
+  border-color: rgba(167,139,250,0.32) !important;
+  color: #E9D5FF !important;
+}
+[data-dark="true"] .im-promo-tab:hover { background: rgba(167,139,250,0.28) !important; }
+
 /* A mark worn on the card's bottom edge, the way the status tab is worn on
    its top one. Opaque and ringed in the card's own colour so it cuts the
    border rather than sitting on top of it — the promo tag's fill is a tint,
