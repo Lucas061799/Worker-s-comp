@@ -1590,9 +1590,14 @@ html[data-dark="true"] body .print-btn-text {
   font-weight: 700;
   color: #A614C3;
   white-space: nowrap;
+  /* Underlined at rest, not only on hover: it is the one thing on this card
+     you can press that does not look like a button. */
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
   transition: color 140ms;
 }
-.im-promo-tab:hover { color: #5C2ED4; text-decoration: underline; }
+.im-promo-tab:hover { color: #5C2ED4; }
 [data-dark="true"] .im-promo-tab { color: #E879F9 !important; }
 [data-dark="true"] .im-promo-tab:hover { color: #C4B5FD !important; }
 
