@@ -295,7 +295,7 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
         border: '1.5px solid var(--line)',
       }}
     >
-      <div className="relative px-5 pb-5 pt-7 flex-1 flex flex-col">
+      <div className="relative px-5 pb-7 pt-7 flex-1 flex flex-col">
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
@@ -338,30 +338,28 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
           </p>
         )}
 
-        {/* The carrier signs the card: the logo, the name, and under them
-            whatever marks that carrier carries. The marks take a line of
-            their own rather than standing beside the name — the recommended
-            chip is several times the width of a name like CNA, and next to
-            it the line read as a chip with a word in front of it. Every
-            line has a floor, so a card that carries a mark keeps its logo
-            level with one that does not. */}
-        <div className="mt-auto pt-5 flex flex-col items-center gap-1.5 min-h-[102px]">
-          <CarrierLogo carrier={carrier} size={46} ratio={2.8} />
-          <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
-            {carrier.name}
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 min-h-[27px]">
-            {carrier.reco && quoted && (
-              <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
-            )}
-            {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
-          </div>
+        {/* The carrier signs the card with its mark alone, as the production
+            screen does — the name under it was the same word twice once the
+            real logos went in. */}
+        <div className="mt-auto pt-5 flex justify-center">
+          <CarrierLogo carrier={carrier} size={46} ratio={2.8} named />
         </div>
 
         {quoted && (
           <div className="pt-4">
             <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
           </div>
+        )}
+
+        {/* The other edge. The top one says what happens after Select; this
+            one says what is particular about the carrier. Worn rather than
+            stacked, so it costs the card no height and no card has to
+            reserve a line for a mark it does not carry. */}
+        {quoted && (carrier.reco || carrier.promo) && (
+          <span className="im-edge-mark absolute -bottom-[11px] left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full">
+            {carrier.reco && <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>}
+            {carrier.promo && <PromoBadge carrier={carrier} />}
+          </span>
         )}
       </div>
 
@@ -813,7 +811,7 @@ export default function Indication({
            within a couple of pixels of the Select button on the card above.
            V1 has no tab, so its rows sit at the column gap. */
         <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-stretch ${
-          version === 1 ? 'gap-3' : 'gap-x-3 gap-y-7'
+          version === 1 ? 'gap-3' : 'gap-x-3 gap-y-10'
         }`}>
           {results.map(r => {
             const Tile = version === 1 ? CarrierTileV1 : CarrierTileV2

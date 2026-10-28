@@ -1577,6 +1577,15 @@ html[data-dark="true"] body .print-btn-text {
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
+/* A mark worn on the card's bottom edge, the way the status tab is worn on
+   its top one. Opaque and ringed in the card's own colour so it cuts the
+   border rather than sitting on top of it — the promo tag's fill is a tint,
+   which would otherwise have let the border show straight through. */
+.im-edge-mark {
+  background: var(--surface-card);
+  box-shadow: 0 0 0 2.5px var(--surface-card);
+}
+
 /* The tier card's action bar. Flat until you point at it, then the brand
    gradient — a fill that follows the cursor says "this is what you are
    about to press", which is the one thing a fill here can say when nothing

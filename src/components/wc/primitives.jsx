@@ -103,7 +103,7 @@ const CARRIER_MARKS = {
    wordmarks, not monograms: EMPLOYERS is three and a half times as wide as it
    is tall, and in a square box it came out ten pixels high. The tile stays
    white in dark mode — a brand mark needs its own background, not the page's. */
-export function CarrierLogo({ carrier, size = 40, ratio = 2, className = '' }) {
+export function CarrierLogo({ carrier, size = 40, ratio = 2, named = false, className = '' }) {
   const mark = CARRIER_MARKS[carrier?.id]
   return (
     <div
@@ -116,8 +116,15 @@ export function CarrierLogo({ carrier, size = 40, ratio = 2, className = '' }) {
       title={carrier?.name}
     >
       {mark ? (
-        /* Decorative: every place this is used names the carrier beside it. */
-        <img src={mark} alt="" className="max-w-full max-h-full" style={{ objectFit: 'contain' }} />
+        /* Decorative where the carrier is named beside it; `named` is for the
+           card that shows the mark alone, where this is the only thing a
+           screen reader has to go on. */
+        <img
+          src={mark}
+          alt={named ? carrier.name : ''}
+          className="max-w-full max-h-full"
+          style={{ objectFit: 'contain' }}
+        />
       ) : (
         <svg
           width={Math.round(size * 0.46)} height={Math.round(size * 0.46)}
