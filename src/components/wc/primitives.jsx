@@ -36,14 +36,43 @@ export function BrandText({ children, className = '' }) {
 }
 
 /* Section header. Space above, bold title over a hairline, optional
-   subtitle underneath. */
-export function StepHeader({ title, subtitle }) {
+   subtitle underneath, and an optional control on the title's own line —
+   the title keeps the left, so the two never trade places. */
+export function StepHeader({ title, subtitle, aside }) {
   return (
     <div className="pt-6 md:pt-8 mb-4 md:mb-5">
       <div className="pb-3 md:pb-4 border-b" style={{ borderColor: '#D1D5DB' }}>
-        <h2 className="text-base md:text-lg font-bold text-navy">{title}</h2>
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-base md:text-lg font-bold text-navy">{title}</h2>
+          {aside && <div className="shrink-0">{aside}</div>}
+        </div>
         {subtitle && <p className="text-sm text-gray-500 leading-relaxed max-w-2xl mt-1.5">{subtitle}</p>}
       </div>
+    </div>
+  )
+}
+
+/* A demo switch, not part of the flow: the same screen drawn more than one
+   way, so a reviewer can put the treatments side by side. The segmented
+   track the state tabs use — it is the same job, picking one of a few. */
+export function VersionSwitch({ options, value, onChange, label = 'Layout version' }) {
+  return (
+    <div className="im-state-track inline-flex items-center gap-1" role="group" aria-label={label}>
+      {options.map(opt => {
+        const on = opt.value === value
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            aria-pressed={on}
+            title={opt.title}
+            className={`im-state-tab px-2.5 h-7 rounded-lg text-[11.5px] font-bold transition ${on ? 'im-state-tab-on' : ''}`}
+          >
+            <span className={on ? 'im-state-tab-name' : undefined}>{opt.label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }

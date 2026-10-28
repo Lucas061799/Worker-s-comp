@@ -1002,7 +1002,7 @@ button.force-white-text,
    prices across a row. */
 .im-reco-mark {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 8px 3px 9px; border-radius: 9999px;
+  padding: 3px 8px 3px 9px; border-radius: 9999px; white-space: nowrap;
   font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
   background: #3A2968;
   color: #FFFFFF;
@@ -1010,6 +1010,49 @@ button.force-white-text,
 [data-dark="true"] .im-reco-mark {
   background: #3A2968 !important;
   color: #FFFFFF !important;
+}
+
+/* The same colours as a band across the top of a card, which is how the
+   carrier-led version of the tile carries it. */
+.im-reco-banner {
+  background: #3A2968;
+  border-bottom: 1px solid #3A2968;
+  color: #FFFFFF;
+}
+[data-dark="true"] .im-reco-banner {
+  background: #3A2968 !important;
+  border-bottom-color: #3A2968 !important;
+  color: #FFFFFF !important;
+}
+.im-reco-banner .im-info-dot {
+  background: rgba(255,255,255,0.30);
+  color: #FFFFFF;
+}
+.im-reco-banner .im-info-dot:hover,
+.im-reco-banner .im-info-dot[data-open="true"] {
+  background: rgba(255,255,255,0.48);
+}
+[data-dark="true"] .im-reco-banner .im-info-dot {
+  background: rgba(255,255,255,0.30) !important;
+  color: #FFFFFF !important;
+}
+
+/* One market per line, for the version that lays them out as a table. The
+   hover is the whole row, because the whole row is one carrier. */
+.im-quote-row { transition: background 120ms; }
+.im-quote-row:hover { background: var(--fill-subtle); }
+[data-dark="true"] .im-quote-row:hover,
+[data-dark="true"] .bop-page .im-quote-row:hover {
+  background: rgba(255,255,255,0.04) !important;
+}
+.im-quote-head {
+  background: var(--surface-soft);
+  color: #6B7280;
+}
+[data-dark="true"] .im-quote-head,
+[data-dark="true"] .bop-page .im-quote-head {
+  background: rgba(255,255,255,0.03) !important;
+  color: #8B8FA8 !important;
 }
 /* The dot rides on the fill, so it is white at low alpha rather than a
    second colour. */

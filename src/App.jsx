@@ -5,7 +5,7 @@ import btisLogo from './assets/btislogo.png'
 import btisLogoDark from './assets/btislogo-dark.png'
 import Sidebar from './components/Sidebar'
 import PrintSummary from './components/PrintSummary'
-import { StepHeader, StepNav } from './components/wc/primitives'
+import { StepHeader, StepNav, VersionSwitch } from './components/wc/primitives'
 import PageZero from './pages/PageZero'
 import DemoBar from './components/DemoJump'
 import BusinessInfo from './pages/wc/BusinessInfo'
@@ -21,7 +21,7 @@ import Referral, { ReferralSubmitted } from './pages/wc/Referral'
 import BindFlow, { QuoteRail } from './pages/wc/BindFlow'
 import { feesFor, FACTORS, premiumForCarrier } from './pages/wc/Indication'
 import { Modal, ModalButton } from './components/wc/primitives'
-import Indication from './pages/wc/Indication'
+import Indication, { INDICATION_VERSIONS } from './pages/wc/Indication'
 import CarrierFlow from './pages/wc/CarrierFlow'
 import Quote from './pages/wc/Quote'
 import WcSubmission from './pages/wc/WcSubmission'
@@ -93,6 +93,10 @@ function App() {
      one is running. The Referral screen itself is still to come, so this
      records the intent and says so rather than pretending to submit. */
   const [referralInPlay, setReferralInPlay] = useState(() => !!restored?.referralInPlay)
+  /* A demo control, not part of the flow: three treatments of the price
+     indication, switched from its own header. Deliberately not persisted —
+     a reviewer's comparison is this sitting's, not the submission's. */
+  const [indicationVersion, setIndicationVersion] = useState(2)
 
   /* Carrier flow asks for sub-class descriptors before the carrier's own
      questions, so the step has two screens rather than one. */
@@ -636,13 +640,24 @@ owner_involved: 'yes',
             {!inAppPhase && (
               <section className="bop-page">
                 <div className="px-4 md:px-6">
-                  <StepHeader title={
-                    referralStage === 'form' ? titles.referral
-                      : referralStage === 'submitted' ? titles.referred
-                        : binding ? titles.bind
-                          : currentKey === 'carrierflow' && !subclassDone ? titles.subclass
-                            : (titles[currentKey] || '')
-                  } />
+                  <StepHeader
+                    title={
+                      referralStage === 'form' ? titles.referral
+                        : referralStage === 'submitted' ? titles.referred
+                          : binding ? titles.bind
+                            : currentKey === 'carrierflow' && !subclassDone ? titles.subclass
+                              : (titles[currentKey] || '')
+                    }
+                    aside={
+                      !rating && !finalizing && !referralStage && showingIndication ? (
+                        <VersionSwitch
+                          options={INDICATION_VERSIONS}
+                          value={indicationVersion}
+                          onChange={setIndicationVersion}
+                        />
+                      ) : undefined
+                    }
+                  />
                 </div>
                 <div className="px-4 md:px-6 pb-8 md:pb-10">
                   {rating && (
@@ -665,6 +680,7 @@ owner_involved: 'yes',
                       onPickCarrier={handlePickCarrier}
                       referralInPlay={referralInPlay}
                       onRefer={() => setReferralStage('form')}
+                      version={indicationVersion}
                     />
                   )}
                   {!rating && !finalizing && referralStage === 'form' && (
