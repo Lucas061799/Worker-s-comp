@@ -338,19 +338,21 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
           </p>
         )}
 
-        {/* The carrier signs the card: the logo on its own line, as the
-            production card has it, and the name under it with whatever marks
-            that carrier carries. Both the stack and the name line have
-            floors, so a card that carries a mark keeps its logo level with
-            one that does not. */}
-        <div className="mt-auto pt-5 flex flex-col items-center gap-2 min-h-[75px]">
+        {/* The carrier signs the card: the logo, the name, and under them
+            whatever marks that carrier carries. The marks take a line of
+            their own rather than standing beside the name — the recommended
+            chip is several times the width of a name like CNA, and next to
+            it the line read as a chip with a word in front of it. Every
+            line has a floor, so a card that carries a mark keeps its logo
+            level with one that does not. */}
+        <div className="mt-auto pt-5 flex flex-col items-center gap-1.5 min-h-[96px]">
           <CarrierLogo carrier={carrier} size={40} />
+          <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
+            {carrier.name}
+          </span>
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 min-h-[27px]">
-            <span className={`text-[13px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
-              {carrier.name}
-            </span>
             {carrier.reco && quoted && (
-              <span className="im-reco-mark">★ BTIS RECOMMENDED<RecoDot /></span>
+              <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
             )}
             {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
           </div>
@@ -410,7 +412,7 @@ function CarrierRowV3({ carrier, onSelect, open, onToggle, best }) {
             )}
             {!quoted && <span className="im-chip im-chip-muted">Not a fit</span>}
             {carrier.reco && quoted && (
-              <span className="im-reco-mark">★ BTIS RECOMMENDED<RecoDot /></span>
+              <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
             )}
             {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
           </div>
@@ -533,7 +535,7 @@ function CarrierTierV4({ carrier, onSelect, best }) {
           className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold px-3 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-1.5"
           style={{ background: BRAND_GRADIENT, letterSpacing: '0.08em' }}
         >
-          ★ BTIS RECOMMENDED<RecoDot />
+          ★ RECOMMENDED<RecoDot />
         </div>
       )}
       <div
@@ -658,16 +660,16 @@ function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
 
       <Chevron open={open} onToggle={onToggle} label={carrier.name} className="absolute top-4 right-4" />
 
-      {/* Two lines of chips, reserved on every card: the recommended mark and
-          a status chip do not fit on one line together at this width, and a
-          card that wraps them starts its price a row below its neighbours'.
-          Inland's original carries one chip and never met this. */}
-      <div className="flex flex-wrap items-start content-start gap-2 mb-3 min-h-[55px]">
+      {/* One line, reserved: a card whose chips wrap starts its price a row
+          below its neighbours'. Reserving two lines left a hole under the
+          single-chip cards, so the mark lost the word BTIS instead and the
+          pair now fits on one. */}
+      <div className="flex flex-wrap items-start content-start gap-2 mb-3 min-h-[27px]">
         <span className={`im-chip ${!quoted ? 'im-chip-muted' : carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
           {!quoted ? 'Declined' : carrier.bind ? 'Instant bind' : 'UW review'}
         </span>
         {carrier.reco && quoted && (
-          <span className="im-reco-mark">★ BTIS RECOMMENDED<RecoDot /></span>
+          <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
         )}
         {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
       </div>
