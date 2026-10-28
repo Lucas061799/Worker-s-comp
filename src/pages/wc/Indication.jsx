@@ -347,11 +347,16 @@ function CarrierTileV2({ carrier, onSelect }) {
           </p>
         )}
 
-        {/* The carrier signs the card with its mark alone, as the production
-            screen does — the name under it was the same word twice once the
-            real logos went in. */}
-        <div className="mt-auto pt-5 flex items-center justify-center h-[108px]">
-          <CarrierLogo carrier={carrier} size={88} named />
+        {/* The name is back under the mark. It went when the tile was
+            landscape and a wordmark could be read in it; a square is
+            width-bound for a 3.5:1 lockup like Berkshire Hathaway GUARD's,
+            which comes out 19px tall and unreadable. The mark is decorative
+            again now that something beside it says the name. */}
+        <div className="mt-auto pt-5 flex flex-col items-center gap-2">
+          <CarrierLogo carrier={carrier} size={88} />
+          <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
+            {carrier.name}
+          </span>
         </div>
 
         {quoted && (
