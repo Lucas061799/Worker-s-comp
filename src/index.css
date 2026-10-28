@@ -1577,28 +1577,18 @@ html[data-dark="true"] body .print-btn-text {
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
-/* The promotion, as a tab rather than a chip, so it can ride beside the
-   price at the price's own weight. Tinted rather than filled: the status tab
-   on the top edge is the filled one, and two gradient fills on one card
-   compete for the same job. */
+/* The promotion, set into the line under the price rather than stood beside
+   it. A pill next to a 28px number was an object pasted onto the card; at
+   the sub-line's own size it is a word in a sentence, which is what it is. */
 .im-promo-tab {
-  display: inline-flex; align-items: center;
-  padding: 3px 8px; border-radius: 9999px;
-  font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
-  background: rgba(92,46,212,0.10);
-  border: 1px solid rgba(92,46,212,0.20);
+  font-weight: 700;
   color: #A614C3;
   white-space: nowrap;
-  transition: background 140ms;
+  transition: color 140ms;
 }
-.im-promo-tab:hover { background: rgba(92,46,212,0.18); }
-[data-dark="true"] .im-promo-tab,
-[data-dark="true"] .bop-page .im-promo-tab {
-  background: rgba(167,139,250,0.18) !important;
-  border-color: rgba(167,139,250,0.32) !important;
-  color: #E9D5FF !important;
-}
-[data-dark="true"] .im-promo-tab:hover { background: rgba(167,139,250,0.28) !important; }
+.im-promo-tab:hover { color: #5C2ED4; text-decoration: underline; }
+[data-dark="true"] .im-promo-tab { color: #E879F9 !important; }
+[data-dark="true"] .im-promo-tab:hover { color: #C4B5FD !important; }
 
 /* A mark worn on the card's bottom edge, the way the status tab is worn on
    its top one. Opaque and ringed in the card's own colour so it cuts the

@@ -126,7 +126,7 @@ function PromoBadge({ carrier, tab = false }) {
         aria-label={`What the ${carrier.name} promotion is`}
         className={tab ? 'im-promo-tab' : 'inline-flex rounded-full transition hover:opacity-80'}
       >
-        {tab ? 'PROMO' : <Tag tone="brand">Promo</Tag>}
+        {tab ? '+2% promo' : <Tag tone="brand">Promo</Tag>}
       </button>
       {open && (
         <Modal
@@ -282,7 +282,7 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
 /* The production screen's order, in our own chrome: the price is the first
    thing on the card, the carrier signs the bottom, and what decides what
    happens after Select is a tab notched into the card's top edge. */
-function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
+function CarrierTileV2({ carrier, onSelect }) {
   const quoted = !carrier.noquote
 
   return (
@@ -295,10 +295,7 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
         border: '1.5px solid var(--line)',
       }}
     >
-      {/* The extra headroom is for the promo tab: beside the price it reached
-            under the chevron, and the price line is the one thing on this card
-            that cannot move sideways. */}
-      <div className="relative px-5 pb-7 pt-9 flex-1 flex flex-col">
+            <div className="relative px-5 pb-7 pt-7 flex-1 flex flex-col">
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
@@ -311,23 +308,19 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
           </span>
         )}
 
-        {/* The corner, because the price owns the centre line here. */}
-        <Chevron open={open} onToggle={onToggle} label={carrier.name} className="absolute top-3 right-3" />
-
         {quoted ? (
           <>
             {/* Solid, not the brand gradient. The gradient made the one
                 number on the tile the decorative thing on it. */}
-            <div className="grid items-center" style={{ gridTemplateColumns: '1fr auto 1fr' }}>
-              <span aria-hidden="true" />
-              <p className="text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
-                {money(carrier.price)}
-              </p>
-              <span className="justify-self-start pl-2">
-                {carrier.promo && <PromoBadge carrier={carrier} tab />}
-              </span>
-            </div>
-            <p className="text-center text-[11px] text-gray-500 mt-1.5">Est. annual</p>
+            <p className="text-center text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
+              {money(carrier.price)}
+            </p>
+            <p className="text-center text-[11px] text-gray-500 mt-1.5">
+              Est. annual
+              {carrier.promo && (
+                <> &middot; <PromoBadge carrier={carrier} tab /></>
+              )}
+            </p>
           </>
         ) : (
           <>
@@ -338,9 +331,7 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
           </>
         )}
 
-        {quoted ? (
-          <SlaRows carrier={carrier} className="mt-4 pt-3.5 space-y-1.5" />
-        ) : (
+        {!quoted && (
           <p className="mt-4 pt-3.5 text-center text-[11.5px] leading-relaxed text-gray-500"
             style={{ borderTop: '1px solid var(--line)' }}>
             {carrier.noquote}.
@@ -371,7 +362,6 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
         )}
       </div>
 
-      {open && <DetailPanel carrier={carrier} className="rounded-b-2xl" />}
     </div>
   )
 }
