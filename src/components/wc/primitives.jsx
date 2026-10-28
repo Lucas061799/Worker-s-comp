@@ -12,7 +12,7 @@ import markCna from '../../assets/carrier-cna.svg'
 import markGreatAmerican from '../../assets/carrier-greatamerican.svg'
 import markPie from '../../assets/carrier-pie.png'
 import markEmployers from '../../assets/carrier-employers.png'
-import markIcwZenith from '../../assets/carrier-icwzenith.svg'
+import markIcwZenith from '../../assets/carrier-icwzenith.png'
 
 export const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -101,7 +101,7 @@ const CARRIER_MARKS = {
   greatamerican: { src: markGreatAmerican, pad: 0.04 },
   pie:           { src: markPie, pad: 0.04 },
   employers:     { src: markEmployers },
-  icwzenith:     { src: markIcwZenith, pad: 0.06 },
+  icwzenith:     { src: markIcwZenith, pad: 0.02 },
 }
 
 /* A carrier's mark on a white tile. The tile is landscape because these are

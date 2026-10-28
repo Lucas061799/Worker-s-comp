@@ -1586,6 +1586,36 @@ html[data-dark="true"] body .print-btn-text {
 /* The promotion, set into the line under the price rather than stood beside
    it. A pill next to a 28px number was an object pasted onto the card; at
    the sub-line's own size it is a word in a sentence, which is what it is. */
+/* The house's own endorsement, set into the line under the price beside the
+   promotion. BTIS purple rather than Razz, so the two notes that can sit
+   there are told apart by colour as well as by word. */
+.im-reco-note {
+  font-weight: 700;
+  color: #3A2968;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 140ms;
+}
+.im-reco-note:hover { color: #5C2ED4; }
+[data-dark="true"] .im-reco-note { color: #C4B5FD !important; }
+[data-dark="true"] .im-reco-note:hover { color: #E9D5FF !important; }
+
+/* The tier card's pill is the brand gradient, so its dot takes the same
+   white-on-fill treatment the flat BTIS-purple chip's does. Left as brand
+   purple it was purple on purple. */
+.im-reco-tab .im-info-dot {
+  background: rgba(255,255,255,0.30);
+  color: #FFFFFF;
+}
+.im-reco-tab .im-info-dot:hover,
+.im-reco-tab .im-info-dot[data-open="true"] { background: rgba(255,255,255,0.48); }
+[data-dark="true"] .im-reco-tab .im-info-dot {
+  background: rgba(255,255,255,0.30) !important;
+  color: #FFFFFF !important;
+}
+
 .im-promo-tab {
   font-weight: 700;
   color: #A614C3;
@@ -1600,15 +1630,6 @@ html[data-dark="true"] body .print-btn-text {
 .im-promo-tab:hover { color: #5C2ED4; }
 [data-dark="true"] .im-promo-tab { color: #E879F9 !important; }
 [data-dark="true"] .im-promo-tab:hover { color: #C4B5FD !important; }
-
-/* A mark worn on the card's bottom edge, the way the status tab is worn on
-   its top one. Opaque and ringed in the card's own colour so it cuts the
-   border rather than sitting on top of it — the promo tag's fill is a tint,
-   which would otherwise have let the border show straight through. */
-.im-edge-mark {
-  background: var(--surface-card);
-  box-shadow: 0 0 0 2.5px var(--surface-card);
-}
 
 /* The tier card's action bar. Flat until you point at it, then the brand
    gradient — a fill that follows the cursor says "this is what you are

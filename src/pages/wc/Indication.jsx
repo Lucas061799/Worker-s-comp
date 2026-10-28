@@ -150,6 +150,37 @@ function PromoBadge({ carrier, tab = false }) {
   )
 }
 
+function RecoNote({ carrier }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Why BTIS Recommended?"
+        className="im-reco-note"
+      >
+        ★ BTIS recommended
+      </button>
+      {open && (
+        <Modal
+          title="Why BTIS Recommended?"
+          width={420}
+          onDismiss={() => setOpen(false)}
+          footerAlign="end"
+          footer={<ModalButton onClick={() => setOpen(false)}>Got it</ModalButton>}
+        >
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-2)' }}>
+            BTIS holds full authority with {carrier.name} for all processing — quicker
+            quoting, faster endorsement turnaround, and in-house billing that collects
+            your broker fee at new business and at renewal.
+          </p>
+        </Modal>
+      )}
+    </>
+  )
+}
+
 function RecoDot() {
   return (
     <InfoDot
@@ -295,7 +326,7 @@ function CarrierTileV2({ carrier, onSelect }) {
         border: '1.5px solid var(--line)',
       }}
     >
-            <div className="relative px-5 pb-7 pt-7 flex-1 flex flex-col">
+            <div className="relative px-5 pb-5 pt-7 flex-1 flex flex-col">
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
@@ -317,9 +348,8 @@ function CarrierTileV2({ carrier, onSelect }) {
             </p>
             <p className="text-center text-[11px] text-gray-500 mt-1.5">
               Est. annual
-              {carrier.promo && (
-                <> &middot; <PromoBadge carrier={carrier} tab /></>
-              )}
+              {carrier.reco && <> &middot; <RecoNote carrier={carrier} /></>}
+              {carrier.promo && <> &middot; <PromoBadge carrier={carrier} tab /></>}
             </p>
           </>
         ) : (
@@ -349,16 +379,6 @@ function CarrierTileV2({ carrier, onSelect }) {
           <div className="pt-4">
             <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
           </div>
-        )}
-
-        {/* The other edge. The top one says what happens after Select; this
-            one says the house backs this carrier. Worn rather than stacked,
-            so it costs the card no height and no card has to reserve a line
-            for a mark it does not carry. */}
-        {quoted && carrier.reco && (
-          <span className="im-edge-mark absolute -bottom-[11px] left-1/2 -translate-x-1/2 inline-flex rounded-full">
-            <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
-          </span>
         )}
       </div>
 
@@ -528,10 +548,10 @@ function CarrierTierV4({ carrier, onSelect, best }) {
     <div className="relative">
       {carrier.reco && quoted && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold pl-3 pr-4 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-2"
+          className="im-reco-tab absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold pl-3 pr-4 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-2"
           style={{ background: BRAND_GRADIENT, letterSpacing: '0.08em' }}
         >
-          ★ RECOMMENDED
+          ★ RECOMMENDED<RecoDot />
         </div>
       )}
       <div
