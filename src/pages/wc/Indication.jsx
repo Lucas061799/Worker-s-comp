@@ -542,12 +542,16 @@ function CarrierTierV4({ carrier, onSelect, best }) {
           boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
         }}
       >
-        <div className="px-5 pt-6 pb-3">
-          {/* Fixed at two lines of the name, so a carrier called Berkshire
-              Hathaway GUARD does not push its own price below its
-              row-mates'. GL-BOP's tiers are named in one word and never
-              met this. */}
-          <div className="flex flex-wrap items-center gap-2 mb-1 min-h-[56px] content-start">
+        {/* GL-BOP floors the tagline and lets the name flow, which works when
+            every tier is named in one word. Ours wrap — Berkshire Hathaway
+            GUARD takes two lines — so the floor is on the header as a whole
+            instead. Flooring the name itself made a three-letter carrier
+            reserve two lines and open a hole under its own name; this way the
+            slack falls at the foot of the header, as space before the price.
+            125px is the tallest header there is: Berkshire Hathaway GUARD,
+            whose name and tagline both take two lines. */}
+        <div className="px-5 pt-6 pb-3 min-h-[125px]">
+          <div className="flex flex-wrap items-center gap-2 mb-1 content-start">
             <span className={`text-lg font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
               {carrier.name}
             </span>
