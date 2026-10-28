@@ -6,7 +6,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 import { Children, useEffect, useId, useRef, useState } from 'react'
-import markAmtrust from '../../assets/carrier-amtrust.jpg'
+import markAmtrust from '../../assets/carrier-amtrust.png'
 import markGuard from '../../assets/carrier-clearspring.png'
 import markCna from '../../assets/carrier-cna.svg'
 import markGreatAmerican from '../../assets/carrier-greatamerican.svg'
@@ -89,14 +89,19 @@ export function VersionSwitch({ options, value, onChange, label = 'Layout versio
    CARRIERS, so a carrier with no mark yet falls back to the grey glyph rather
    than wearing somebody else's — which is what the tiles used to do, AmTrust
    showing Coterie's. */
+/* `pad` is the inset as a fraction of the tile's height. A wide lockup is
+   limited by the box's width and can afford the default inset; a stacked one
+   is limited by its height, so the same inset costs it a third of its size —
+   AmTrust's stacked mark came out 36px wide against CNA's 82. The stacked
+   marks are let out to the tile's edge instead. */
 const CARRIER_MARKS = {
-  amtrust:       markAmtrust,
-  clearspring:   markGuard,
-  cna:           markCna,
-  greatamerican: markGreatAmerican,
-  pie:           markPie,
-  employers:     markEmployers,
-  icwzenith:     markIcwZenith,
+  amtrust:       { src: markAmtrust, pad: 0 },
+  clearspring:   { src: markGuard },
+  cna:           { src: markCna },
+  greatamerican: { src: markGreatAmerican, pad: 0.04 },
+  pie:           { src: markPie, pad: 0.04 },
+  employers:     { src: markEmployers },
+  icwzenith:     { src: markIcwZenith, pad: 0.06 },
 }
 
 /* A carrier's mark on a white tile. The tile is landscape because these are
@@ -111,7 +116,7 @@ export function CarrierLogo({ carrier, size = 40, ratio = 2, named = false, clas
       style={{
         width: Math.round(size * (mark ? ratio : 1)),
         height: size,
-        padding: Math.round(size * (mark ? 0.14 : 0.08)),
+        padding: Math.round(size * (mark ? (mark.pad ?? 0.14) : 0.08)),
       }}
       title={carrier?.name}
     >
@@ -120,7 +125,7 @@ export function CarrierLogo({ carrier, size = 40, ratio = 2, named = false, clas
            card that shows the mark alone, where this is the only thing a
            screen reader has to go on. */
         <img
-          src={mark}
+          src={mark.src}
           alt={named ? carrier.name : ''}
           className="max-w-full max-h-full"
           style={{ objectFit: 'contain' }}

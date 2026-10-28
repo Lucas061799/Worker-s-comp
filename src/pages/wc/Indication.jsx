@@ -531,7 +531,7 @@ function CarrierTierV4({ carrier, onSelect, best }) {
           className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold pl-3 pr-4 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-2"
           style={{ background: BRAND_GRADIENT, letterSpacing: '0.08em' }}
         >
-          ★ RECOMMENDED<RecoDot />
+          ★ RECOMMENDED
         </div>
       )}
       <div
