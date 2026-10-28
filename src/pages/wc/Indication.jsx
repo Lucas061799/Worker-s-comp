@@ -150,37 +150,6 @@ function PromoBadge({ carrier, tab = false }) {
   )
 }
 
-function RecoNote({ carrier }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Why BTIS Recommended?"
-        className="im-reco-note"
-      >
-        ★ BTIS recommended
-      </button>
-      {open && (
-        <Modal
-          title="Why BTIS Recommended?"
-          width={420}
-          onDismiss={() => setOpen(false)}
-          footerAlign="end"
-          footer={<ModalButton onClick={() => setOpen(false)}>Got it</ModalButton>}
-        >
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-2)' }}>
-            BTIS holds full authority with {carrier.name} for all processing — quicker
-            quoting, faster endorsement turnaround, and in-house billing that collects
-            your broker fee at new business and at renewal.
-          </p>
-        </Modal>
-      )}
-    </>
-  )
-}
-
 function RecoDot() {
   return (
     <InfoDot
@@ -323,7 +292,8 @@ function CarrierTileV2({ carrier, onSelect }) {
       className="rounded-2xl relative flex flex-col transition"
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: '1.5px solid var(--line)',
+        border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
+        boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
       }}
     >
             <div className="relative px-5 pb-5 pt-7 flex-1 flex flex-col">
@@ -331,11 +301,21 @@ function CarrierTileV2({ carrier, onSelect }) {
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
           <span
-            className={`absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-[3px] rounded-md text-[9.5px] font-extrabold tracking-[0.08em] ${
+            className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-[3px] rounded-md text-[9.5px] font-extrabold tracking-[0.08em] inline-flex items-center gap-1.5 ${
               carrier.bind ? 'im-bind-tab' : 'im-bind-tab-soft'
             }`}
           >
-            {carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}
+            {/* Three children, so the flex gap falls evenly either side of
+                the separator — inline it sat tight against the first word and
+                loose against the second. */}
+            <span>{carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}</span>
+            {carrier.reco && (
+              <>
+                <span aria-hidden="true" style={{ opacity: 0.55 }}>&middot;</span>
+                <span>RECOMMENDED</span>
+                <RecoDot />
+              </>
+            )}
           </span>
         )}
 
@@ -348,7 +328,6 @@ function CarrierTileV2({ carrier, onSelect }) {
             </p>
             <p className="text-center text-[11px] text-gray-500 mt-1.5">
               Est. annual
-              {carrier.reco && <> &middot; <RecoNote carrier={carrier} /></>}
               {carrier.promo && <> &middot; <PromoBadge carrier={carrier} tab /></>}
             </p>
           </>
