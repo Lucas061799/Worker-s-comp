@@ -1300,10 +1300,16 @@ button.force-white-text,
 .im-rule { border-top: 1px solid #E5E7EB; }
 [data-dark="true"] .im-rule { border-top-color: rgba(255,255,255,0.10) !important; }
 
-/* No edge: a carrier's mark sits on the card, not in a box. The white stays
-   — in dark mode a brand mark still needs its own light ground — but on a
-   white card it is invisible, which is the point. */
-.im-carrier-tile { background: #FFFFFF !important; border: none !important; }
+/* No edge and no fill: a carrier's mark sits on the card, not in a box. On a
+   white card the white ground was invisible anyway, and on the declined
+   card — which is drawn on the page's own soft grey — it showed as a white
+   rectangle around the logo.
+
+   Dark mode is the one place it has to stay: these marks are navy, red and
+   grey ink meant for paper, and on a dark card they would disappear. */
+.im-carrier-tile { background: transparent !important; border: none !important; }
+[data-dark="true"] .im-carrier-tile,
+[data-dark="true"] .bop-page .im-carrier-tile { background: #FFFFFF !important; }
 
 .im-toggle-knob { background: #FFFFFF !important; }
 
