@@ -690,16 +690,16 @@ function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
               <CostRow label="Premium" value={money(carrier.price)} />
               <CostRow label="BTIS service fee" value={money(fees.service)} />
               <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
+                {/* The turnarounds come back here. They were an eyebrow on the
+                    face, which is why the panel did not repeat them. */}
+                <CostRow label="Quote" value={carrier.slaShort || carrier.sla} />
+                <CostRow label="Endorsement" value={carrier.endorsementSla} />
                 {detailRows(carrier).map(([label, value]) => (
                   <CostRow key={label} label={label} value={value} />
                 ))}
               </div>
             </div>
           )}
-
-          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mt-3.5">
-            Quote {carrier.slaShort || carrier.sla} · Endorsement {carrier.endorsementSla}
-          </p>
 
           <div className="mt-auto pt-4">
             <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
