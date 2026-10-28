@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
-  CarrierLogo, InfoDot, InfoPanel,
-  Modal, ModalButton, Tag,
+  BRAND_GRADIENT, BrandText, CarrierLogo, CheckGlyph, InfoDot, InfoPanel,
+  Modal, ModalButton, SectionLabel, Tag,
 } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
@@ -469,6 +469,342 @@ function CarrierRowV3({ carrier, onSelect, open, onToggle, last }) {
   )
 }
 
+
+/* ─────────── Version 4 — the accordion stack ─────────── */
+
+/* CBIC's Price Indication and GL-BOP's Compare draw the same row: a brand dot
+   and the name, the pills that qualify it, the price with its monthly and
+   total underneath, and the action on the right. The whole row is the
+   switch, and what opens is a pair of panels rather than a list. */
+function CarrierRowV4({ carrier, onSelect, open, onToggle, best }) {
+  const quoted = !carrier.noquote
+  const fees = quoted ? feesFor(carrier.price) : null
+
+  return (
+    <div
+      className="rounded-xl overflow-hidden transition"
+      style={{
+        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
+        border: `1.5px solid ${best ? '#7C3AED' : 'var(--line)'}`,
+        boxShadow: best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
+      }}
+    >
+      <div className="px-4 py-3.5 cursor-pointer" onClick={onToggle}>
+        <div className="flex items-center justify-between gap-3 mb-2.5">
+          <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
+            {/* The small brand anchor both of those screens start a row with. */}
+            <span className="rounded-full shrink-0"
+              style={{ width: 8, height: 8, background: BRAND_GRADIENT, opacity: quoted ? 1 : 0.4 }} />
+            <span className={`text-sm font-semibold truncate ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
+              {carrier.name}
+            </span>
+            {best && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white whitespace-nowrap"
+                style={{ background: BRAND_GRADIENT }}>
+                Best value
+              </span>
+            )}
+            {quoted && (
+              <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
+                {carrier.bind ? 'Instant bind' : 'UW review'}
+              </span>
+            )}
+            {!quoted && <span className="im-chip im-chip-muted">Not a fit</span>}
+            {carrier.reco && quoted && (
+              <span className="im-reco-mark">★ BTIS RECOMMENDED<RecoDot /></span>
+            )}
+            {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"
+            style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+            aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {quoted ? (
+            <div>
+              <p className="flex items-baseline gap-1">
+                <span className="text-xl font-bold" style={{ color: 'var(--ink)' }}>{money(carrier.price)}</span>
+                <span className="text-xs text-gray-400">/yr</span>
+              </p>
+              <p className="text-[11px] text-gray-400">
+                {money(carrier.price / 12)}/mo · Total {money(fees.total)}
+              </p>
+            </div>
+          ) : (
+            <span className="text-xs flex-1 min-w-0 text-gray-500">
+              {carrier.name} isn't quoting this risk today.
+              <span className="im-wage-link font-semibold ml-1">
+                {open ? 'Hide details' : 'See why →'}
+              </span>
+            </span>
+          )}
+
+          {quoted && (
+            /* The source screens fill the best row's button and outline the
+               rest, so the grid carries one recommended action rather than
+               seven equal ones. */
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); onSelect() }}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition shrink-0 ${best ? '' : 'im-btn-outline'}`}
+              style={best ? { background: BRAND_GRADIENT, color: '#fff' } : undefined}
+            >
+              Select
+            </button>
+          )}
+        </div>
+      </div>
+
+      {open && (
+        <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
+          {quoted ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <V4Panel title="Cost breakdown">
+                <V4Row label="Premium" value={money(carrier.price)} />
+                <V4Row label="BTIS service fee" value={money(fees.service)} />
+                <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
+                  <V4Row label="Total annual cost" value={money(fees.total)} bold />
+                </div>
+              </V4Panel>
+              <V4Panel title="Servicing">
+                <V4Row label="Quote" value={carrier.slaShort || carrier.sla} />
+                <V4Row label="Endorsement" value={carrier.endorsementSla} />
+                {detailRows(carrier).map(([label, value]) => (
+                  <V4Row key={label} label={label} value={value} />
+                ))}
+              </V4Panel>
+            </div>
+          ) : (
+            <V4Panel title={`Why ${carrier.name} didn't quote`}>
+              <p className="text-[12px] leading-relaxed" style={{ color: 'var(--ink-2)' }}>
+                {carrier.noquote}.
+              </p>
+            </V4Panel>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function V4Panel({ title, children }) {
+  return (
+    <div className="rounded-xl p-4"
+      style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
+      <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400 mb-2.5">{title}</div>
+      {children}
+    </div>
+  )
+}
+
+function V4Row({ label, value, bold }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-1 text-[12.5px]">
+      <span className="text-gray-500" style={{ fontWeight: bold ? 600 : 400 }}>{label}</span>
+      <span className="text-right" style={{ color: 'var(--ink)', fontWeight: bold ? 700 : 600 }}>{value}</span>
+    </div>
+  )
+}
+
+/* ─────────── Version 5 — the tier card ─────────── */
+
+/* GL-BOP's coverage tiers: a pill floating over the top edge, the name and
+   its one-line promise, a price big enough to be the whole point, and then
+   every term as a labelled row on a fixed height so the rows line up across
+   the cards. The action is a bar across the foot, not a button inside. */
+function CarrierTierV5({ carrier, onSelect, best }) {
+  const quoted = !carrier.noquote
+  const rows = [
+    ['Quote turnaround', quoted ? (carrier.slaShort || carrier.sla) : null],
+    ['Endorsement turnaround', quoted ? carrier.endorsementSla : null],
+    ['Billing', carrier.billing],
+    ['Servicing', carrier.own],
+    ['Underwriting', carrier.reco ? 'BTIS authority' : 'Carrier'],
+  ]
+
+  return (
+    <div className="relative">
+      {carrier.reco && quoted && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold px-3 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-1.5"
+          style={{ background: BRAND_GRADIENT, letterSpacing: '0.08em' }}
+        >
+          ★ BTIS RECOMMENDED<RecoDot />
+        </div>
+      )}
+      <div
+        className="rounded-2xl overflow-hidden h-full flex flex-col transition"
+        style={{
+          background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
+          border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
+          boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
+        }}
+      >
+        <div className="px-5 pt-6 pb-3">
+          {/* Fixed at two lines of the name, so a carrier called Berkshire
+              Hathaway GUARD does not push its own price below its
+              row-mates'. GL-BOP's tiers are named in one word and never
+              met this. */}
+          <div className="flex flex-wrap items-center gap-2 mb-1 min-h-[56px] content-start">
+            <span className={`text-lg font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
+              {carrier.name}
+            </span>
+            {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
+          </div>
+          {/* Fixed, so the prices start on the same line across the row. */}
+          <div className="text-xs text-gray-500 leading-relaxed min-h-[40px]">
+            {quoted ? carrier.tagline : 'Outside this carrier’s current appetite'}
+          </div>
+        </div>
+
+        <div className="px-5 pb-5 text-center">
+          {quoted ? (
+            <>
+              <p className="flex items-baseline justify-center gap-1">
+                <span className="text-4xl font-bold" style={{ color: 'var(--ink)' }}>{money(carrier.price)}</span>
+                <span className="text-xs text-gray-400">/year</span>
+              </p>
+              <p className="text-xs text-gray-400 mt-1">{money(carrier.price / 12)}/mo</p>
+              {/* Reserved on every card, so the one that earns the line does
+                  not start its terms list a row below everyone else's. */}
+              <p className="text-[11px] font-bold mt-1.5 h-[17px]">
+                {best && <BrandText>Lowest of the markets</BrandText>}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-4xl font-bold text-gray-400 leading-none py-1">—</p>
+              <p className="text-xs text-gray-400 mt-1">No price returned</p>
+              <p className="text-[11px] font-bold mt-1.5 h-[17px]" aria-hidden="true" />
+            </>
+          )}
+        </div>
+
+        <div className="px-5 pb-4 flex-1">
+          {rows.map(([label, value]) => (
+            <div key={label} className="py-2.5 border-b last:border-b-0"
+              style={{ borderColor: 'var(--line-soft)', minHeight: 56 }}>
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 leading-tight mb-1">
+                {label}
+              </div>
+              <div className="text-sm font-semibold leading-tight"
+                style={{
+                  color: value ? 'var(--ink)' : '#9CA3AF',
+                  fontStyle: value ? 'normal' : 'italic',
+                }}>
+                {value || 'Not available'}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {quoted ? (
+          <button
+            type="button"
+            onClick={onSelect}
+            className="w-full py-3.5 text-sm font-bold transition hover:opacity-95"
+            style={carrier.bind
+              ? { background: BRAND_GRADIENT, color: '#fff' }
+              : { background: 'var(--surface-soft)', color: 'var(--ink-2)', borderTop: '1px solid var(--line)' }}
+          >
+            {carrier.bind ? 'Select — instant bind' : 'Select — refer to UW'}
+          </button>
+        ) : (
+          <div className="w-full py-3.5 text-sm font-bold text-center text-gray-400"
+            style={{ borderTop: '1px solid var(--line)' }}>
+            Declined
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ─────────── Version 6 — the outcome card ─────────── */
+
+/* Inland's Compare Quotes. Its one strong idea is that the headline is the
+   total, not the premium: that is the number the bind screen will charge,
+   and a card leading with the premium alone reads cheaper than it is. What
+   makes up the difference is listed under it rather than hidden behind it. */
+function CarrierOutcomeV6({ carrier, onSelect }) {
+  const quoted = !carrier.noquote
+  const fees = quoted ? feesFor(carrier.price) : null
+
+  return (
+    <div
+      className="rounded-2xl p-5 flex flex-col"
+      style={{
+        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
+        border: '1.5px solid var(--line)',
+      }}
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <CarrierLogo carrier={carrier} size={56} />
+        <div className="min-w-0">
+          <p className={`text-[15px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
+            {carrier.name}
+          </p>
+          <p className="text-[11.5px] text-gray-400">{carrier.sub}</p>
+        </div>
+      </div>
+
+      {/* Two lines of chips, reserved on every card: the recommended mark and
+          a status chip do not fit on one line together at this width, and a
+          card that wraps them starts its price a row below its neighbours'.
+          Inland's original carries one chip and never met this. */}
+      <div className="flex flex-wrap items-start content-start gap-2 mb-3 min-h-[55px]">
+        <span className={`im-chip ${!quoted ? 'im-chip-muted' : carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
+          {!quoted ? 'Declined' : carrier.bind ? 'Instant bind' : 'UW review'}
+        </span>
+        {carrier.reco && quoted && (
+          <span className="im-reco-mark">★ BTIS RECOMMENDED<RecoDot /></span>
+        )}
+        {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
+      </div>
+
+      {quoted ? (
+        <>
+          <SectionLabel className="mb-1">Total annual cost</SectionLabel>
+          <p className="text-[30px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
+            {money(fees.total)}
+          </p>
+          <p className="text-[12px] text-gray-400 mt-1">per year, fees included</p>
+
+          {/* What the headline is made of. */}
+          <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
+            <V4Row label="Premium" value={money(carrier.price)} />
+            <V4Row label="BTIS service fee" value={money(fees.service)} />
+            <div className="mt-1 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
+              <V4Row label="Total" value={money(fees.total)} bold />
+            </div>
+          </div>
+
+          {carrier.bind && (
+            <span className="im-chip im-chip-good self-start mt-3.5">
+              <CheckGlyph className="w-2.5 h-2.5" />
+              Bind online today
+            </span>
+          )}
+
+          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mt-2.5">
+            Quote {carrier.slaShort || carrier.sla} · Endorsement {carrier.endorsementSla}
+          </p>
+
+          <div className="mt-auto pt-4">
+            <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
+          </div>
+        </>
+      ) : (
+        <p className="text-[12.5px] text-gray-500 leading-relaxed">{carrier.noquote}.</p>
+      )}
+    </div>
+  )
+}
+
 /* The prototype's threshold: the callout is offered only once prices are back
    and only when the cheapest of them is over this, so most submissions never
    see it. */
@@ -476,9 +812,12 @@ const REFERRAL_THRESHOLD = 20000
 
 /* The three treatments, named where the switcher reads them. */
 export const INDICATION_VERSIONS = [
-  { value: 1, label: 'V1', title: 'Carrier-led cards' },
-  { value: 2, label: 'V2', title: 'Price-led cards' },
-  { value: 3, label: 'V3', title: 'Comparison table' },
+  { value: 1, label: 'V1', title: 'Carrier-led cards — ours' },
+  { value: 2, label: 'V2', title: 'Price-led cards — ours' },
+  { value: 3, label: 'V3', title: 'Comparison table — ours' },
+  { value: 4, label: 'V4', title: "Accordion stack — CBIC / GL-BOP Compare" },
+  { value: 5, label: 'V5', title: 'Tier cards — GL-BOP Package' },
+  { value: 6, label: 'V6', title: 'Outcome cards — Inland Compare Quotes' },
 ]
 
 export default function Indication({
@@ -523,7 +862,39 @@ export default function Indication({
           own questions, as the prototype's tiles do. The switch is one for
           the whole grid: these rows are here to be read across carriers,
           and opening them together is also what keeps a row level. */}
-      {version === 3 ? (
+      {version === 4 ? (
+        <div className="space-y-3">
+          {results.map(r => (
+            <CarrierRowV4
+              key={r.id}
+              carrier={r}
+              best={!r.noquote && r.price === lowest}
+              onSelect={() => onPickCarrier(r)}
+              open={detailsOpen}
+              onToggle={() => setDetailsOpen(o => !o)}
+            />
+          ))}
+        </div>
+      ) : version === 5 ? (
+        /* The tier cards wear a pill over the top edge, so their rows are
+           set apart the way V2's are. */
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 items-stretch pt-3">
+          {results.map(r => (
+            <CarrierTierV5
+              key={r.id}
+              carrier={r}
+              best={!r.noquote && r.price === lowest}
+              onSelect={() => onPickCarrier(r)}
+            />
+          ))}
+        </div>
+      ) : version === 6 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
+          {results.map(r => (
+            <CarrierOutcomeV6 key={r.id} carrier={r} onSelect={() => onPickCarrier(r)} />
+          ))}
+        </div>
+      ) : version === 3 ? (
         <div className="rounded-2xl overflow-hidden"
           style={{ background: 'var(--surface-card)', border: '1.5px solid var(--line)' }}>
           <QuoteTableHead />
