@@ -224,7 +224,7 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
           {/* The name sits beside its mark rather than under it — they are
               one piece of identification, and it buys the tile a line. */}
           <span className="flex items-center gap-2.5 min-w-0">
-            <CarrierLogo carrier={carrier} size={34} ratio={1.9} />
+            <CarrierLogo carrier={carrier} size={36} />
             <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
               {carrier.name}
             </span>
@@ -342,7 +342,7 @@ function CarrierTileV2({ carrier, onSelect }) {
             screen does — the name under it was the same word twice once the
             real logos went in. */}
         <div className="mt-auto pt-5 flex justify-center">
-          <CarrierLogo carrier={carrier} size={46} ratio={2.8} named />
+          <CarrierLogo carrier={carrier} size={48} named />
         </div>
 
         {quoted && (
@@ -644,7 +644,7 @@ function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
       }}
     >
       <div className="flex items-center gap-3 mb-4 pr-8">
-        <CarrierLogo carrier={carrier} size={42} ratio={1.9} />
+        <CarrierLogo carrier={carrier} size={44} />
         <div className="min-w-0">
           <p className={`text-[15px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
             {carrier.name}
