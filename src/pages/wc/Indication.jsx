@@ -296,7 +296,7 @@ function CarrierTileV2({ carrier, onSelect }) {
         boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
       }}
     >
-            <div className="relative px-5 pb-5 pt-7 flex-1 flex flex-col">
+            <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
