@@ -224,7 +224,7 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
           {/* The name sits beside its mark rather than under it — they are
               one piece of identification, and it buys the tile a line. */}
           <span className="flex items-center gap-2.5 min-w-0">
-            <CarrierLogo carrier={carrier} size={36} />
+            <CarrierLogo carrier={carrier} size={40} />
             <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
               {carrier.name}
             </span>
@@ -350,8 +350,8 @@ function CarrierTileV2({ carrier, onSelect }) {
         {/* The carrier signs the card with its mark alone, as the production
             screen does — the name under it was the same word twice once the
             real logos went in. */}
-        <div className="mt-auto pt-5 flex justify-center">
-          <CarrierLogo carrier={carrier} size={48} named />
+        <div className="mt-auto pt-5 flex items-center justify-center h-[108px]">
+          <CarrierLogo carrier={carrier} size={88} named />
         </div>
 
         {quoted && (
@@ -643,11 +643,15 @@ function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
       className="rounded-2xl p-5 flex flex-col relative"
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: '1.5px solid var(--line)',
+        border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
+        boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
       }}
     >
-      <div className="flex items-center gap-3 mb-4 pr-8">
-        <CarrierLogo carrier={carrier} size={44} />
+      {/* The floor was the logo's, back when every tile was the same height.
+          Tiles hug their marks now, so the header carries it instead — and
+          the mark is narrower, to leave the name room enough not to wrap. */}
+      <div className="flex items-center gap-3 mb-4 pr-8 min-h-[56px]">
+        <CarrierLogo carrier={carrier} size={52} />
         <div className="min-w-0">
           <p className={`text-[15px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
             {carrier.name}
@@ -659,16 +663,12 @@ function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
       <Chevron open={open} onToggle={onToggle} label={carrier.name} className="absolute top-4 right-4" />
 
       {/* One line, reserved: a card whose chips wrap starts its price a row
-          below its neighbours'. Reserving two lines left a hole under the
-          single-chip cards, so the mark lost the word BTIS instead and the
-          pair now fits on one. */}
+          below its neighbours'. The endorsement is on the card's own edge
+          now, so this row is back to one chip and a promo at most. */}
       <div className="flex flex-wrap items-start content-start gap-2 mb-3 min-h-[27px]">
         <span className={`im-chip ${!quoted ? 'im-chip-muted' : carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
           {!quoted ? 'Declined' : carrier.bind ? 'Instant bind' : 'UW review'}
         </span>
-        {carrier.reco && quoted && (
-          <span className="im-reco-mark">★ RECOMMENDED<RecoDot /></span>
-        )}
         {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
       </div>
 

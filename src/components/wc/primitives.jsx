@@ -89,35 +89,32 @@ export function VersionSwitch({ options, value, onChange, label = 'Layout versio
    CARRIERS, so a carrier with no mark yet falls back to the grey glyph rather
    than wearing somebody else's — which is what the tiles used to do, AmTrust
    showing Coterie's. */
-/* `pad` is the inset as a fraction of the tile's height. A wide lockup is
-   limited by the box's width and can afford the default inset; a stacked one
-   is limited by its height, so the same inset costs it a third of its size —
-   AmTrust's stacked mark came out 36px wide against CNA's 82. The stacked
-   marks are let out to the tile's edge instead. */
 const CARRIER_MARKS = {
-  amtrust:       { src: markAmtrust, pad: 0 },
-  clearspring:   { src: markGuard },
-  cna:           { src: markCna },
-  greatamerican: { src: markGreatAmerican, pad: 0.04 },
-  pie:           { src: markPie, pad: 0.04 },
-  employers:     { src: markEmployers },
-  icwzenith:     { src: markIcwZenith, pad: 0.02 },
+  amtrust:       markAmtrust,
+  clearspring:   markGuard,
+  cna:           markCna,
+  greatamerican: markGreatAmerican,
+  pie:           markPie,
+  employers:     markEmployers,
+  icwzenith:     markIcwZenith,
 }
 
-/* A carrier's mark on a white tile. The tile is landscape because these are
-   wordmarks, not monograms: EMPLOYERS is three and a half times as wide as it
-   is tall, and in a square box it came out ten pixels high. The tile stays
-   white in dark mode — a brand mark needs its own background, not the page's. */
-export function CarrierLogo({ carrier, size = 40, ratio = 2, named = false, className = '' }) {
+/* A carrier's mark on a white tile. One square, the same for every carrier,
+   whatever shape its lockup is — the marks differ enough on their own without
+   the tiles differing too. The mark is fitted inside, so a wide wordmark sits
+   short in the square and a stacked one nearly fills it; the square has to be
+   generous for that reason.
+
+   White is the one thing that does not follow the theme: these are navy, red
+   and grey marks drawn for paper, and the carriers publish no light-on-dark
+   variants. In light mode it is invisible against the card; in dark mode it
+   is the ground the mark needs. */
+export function CarrierLogo({ carrier, size = 40, named = false, className = '' }) {
   const mark = CARRIER_MARKS[carrier?.id]
   return (
     <div
-      className={`im-carrier-tile rounded-xl flex items-center justify-center shrink-0 ${className}`}
-      style={{
-        width: Math.round(size * (mark ? ratio : 1)),
-        height: size,
-        padding: Math.round(size * (mark ? (mark.pad ?? 0.14) : 0.08)),
-      }}
+      className={`im-carrier-tile rounded-xl inline-flex items-center justify-center shrink-0 ${className}`}
+      style={{ width: size, height: size, padding: Math.round(size * (mark ? 0.13 : 0.2)) }}
       title={carrier?.name}
     >
       {mark ? (
@@ -125,10 +122,9 @@ export function CarrierLogo({ carrier, size = 40, ratio = 2, named = false, clas
            card that shows the mark alone, where this is the only thing a
            screen reader has to go on. */
         <img
-          src={mark.src}
+          src={mark}
           alt={named ? carrier.name : ''}
-          className="max-w-full max-h-full"
-          style={{ objectFit: 'contain' }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />
       ) : (
         <svg

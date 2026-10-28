@@ -243,7 +243,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   thing naming the carrier; here the name is right beside it,
                   so the mark is an adornment on a list row and a 96px-wide
                   one took a fifth of the row. */}
-              <CarrierLogo carrier={c} size={36} />
+              <CarrierLogo carrier={c} size={52} />
 
                 {/* Name + tagline */}
                 <div className="flex-1 min-w-0">
