@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
-  BRAND_GRADIENT, BrandText, CarrierLogo, CheckGlyph, InfoDot, InfoPanel,
+  BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoPanel,
   Modal, ModalButton, SectionLabel, Tag,
 } from '../../components/wc/primitives'
 
@@ -518,6 +518,7 @@ function CostRow({ label, value, bold }) {
 function CarrierTierV4({ carrier, onSelect, best }) {
   const quoted = !carrier.noquote
   const rows = [
+    ['Binding', quoted ? (carrier.bind ? 'Instant' : 'Underwriter referral') : null],
     ['Quote turnaround', quoted ? (carrier.slaShort || carrier.sla) : null],
     ['Endorsement turnaround', quoted ? carrier.endorsementSla : null],
     ['Billing', carrier.billing],
@@ -602,15 +603,19 @@ function CarrierTierV4({ carrier, onSelect, best }) {
         </div>
 
         {quoted ? (
+          /* GL-BOP fills this bar to say the tier is the one you picked. We
+             have no picked state — Select carries straight on to the carrier's
+             own questions — so a filled bar on every instant-bind card read as
+             four cards already chosen and no way to tell which one you had
+             actually pressed. The bar is the action and nothing else; the
+             recommended carrier is still marked by its pill and its edge. */
           <button
             type="button"
             onClick={onSelect}
             className="w-full py-3.5 text-sm font-bold transition hover:opacity-95"
-            style={carrier.bind
-              ? { background: BRAND_GRADIENT, color: '#fff' }
-              : { background: 'var(--surface-soft)', color: 'var(--ink-2)', borderTop: '1px solid var(--line)' }}
+            style={{ background: 'var(--surface-soft)', color: 'var(--ink-2)', borderTop: '1px solid var(--line)' }}
           >
-            {carrier.bind ? 'Select — instant bind' : 'Select — refer to UW'}
+            Select
           </button>
         ) : (
           <div className="w-full py-3.5 text-sm font-bold text-center text-gray-400"
@@ -629,19 +634,19 @@ function CarrierTierV4({ carrier, onSelect, best }) {
    total, not the premium: that is the number the bind screen will charge,
    and a card leading with the premium alone reads cheaper than it is. What
    makes up the difference is listed under it rather than hidden behind it. */
-function CarrierOutcomeV5({ carrier, onSelect }) {
+function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
   const fees = quoted ? feesFor(carrier.price) : null
 
   return (
     <div
-      className="rounded-2xl p-5 flex flex-col"
+      className="rounded-2xl p-5 flex flex-col relative"
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: '1.5px solid var(--line)',
       }}
     >
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4 pr-8">
         <CarrierLogo carrier={carrier} size={56} />
         <div className="min-w-0">
           <p className={`text-[15px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
@@ -650,6 +655,8 @@ function CarrierOutcomeV5({ carrier, onSelect }) {
           <p className="text-[11.5px] text-gray-400">{carrier.sub}</p>
         </div>
       </div>
+
+      <Chevron open={open} onToggle={onToggle} label={carrier.name} className="absolute top-4 right-4" />
 
       {/* Two lines of chips, reserved on every card: the recommended mark and
           a status chip do not fit on one line together at this width, and a
@@ -673,23 +680,24 @@ function CarrierOutcomeV5({ carrier, onSelect }) {
           </p>
           <p className="text-[12px] text-gray-400 mt-1">per year, fees included</p>
 
-          {/* What the headline is made of. */}
-          <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
-            <CostRow label="Premium" value={money(carrier.price)} />
-            <CostRow label="BTIS service fee" value={money(fees.service)} />
-            <div className="mt-1 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
-              <CostRow label="Total" value={money(fees.total)} bold />
+          {/* What the headline is made of, and who services it — behind the
+              chevron, because the card was saying several things twice. The
+              total was the headline and the last line of its own breakdown;
+              "Bind online today" was the Instant bind chip again, in the
+              same teal, eight lines further down. */}
+          {open && (
+            <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
+              <CostRow label="Premium" value={money(carrier.price)} />
+              <CostRow label="BTIS service fee" value={money(fees.service)} />
+              <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
+                {detailRows(carrier).map(([label, value]) => (
+                  <CostRow key={label} label={label} value={value} />
+                ))}
+              </div>
             </div>
-          </div>
-
-          {carrier.bind && (
-            <span className="im-chip im-chip-good self-start mt-3.5">
-              <CheckGlyph className="w-2.5 h-2.5" />
-              Bind online today
-            </span>
           )}
 
-          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mt-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gray-400 mt-3.5">
             Quote {carrier.slaShort || carrier.sla} · Endorsement {carrier.endorsementSla}
           </p>
 
@@ -789,7 +797,13 @@ export default function Indication({
       ) : version === 5 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
           {results.map(r => (
-            <CarrierOutcomeV5 key={r.id} carrier={r} onSelect={() => onPickCarrier(r)} />
+            <CarrierOutcomeV5
+              key={r.id}
+              carrier={r}
+              onSelect={() => onPickCarrier(r)}
+              open={detailsOpen}
+              onToggle={() => setDetailsOpen(o => !o)}
+            />
           ))}
         </div>
       ) : (
