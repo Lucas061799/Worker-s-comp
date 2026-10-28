@@ -368,115 +368,14 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
   )
 }
 
-/* ─────────── Version 3 — one market per line ─────────── */
 
-/* The densest of the three: every market on one screen with nothing to
-   scroll past, columns headed once instead of labelled on every card, and
-   the figures stacked straight under each other to be compared. */
-const V3_COLS = 'minmax(0,1fr) 104px 118px 132px 124px 92px 28px'
-
-function QuoteTableHead() {
-  return (
-    <div
-      className="im-quote-head grid items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
-      style={{ gridTemplateColumns: V3_COLS, borderBottom: '1px solid var(--line)' }}
-    >
-      <span>Carrier</span>
-      <span className="text-right">Est. annual</span>
-      <span className="text-right">Quote</span>
-      <span className="text-right">Endorsement</span>
-      <span className="text-right">Status</span>
-      <span aria-hidden="true" />
-      <span aria-hidden="true" />
-    </div>
-  )
-}
-
-function CarrierRowV3({ carrier, onSelect, open, onToggle, last }) {
-  const quoted = !carrier.noquote
-
-  return (
-    <div style={last ? undefined : { borderBottom: '1px solid var(--line)' }}>
-      <div
-        className="im-quote-row grid items-center gap-3 px-4 py-3"
-        style={{ gridTemplateColumns: V3_COLS }}
-      >
-        <span className="flex items-center gap-2.5 min-w-0">
-          <CarrierLogo carrier={carrier} size={32} />
-          <span className="min-w-0">
-            <span className={`block text-[13px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
-              {carrier.name}
-            </span>
-            {/* The marks ride under the name rather than taking a column of
-                their own — only two carriers carry one. */}
-            {quoted && (carrier.reco || carrier.promo) && (
-              <span className="flex flex-wrap items-center gap-1.5 mt-1">
-                {carrier.reco && <span className="im-reco-mark">★ BTIS RECOMMENDED<RecoDot /></span>}
-                {carrier.promo && <PromoBadge carrier={carrier} />}
-              </span>
-            )}
-          </span>
-        </span>
-
-        {quoted ? (
-          <>
-            <span className="text-right text-[15px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
-              {money(carrier.price)}
-            </span>
-            <span className="text-right text-[11.5px] font-semibold text-navy">
-              {carrier.slaShort || carrier.sla}
-            </span>
-            <span className="text-right text-[11.5px] font-semibold text-navy">
-              {carrier.endorsementSla}
-            </span>
-            <span className="flex justify-end">
-              <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
-                {carrier.bind ? 'Instant bind' : 'Refer to UW'}
-              </span>
-            </span>
-            <SelectButton onClick={onSelect} className="w-full h-8 text-[12.5px]" />
-          </>
-        ) : (
-          <>
-            <span className="text-right text-[13px] font-semibold text-gray-500">—</span>
-            {/* The reason takes the two turnaround columns, which a declined
-                market has nothing to put in. */}
-            <span className="col-span-2 text-[11.5px] leading-snug text-gray-500">
-              {carrier.noquote}.
-            </span>
-            <span className="flex justify-end">
-              <span className="im-chip im-chip-muted">Declined</span>
-            </span>
-            <span aria-hidden="true" />
-          </>
-        )}
-
-        <Chevron open={open} onToggle={onToggle} label={carrier.name} />
-      </div>
-
-      {open && (
-        <dl className="grid gap-x-8 gap-y-1.5 px-4 pt-3 pb-3.5 sm:grid-cols-3"
-          style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-soft)' }}>
-          {detailRows(carrier).map(([label, value]) => (
-            <div key={label} className="flex justify-between gap-3 text-[11.5px] leading-snug">
-              <dt className="text-gray-500 shrink-0">{label}</dt>
-              <dd className="font-semibold text-right text-navy">{value}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-    </div>
-  )
-}
-
-
-/* ─────────── Version 4 — the accordion stack ─────────── */
+/* ─────────── Version 3 — the accordion stack ─────────── */
 
 /* CBIC's Price Indication and GL-BOP's Compare draw the same row: a brand dot
    and the name, the pills that qualify it, the price with its monthly and
    total underneath, and the action on the right. The whole row is the
    switch, and what opens is a pair of panels rather than a list. */
-function CarrierRowV4({ carrier, onSelect, open, onToggle, best }) {
+function CarrierRowV3({ carrier, onSelect, open, onToggle, best }) {
   const quoted = !carrier.noquote
   const fees = quoted ? feesFor(carrier.price) : null
 
@@ -563,27 +462,27 @@ function CarrierRowV4({ carrier, onSelect, open, onToggle, best }) {
         <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
           {quoted ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <V4Panel title="Cost breakdown">
-                <V4Row label="Premium" value={money(carrier.price)} />
-                <V4Row label="BTIS service fee" value={money(fees.service)} />
+              <CostPanel title="Cost breakdown">
+                <CostRow label="Premium" value={money(carrier.price)} />
+                <CostRow label="BTIS service fee" value={money(fees.service)} />
                 <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
-                  <V4Row label="Total annual cost" value={money(fees.total)} bold />
+                  <CostRow label="Total annual cost" value={money(fees.total)} bold />
                 </div>
-              </V4Panel>
-              <V4Panel title="Servicing">
-                <V4Row label="Quote" value={carrier.slaShort || carrier.sla} />
-                <V4Row label="Endorsement" value={carrier.endorsementSla} />
+              </CostPanel>
+              <CostPanel title="Servicing">
+                <CostRow label="Quote" value={carrier.slaShort || carrier.sla} />
+                <CostRow label="Endorsement" value={carrier.endorsementSla} />
                 {detailRows(carrier).map(([label, value]) => (
-                  <V4Row key={label} label={label} value={value} />
+                  <CostRow key={label} label={label} value={value} />
                 ))}
-              </V4Panel>
+              </CostPanel>
             </div>
           ) : (
-            <V4Panel title={`Why ${carrier.name} didn't quote`}>
+            <CostPanel title={`Why ${carrier.name} didn't quote`}>
               <p className="text-[12px] leading-relaxed" style={{ color: 'var(--ink-2)' }}>
                 {carrier.noquote}.
               </p>
-            </V4Panel>
+            </CostPanel>
           )}
         </div>
       )}
@@ -591,7 +490,7 @@ function CarrierRowV4({ carrier, onSelect, open, onToggle, best }) {
   )
 }
 
-function V4Panel({ title, children }) {
+function CostPanel({ title, children }) {
   return (
     <div className="rounded-xl p-4"
       style={{ background: 'var(--surface-soft)', border: '1px solid var(--line)' }}>
@@ -601,7 +500,7 @@ function V4Panel({ title, children }) {
   )
 }
 
-function V4Row({ label, value, bold }) {
+function CostRow({ label, value, bold }) {
   return (
     <div className="flex items-baseline justify-between gap-4 py-1 text-[12.5px]">
       <span className="text-gray-500" style={{ fontWeight: bold ? 600 : 400 }}>{label}</span>
@@ -610,13 +509,13 @@ function V4Row({ label, value, bold }) {
   )
 }
 
-/* ─────────── Version 5 — the tier card ─────────── */
+/* ─────────── Version 4 — the tier card ─────────── */
 
 /* GL-BOP's coverage tiers: a pill floating over the top edge, the name and
    its one-line promise, a price big enough to be the whole point, and then
    every term as a labelled row on a fixed height so the rows line up across
    the cards. The action is a bar across the foot, not a button inside. */
-function CarrierTierV5({ carrier, onSelect, best }) {
+function CarrierTierV4({ carrier, onSelect, best }) {
   const quoted = !carrier.noquote
   const rows = [
     ['Quote turnaround', quoted ? (carrier.slaShort || carrier.sla) : null],
@@ -724,13 +623,13 @@ function CarrierTierV5({ carrier, onSelect, best }) {
   )
 }
 
-/* ─────────── Version 6 — the outcome card ─────────── */
+/* ─────────── Version 5 — the outcome card ─────────── */
 
 /* Inland's Compare Quotes. Its one strong idea is that the headline is the
    total, not the premium: that is the number the bind screen will charge,
    and a card leading with the premium alone reads cheaper than it is. What
    makes up the difference is listed under it rather than hidden behind it. */
-function CarrierOutcomeV6({ carrier, onSelect }) {
+function CarrierOutcomeV5({ carrier, onSelect }) {
   const quoted = !carrier.noquote
   const fees = quoted ? feesFor(carrier.price) : null
 
@@ -776,10 +675,10 @@ function CarrierOutcomeV6({ carrier, onSelect }) {
 
           {/* What the headline is made of. */}
           <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
-            <V4Row label="Premium" value={money(carrier.price)} />
-            <V4Row label="BTIS service fee" value={money(fees.service)} />
+            <CostRow label="Premium" value={money(carrier.price)} />
+            <CostRow label="BTIS service fee" value={money(fees.service)} />
             <div className="mt-1 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
-              <V4Row label="Total" value={money(fees.total)} bold />
+              <CostRow label="Total" value={money(fees.total)} bold />
             </div>
           </div>
 
@@ -814,10 +713,9 @@ const REFERRAL_THRESHOLD = 20000
 export const INDICATION_VERSIONS = [
   { value: 1, label: 'V1', title: 'Carrier-led cards — ours' },
   { value: 2, label: 'V2', title: 'Price-led cards — ours' },
-  { value: 3, label: 'V3', title: 'Comparison table — ours' },
-  { value: 4, label: 'V4', title: "Accordion stack — CBIC / GL-BOP Compare" },
-  { value: 5, label: 'V5', title: 'Tier cards — GL-BOP Package' },
-  { value: 6, label: 'V6', title: 'Outcome cards — Inland Compare Quotes' },
+  { value: 3, label: 'V3', title: 'Accordion stack — CBIC / GL-BOP Compare' },
+  { value: 4, label: 'V4', title: 'Tier cards — GL-BOP Package' },
+  { value: 5, label: 'V5', title: 'Outcome cards — Inland Compare Quotes' },
 ]
 
 export default function Indication({
@@ -862,10 +760,10 @@ export default function Indication({
           own questions, as the prototype's tiles do. The switch is one for
           the whole grid: these rows are here to be read across carriers,
           and opening them together is also what keeps a row level. */}
-      {version === 4 ? (
+      {version === 3 ? (
         <div className="space-y-3">
           {results.map(r => (
-            <CarrierRowV4
+            <CarrierRowV3
               key={r.id}
               carrier={r}
               best={!r.noquote && r.price === lowest}
@@ -875,12 +773,12 @@ export default function Indication({
             />
           ))}
         </div>
-      ) : version === 5 ? (
+      ) : version === 4 ? (
         /* The tier cards wear a pill over the top edge, so their rows are
            set apart the way V2's are. */
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 items-stretch pt-3">
           {results.map(r => (
-            <CarrierTierV5
+            <CarrierTierV4
               key={r.id}
               carrier={r}
               best={!r.noquote && r.price === lowest}
@@ -888,25 +786,10 @@ export default function Indication({
             />
           ))}
         </div>
-      ) : version === 6 ? (
+      ) : version === 5 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
           {results.map(r => (
-            <CarrierOutcomeV6 key={r.id} carrier={r} onSelect={() => onPickCarrier(r)} />
-          ))}
-        </div>
-      ) : version === 3 ? (
-        <div className="rounded-2xl overflow-hidden"
-          style={{ background: 'var(--surface-card)', border: '1.5px solid var(--line)' }}>
-          <QuoteTableHead />
-          {results.map((r, i) => (
-            <CarrierRowV3
-              key={r.id}
-              carrier={r}
-              last={i === results.length - 1}
-              onSelect={() => onPickCarrier(r)}
-              open={detailsOpen}
-              onToggle={() => setDetailsOpen(o => !o)}
-            />
+            <CarrierOutcomeV5 key={r.id} carrier={r} onSelect={() => onPickCarrier(r)} />
           ))}
         </div>
       ) : (
