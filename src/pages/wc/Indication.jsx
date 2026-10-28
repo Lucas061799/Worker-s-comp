@@ -224,7 +224,7 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
           {/* The name sits beside its mark rather than under it — they are
               one piece of identification, and it buys the tile a line. */}
           <span className="flex items-center gap-2.5 min-w-0">
-            <CarrierLogo carrier={carrier} size={40} />
+            <CarrierLogo carrier={carrier} size={34} ratio={1.9} />
             <span className={`text-sm font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
               {carrier.name}
             </span>
@@ -345,8 +345,8 @@ function CarrierTileV2({ carrier, onSelect, open, onToggle }) {
             it the line read as a chip with a word in front of it. Every
             line has a floor, so a card that carries a mark keeps its logo
             level with one that does not. */}
-        <div className="mt-auto pt-5 flex flex-col items-center gap-1.5 min-h-[96px]">
-          <CarrierLogo carrier={carrier} size={40} />
+        <div className="mt-auto pt-5 flex flex-col items-center gap-1.5 min-h-[102px]">
+          <CarrierLogo carrier={carrier} size={46} ratio={2.8} />
           <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
             {carrier.name}
           </span>
@@ -532,7 +532,7 @@ function CarrierTierV4({ carrier, onSelect, best }) {
     <div className="relative">
       {carrier.reco && quoted && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold px-3 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-1.5"
+          className="absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold pl-3 pr-4 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-2"
           style={{ background: BRAND_GRADIENT, letterSpacing: '0.08em' }}
         >
           ★ RECOMMENDED<RecoDot />
@@ -614,8 +614,7 @@ function CarrierTierV4({ carrier, onSelect, best }) {
           <button
             type="button"
             onClick={onSelect}
-            className="w-full py-3.5 text-sm font-bold transition hover:opacity-95"
-            style={{ background: 'var(--surface-soft)', color: 'var(--ink-2)', borderTop: '1px solid var(--line)' }}
+            className="im-tier-bar w-full py-3.5 text-sm font-bold"
           >
             Select
           </button>
@@ -649,7 +648,7 @@ function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
       }}
     >
       <div className="flex items-center gap-3 mb-4 pr-8">
-        <CarrierLogo carrier={carrier} size={56} />
+        <CarrierLogo carrier={carrier} size={42} ratio={1.9} />
         <div className="min-w-0">
           <p className={`text-[15px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
             {carrier.name}

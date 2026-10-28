@@ -1001,8 +1001,10 @@ button.force-white-text,
    price a line below its row-mates' in a grid whose whole job is comparing
    prices across a row. */
 .im-reco-mark {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 8px 3px 9px; border-radius: 9999px; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
+  /* More room on the right than the left: the dot is round and sits on the
+     end, so matched padding left it looking pressed against the edge. */
+  padding: 3px 11px 3px 10px; border-radius: 9999px; white-space: nowrap;
   font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
   background: #3A2968;
   color: #FFFFFF;
@@ -1298,8 +1300,10 @@ button.force-white-text,
 .im-rule { border-top: 1px solid #E5E7EB; }
 [data-dark="true"] .im-rule { border-top-color: rgba(255,255,255,0.10) !important; }
 
-.im-carrier-tile { background: #FFFFFF !important; border: 1px solid #E5E7EB !important; }
-[data-dark="true"] .im-carrier-tile { border-color: rgba(255,255,255,0.18) !important; }
+/* No edge: a carrier's mark sits on the card, not in a box. The white stays
+   — in dark mode a brand mark still needs its own light ground — but on a
+   white card it is invisible, which is the point. */
+.im-carrier-tile { background: #FFFFFF !important; border: none !important; }
 
 .im-toggle-knob { background: #FFFFFF !important; }
 
@@ -1573,6 +1577,24 @@ html[data-dark="true"] body .print-btn-text {
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
+/* The tier card's action bar. Flat until you point at it, then the brand
+   gradient — a fill that follows the cursor says "this is what you are
+   about to press", which is the one thing a fill here can say when nothing
+   on this screen is ever in a chosen state. */
+.im-tier-bar {
+  background: var(--surface-soft);
+  color: var(--ink-2);
+  border-top: 1px solid var(--line);
+  transition: background 140ms, color 140ms, border-color 140ms;
+}
+.im-tier-bar:hover,
+[data-dark="true"] .im-tier-bar:hover,
+[data-dark="true"] .bop-page .im-tier-bar:hover {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%) !important;
+  color: #FFFFFF !important;
+  border-top-color: transparent !important;
+}
+
 /* The status tab on a price tile. It straddles the card's top edge, so what
    decides whether an underwriter ever sees the submission is read before the
    price rather than after it. Instant bind gets the brand gradient; a referral

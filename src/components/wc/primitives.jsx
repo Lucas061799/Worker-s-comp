@@ -6,6 +6,13 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 import { Children, useEffect, useId, useRef, useState } from 'react'
+import markAmtrust from '../../assets/carrier-amtrust.jpg'
+import markGuard from '../../assets/carrier-clearspring.png'
+import markCna from '../../assets/carrier-cna.svg'
+import markGreatAmerican from '../../assets/carrier-greatamerican.svg'
+import markPie from '../../assets/carrier-pie.png'
+import markEmployers from '../../assets/carrier-employers.png'
+import markIcwZenith from '../../assets/carrier-icwzenith.svg'
 
 export const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
 
@@ -77,28 +84,51 @@ export function VersionSwitch({ options, value, onChange, label = 'Layout versio
   )
 }
 
-/* A carrier's logo on a square white tile. */
-/* Stands in for a carrier mark nobody has supplied yet. The tiles were wearing
-   whichever logo happened to be in the assets folder — AmTrust showed
-   Coterie's — and another company's mark on a carrier's card is worse than no
-   mark at all. Same grey glyph the cross-sell block uses for its unchosen
-   product. Drop the real artwork in here when it arrives. */
-export function CarrierLogo({ carrier, size = 40, className = '' }) {
+/* Each carrier's own mark, taken from the carrier's own site: SVG where they
+   publish one, their highest-resolution bitmap otherwise. Keyed by the id in
+   CARRIERS, so a carrier with no mark yet falls back to the grey glyph rather
+   than wearing somebody else's — which is what the tiles used to do, AmTrust
+   showing Coterie's. */
+const CARRIER_MARKS = {
+  amtrust:       markAmtrust,
+  clearspring:   markGuard,
+  cna:           markCna,
+  greatamerican: markGreatAmerican,
+  pie:           markPie,
+  employers:     markEmployers,
+  icwzenith:     markIcwZenith,
+}
+
+/* A carrier's mark on a white tile. The tile is landscape because these are
+   wordmarks, not monograms: EMPLOYERS is three and a half times as wide as it
+   is tall, and in a square box it came out ten pixels high. The tile stays
+   white in dark mode — a brand mark needs its own background, not the page's. */
+export function CarrierLogo({ carrier, size = 40, ratio = 2, className = '' }) {
+  const mark = CARRIER_MARKS[carrier?.id]
   return (
     <div
       className={`im-carrier-tile rounded-xl flex items-center justify-center shrink-0 ${className}`}
-      style={{ width: size, height: size, padding: Math.round(size * 0.08) }}
+      style={{
+        width: Math.round(size * (mark ? ratio : 1)),
+        height: size,
+        padding: Math.round(size * (mark ? 0.14 : 0.08)),
+      }}
       title={carrier?.name}
     >
-      <svg
-        width={Math.round(size * 0.46)} height={Math.round(size * 0.46)}
-        viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <circle cx="8.5" cy="9.5" r="1.5" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 20" />
-      </svg>
+      {mark ? (
+        /* Decorative: every place this is used names the carrier beside it. */
+        <img src={mark} alt="" className="max-w-full max-h-full" style={{ objectFit: 'contain' }} />
+      ) : (
+        <svg
+          width={Math.round(size * 0.46)} height={Math.round(size * 0.46)}
+          viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"
+          aria-hidden="true"
+        >
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <circle cx="8.5" cy="9.5" r="1.5" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 20" />
+        </svg>
+      )}
     </div>
   )
 }
