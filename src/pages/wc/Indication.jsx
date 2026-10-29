@@ -183,11 +183,14 @@ function Chevron({ open, label, onToggle, className = '' }) {
    is what Bind does. Only V2 carries one, and V2 is V1 — the same card,
    drawn twice, so the button is the only thing that differs between them
    and the question can be asked on its own. */
-function SelectButton({ onClick, className = '' }) {
+function SelectButton({ onClick, label, className = '' }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      /* Nothing printed beside it says which carrier it belongs to, so the
+         button has to say so itself. */
+      aria-label={label ? `Select ${label}` : undefined}
       className={`im-btn-outline inline-flex items-center justify-center rounded-xl font-bold transition ${className}`}
     >
       Select
@@ -248,7 +251,10 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
           <span
-            className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-[3px] rounded-md text-[9.5px] font-extrabold tracking-[0.08em] inline-flex items-center gap-1.5 ${
+            /* Tracking and padding are tighter than the chip's elsewhere:
+               four cards to a row leaves 215px, and the one tab that carries
+               both words came out 230px wide and hung off both edges. */
+            className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-[3px] rounded-md text-[9px] font-extrabold tracking-[0.04em] inline-flex items-center gap-1 ${
               carrier.bind ? 'im-bind-tab' : 'im-bind-tab-soft'
             }`}
           >
@@ -296,23 +302,19 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
           </p>
         )}
 
-        {/* The name is back under the mark. It went when the tile was
-            landscape and a wordmark could be read in it; a square is
-            width-bound for a 3.5:1 lockup like Berkshire Hathaway GUARD's,
-            which comes out 19px tall and unreadable. The mark is decorative
-            again now that something beside it says the name. */}
-        <div className="mt-auto pt-5 flex flex-col items-center gap-2">
-          <CarrierLogo carrier={carrier} size={88} />
-          <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
-            {carrier.name}
-          </span>
+        {/* The mark signs the card on its own — most of these lockups spell
+            the carrier out inside the artwork, so a line of type under them
+            was saying it twice. It carries the name as its alt text rather
+            than in print, and the card and its button say it too. */}
+        <div className="mt-auto pt-5 flex justify-center">
+          <CarrierLogo carrier={carrier} size={88} named />
         </div>
 
         {/* V2 only. The signature above it already carries the auto margin,
             so the button lands at the foot and the row stays level. */}
         {quoted && withSelect && (
           <div className="pt-5">
-            <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
+            <SelectButton onClick={onSelect} label={carrier.name} className="w-full h-10 text-sm" />
           </div>
         )}
       </div>
@@ -761,7 +763,7 @@ export default function Indication({
            because the status tab hangs over each card's top edge — at an
            even 12px gap it came within a couple of pixels of the card above.
            The carrier card has no tab, so its rows sit at the column gap. */
-        <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-stretch ${
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch ${
           version === 3 ? 'gap-3' : 'gap-x-3 gap-y-10'
         }`}>
           {results.map(r => {
