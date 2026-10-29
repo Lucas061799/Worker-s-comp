@@ -178,7 +178,23 @@ function Chevron({ open, label, onToggle, className = '' }) {
   )
 }
 
-/* Select has gone from the cards: the card itself is the control, the way
+/* Outlined, not filled. Six solid gradient buttons in a grid read as six
+   carriers already chosen; the choice has not been made yet, and filling in
+   is what Bind does. Only V2 carries one — it is the treatment that asks
+   whether the button is worth the room, against a V1 that drops it. */
+function SelectButton({ onClick, className = '' }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`im-btn-outline inline-flex items-center justify-center rounded-xl font-bold transition ${className}`}
+    >
+      Select
+    </button>
+  )
+}
+
+/* Everywhere else the card itself is the control, the way
    a market is picked on a board of them. Everything inside one that is
    already pressable — the promo badge, an info dot, the disclosure, and the
    popover or modal either of them throws over the page — keeps its own
@@ -307,8 +323,7 @@ function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
       /* Every tile is drawn the same. The cheapest used to carry a brand
          edge and a glow, which read as a market already chosen rather than
          the one that happens to be first in a list sorted by price. */
-      className={`rounded-2xl overflow-hidden flex flex-col transition ${quoted ? 'im-pick-card im-pick-lift' : ''}`}
-      {...(quoted ? pickProps(onSelect, carrier.name) : {})}
+      className="rounded-2xl overflow-hidden flex flex-col transition"
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: '1.5px solid var(--line)',
@@ -347,16 +362,21 @@ function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
 
             <SlaRows carrier={carrier} className="mt-3.5 pt-3 space-y-1.5" />
 
-            {/* What the carrier will do with this submission is the last
-                thing on the tile, and the auto margin holds it to the foot
-                — so a row stays level and the height the recommended
-                banner adds to one tile is shared between its siblings'
-                gaps instead of opening a hole in one of them. */}
+            {/* What the carrier will do with this submission leads — it is
+                the thing that changes what happens next. */}
             <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
               {carrier.promo && <PromoBadge carrier={carrier} />}
+            </div>
+
+            {/* Two auto margins — here and above the chips — so a row stays
+                level and the height the recommended banner adds to one tile
+                is shared between its siblings' gaps instead of opening a
+                hole in one of them. */}
+            <div className="mt-auto pt-5">
+              <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
             </div>
           </>
         ) : (
@@ -643,7 +663,7 @@ const REFERRAL_THRESHOLD = 20000
    card leads, since it is the one the production screen is closest to. */
 export const INDICATION_VERSIONS = [
   { value: 1, label: 'V1', title: 'Price-led cards — ours' },
-  { value: 2, label: 'V2', title: 'Carrier-led cards — ours' },
+  { value: 2, label: 'V2', title: 'Carrier-led cards, with Select — ours' },
   { value: 3, label: 'V3', title: 'Accordion stack — CBIC / GL-BOP Compare' },
   { value: 4, label: 'V4', title: 'Tier cards — GL-BOP Package' },
 ]
@@ -686,11 +706,14 @@ export default function Indication({
 
   return (
     <div className="w-full">
-      {/* Nothing on a card says "press me" any more, so the instruction is
-          given once over the grid rather than six times inside it. */}
-      <p className="text-[12.5px] text-gray-500 mb-4">
-        Choose a market to carry on to its own questions.
-      </p>
+      {/* Nothing on a card says "press me", so the instruction is given once
+          over the grid rather than six times inside it — except on V2, which
+          is the treatment that keeps the button and so says it itself. */}
+      {version !== 2 && (
+        <p className="text-[12.5px] text-gray-500 mb-4">
+          Choose a market to carry on to its own questions.
+        </p>
+      )}
 
       {/* The card is the decision — pressing one carries straight on to that
           carrier's own questions, as the prototype's tiles do. The switch is
