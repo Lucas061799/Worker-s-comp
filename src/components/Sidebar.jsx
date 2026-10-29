@@ -33,6 +33,7 @@ function getCompletion(formData) {
   const cov = formData.coverage      || {}
   const uw  = formData.underwriting  || {}
   const sel = formData.carrierSelection?.checked || {}
+  const loc = formData.locations?.list    || []
   const bnd = formData.bind          || {}
 
   const state = pz.state || 'CA'
@@ -42,6 +43,11 @@ function getCompletion(formData) {
   c['business']    = !!(biz.name && biz.address && biz.city && biz.entityType && biz.fein && biz.yearEstablished && biz.phone && biz.email)
   c['history']     = !!hist.coverageStatus && hist.claimsPast4 !== undefined
   c['losses']      = (hist.claimCount || 0) > 0 && !!hist.losses && hist.losses.length > 0
+  /* The step is only in the rail when Business Info says there are other
+     sites, so it is answered once one of them is on file and whole. The
+     primary row is carried over from Business Info and is always there, so
+     it is the added ones that decide this. */
+  c['locations']   = loc.length > 0 && loc.every(l => l.address && l.city && l.state && l.zip)
   c['coverages']   = !!(stateCov.classes && stateCov.classes.length > 0 && stateCov.classes.every(cl => cl.code && cl.payroll))
   c['questions']   = uw.safety_program !== undefined
   c['carriers']    = Object.values(sel).some(Boolean)
