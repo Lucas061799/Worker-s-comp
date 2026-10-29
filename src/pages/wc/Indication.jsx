@@ -180,8 +180,9 @@ function Chevron({ open, label, onToggle, className = '' }) {
 
 /* Outlined, not filled. Six solid gradient buttons in a grid read as six
    carriers already chosen; the choice has not been made yet, and filling in
-   is what Bind does. Only V2 carries one — it is the treatment that asks
-   whether the button is worth the room, against a V1 that drops it. */
+   is what Bind does. Only V2 carries one, and V2 is V1 — the same card,
+   drawn twice, so the button is the only thing that differs between them
+   and the question can be asked on its own. */
 function SelectButton({ onClick, className = '' }) {
   return (
     <button
@@ -220,20 +221,22 @@ function pickProps(onSelect, name) {
   }
 }
 
-/* ─────────── Version 1 — the price leads ─────────── */
+/* ─────────── Versions 1 and 2 — the price leads ─────────── */
 
 /* The production screen's order, in our own chrome: the price is the first
    thing on the card, the carrier signs the bottom, and what decides what
    happens after Select is a tab notched into the card's top edge. */
-function CarrierTilePrice({ carrier, onSelect }) {
+function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
   const quoted = !carrier.noquote
 
   return (
     <div
       /* No overflow clip: the status tab has to hang over the top edge, so
          the detail panel rounds its own corners. */
-      className={`rounded-2xl relative flex flex-col transition ${quoted ? 'im-pick-card im-pick-lift' : ''}`}
-      {...(quoted ? pickProps(onSelect, carrier.name) : {})}
+      className={`rounded-2xl relative flex flex-col transition ${
+        quoted && !withSelect ? 'im-pick-card im-pick-lift' : ''
+      }`}
+      {...(quoted && !withSelect ? pickProps(onSelect, carrier.name) : {})}
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
@@ -304,13 +307,21 @@ function CarrierTilePrice({ carrier, onSelect }) {
             {carrier.name}
           </span>
         </div>
+
+        {/* V2 only. The signature above it already carries the auto margin,
+            so the button lands at the foot and the row stays level. */}
+        {quoted && withSelect && (
+          <div className="pt-5">
+            <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
+          </div>
+        )}
       </div>
 
     </div>
   )
 }
 
-/* ─────────── Version 2 — the carrier leads ─────────── */
+/* ─────────── Version 3 — the carrier leads ─────────── */
 
 /* One carrier, one tile, identified first: the mark and the name across the
    top, the price under them, and what the carrier will do with the
@@ -323,7 +334,8 @@ function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
       /* Every tile is drawn the same. The cheapest used to carry a brand
          edge and a glow, which read as a market already chosen rather than
          the one that happens to be first in a list sorted by price. */
-      className="rounded-2xl overflow-hidden flex flex-col transition"
+      className={`rounded-2xl overflow-hidden flex flex-col transition ${quoted ? 'im-pick-card im-pick-lift' : ''}`}
+      {...(quoted ? pickProps(onSelect, carrier.name) : {})}
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: '1.5px solid var(--line)',
@@ -362,21 +374,16 @@ function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
 
             <SlaRows carrier={carrier} className="mt-3.5 pt-3 space-y-1.5" />
 
-            {/* What the carrier will do with this submission leads — it is
-                the thing that changes what happens next. */}
+            {/* What the carrier will do with this submission is the last
+                thing on the tile, and the auto margin holds it to the foot
+                — so a row stays level and the height the recommended
+                banner adds to one tile is shared between its siblings'
+                gaps instead of opening a hole in one of them. */}
             <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
               {carrier.promo && <PromoBadge carrier={carrier} />}
-            </div>
-
-            {/* Two auto margins — here and above the chips — so a row stays
-                level and the height the recommended banner adds to one tile
-                is shared between its siblings' gaps instead of opening a
-                hole in one of them. */}
-            <div className="mt-auto pt-5">
-              <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
             </div>
           </>
         ) : (
@@ -394,7 +401,7 @@ function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
   )
 }
 
-/* ─────────── Version 3 — the accordion stack ─────────── */
+/* ─────────── Version 4 — the accordion stack ─────────── */
 
 /* CBIC's Price Indication and GL-BOP's Compare draw the same row: a brand dot
    and the name, the pills that qualify it, and the price with its monthly
@@ -402,7 +409,7 @@ function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
    has none, so the row is the pick and the caret on the right is what opens
    the pair of panels under it. A market that declined has nothing to pick,
    so there the row is still the switch. */
-function CarrierRowV3({ carrier, onSelect, open, onToggle, best }) {
+function CarrierRowAccordion({ carrier, onSelect, open, onToggle, best }) {
   const quoted = !carrier.noquote
   const fees = quoted ? feesFor(carrier.price) : null
 
@@ -538,7 +545,7 @@ function CostRow({ label, value, bold }) {
   )
 }
 
-/* ─────────── Version 4 — the tier card ─────────── */
+/* ─────────── Version 5 — the tier card ─────────── */
 
 /* GL-BOP's coverage tiers: a pill floating over the top edge, the name and
    its one-line promise, a price big enough to be the whole point, and then
@@ -546,7 +553,7 @@ function CostRow({ label, value, bold }) {
    the cards. GL-BOP ends it with a bar across the foot; ours has no Select
    at all, so the card is the action and the foot carries nothing — except
    on a market that declined, which says so there. */
-function CarrierTierV4({ carrier, onSelect, best }) {
+function CarrierTier({ carrier, onSelect, best }) {
   const quoted = !carrier.noquote
   const rows = [
     ['Binding', quoted ? (carrier.bind ? 'Instant' : 'Underwriter referral') : null],
@@ -659,13 +666,16 @@ function CarrierTierV4({ carrier, onSelect, best }) {
    see it. */
 const REFERRAL_THRESHOLD = 20000
 
-/* The four treatments, named where the switcher reads them. The price-led
-   card leads, since it is the one the production screen is closest to. */
+/* The five treatments, named where the switcher reads them. The price-led
+   card leads, since it is the one the production screen is closest to — and
+   it is there twice, once as the card you press and once with a Select
+   under it, which is the one question worth asking on its own. */
 export const INDICATION_VERSIONS = [
   { value: 1, label: 'V1', title: 'Price-led cards — ours' },
-  { value: 2, label: 'V2', title: 'Carrier-led cards, with Select — ours' },
-  { value: 3, label: 'V3', title: 'Accordion stack — CBIC / GL-BOP Compare' },
-  { value: 4, label: 'V4', title: 'Tier cards — GL-BOP Package' },
+  { value: 2, label: 'V2', title: 'Price-led cards, with Select — ours' },
+  { value: 3, label: 'V3', title: 'Carrier-led cards — ours' },
+  { value: 4, label: 'V4', title: 'Accordion stack — CBIC / GL-BOP Compare' },
+  { value: 5, label: 'V5', title: 'Tier cards — GL-BOP Package' },
 ]
 
 export default function Indication({
@@ -720,10 +730,10 @@ export default function Indication({
           one for the whole grid: these rows are here to be read across
           carriers, and opening them together is also what keeps a row
           level. */}
-      {version === 3 ? (
+      {version === 4 ? (
         <div className="space-y-3">
           {results.map(r => (
-            <CarrierRowV3
+            <CarrierRowAccordion
               key={r.id}
               carrier={r}
               best={!r.noquote && r.price === lowest}
@@ -733,12 +743,12 @@ export default function Indication({
             />
           ))}
         </div>
-      ) : version === 4 ? (
+      ) : version === 5 ? (
         /* The tier cards wear a pill over the top edge, so their rows are
-           set apart the way V2's are. */
+           set apart the way the price cards' are. */
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 items-stretch pt-3">
           {results.map(r => (
-            <CarrierTierV4
+            <CarrierTier
               key={r.id}
               carrier={r}
               best={!r.noquote && r.price === lowest}
@@ -747,20 +757,21 @@ export default function Indication({
           ))}
         </div>
       ) : (
-        /* V1's rows are set wider apart than its columns because the status
-           tab hangs over each card's top edge — at an even 12px gap it came
-           within a couple of pixels of the card above. V2 has no tab, so its
-           rows sit at the column gap. */
+        /* The price cards' rows are set wider apart than their columns
+           because the status tab hangs over each card's top edge — at an
+           even 12px gap it came within a couple of pixels of the card above.
+           The carrier card has no tab, so its rows sit at the column gap. */
         <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-stretch ${
-          version === 2 ? 'gap-3' : 'gap-x-3 gap-y-10'
+          version === 3 ? 'gap-3' : 'gap-x-3 gap-y-10'
         }`}>
           {results.map(r => {
-            const Tile = version === 2 ? CarrierTileCarrier : CarrierTilePrice
+            const Tile = version === 3 ? CarrierTileCarrier : CarrierTilePrice
             return (
               <Tile
                 key={r.id}
                 carrier={r}
                 onSelect={() => onPickCarrier(r)}
+                withSelect={version === 2}
                 open={detailsOpen}
                 onToggle={() => setDetailsOpen(o => !o)}
               />
