@@ -96,7 +96,7 @@ function App() {
   /* A demo control, not part of the flow: three treatments of the price
      indication, switched from its own header. Deliberately not persisted —
      a reviewer's comparison is this sitting's, not the submission's. */
-  const [indicationVersion, setIndicationVersion] = useState(2)
+  const [indicationVersion, setIndicationVersion] = useState(1)
 
   /* Carrier flow asks for sub-class descriptors before the carrier's own
      questions, so the step has two screens rather than one. */

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
   BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoPanel,
-  Modal, ModalButton, SectionLabel, Tag,
+  Modal, ModalButton, Tag,
 } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
@@ -178,27 +178,128 @@ function Chevron({ open, label, onToggle, className = '' }) {
   )
 }
 
-function SelectButton({ onClick, className = '' }) {
-  /* Outlined, not filled. Six solid gradient buttons in a grid read as six
-     carriers already chosen; the choice has not been made yet, and filling
-     in is what Bind does. */
+/* Select has gone from the cards: the card itself is the control, the way
+   a market is picked on a board of them. Everything inside one that is
+   already pressable — the promo badge, an info dot, the disclosure, and the
+   popover or modal either of them throws over the page — keeps its own
+   click, so a card only picks when the press landed on the card. */
+function pickProps(onSelect, name) {
+  return {
+    role: 'button',
+    tabIndex: 0,
+    'aria-label': `Select ${name}`,
+    onClick: e => {
+      if (e.target.closest('button, a, [role="dialog"], [data-overlay]')) return
+      onSelect()
+    },
+    /* Space and Enter only on the card itself; a nested control handles its
+       own keys and must not pick the market as well. */
+    onKeyDown: e => {
+      if (e.target !== e.currentTarget) return
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        onSelect()
+      }
+    },
+  }
+}
+
+/* ─────────── Version 1 — the price leads ─────────── */
+
+/* The production screen's order, in our own chrome: the price is the first
+   thing on the card, the carrier signs the bottom, and what decides what
+   happens after Select is a tab notched into the card's top edge. */
+function CarrierTilePrice({ carrier, onSelect }) {
+  const quoted = !carrier.noquote
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`im-btn-outline inline-flex items-center justify-center rounded-xl font-bold transition ${className}`}
+    <div
+      /* No overflow clip: the status tab has to hang over the top edge, so
+         the detail panel rounds its own corners. */
+      className={`rounded-2xl relative flex flex-col transition ${quoted ? 'im-pick-card im-pick-lift' : ''}`}
+      {...(quoted ? pickProps(onSelect, carrier.name) : {})}
+      style={{
+        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
+        border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
+        boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
+      }}
     >
-      Select
-    </button>
+            <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
+        {/* A referral is stated rather than left to be inferred from a
+            missing tab, so every card in the row reads the same way. */}
+        {quoted && (
+          <span
+            className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-[3px] rounded-md text-[9.5px] font-extrabold tracking-[0.08em] inline-flex items-center gap-1.5 ${
+              carrier.bind ? 'im-bind-tab' : 'im-bind-tab-soft'
+            }`}
+          >
+            {/* Three children, so the flex gap falls evenly either side of
+                the separator — inline it sat tight against the first word and
+                loose against the second. */}
+            <span>{carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}</span>
+            {carrier.reco && (
+              <>
+                <span aria-hidden="true" style={{ opacity: 0.55 }}>&middot;</span>
+                <span>RECOMMENDED</span>
+                <RecoDot />
+              </>
+            )}
+          </span>
+        )}
+
+        {quoted ? (
+          <>
+            {/* Solid, not the brand gradient. The gradient made the one
+                number on the tile the decorative thing on it. */}
+            <p className="text-center text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
+              {money(carrier.price)}
+            </p>
+            {/* A div, not a p: the promo badge opens a modal from where it
+                stands, and a dialog is not legal inside a paragraph. */}
+            <div className="text-center text-[11px] text-gray-500 mt-1.5">
+              Est. annual
+              {carrier.promo && <> &middot; <PromoBadge carrier={carrier} tab /></>}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Where the price would be, so the card still lines up with the
+                row it sits in. */}
+            <p className="text-center text-[17px] font-bold leading-none text-gray-700">Not available</p>
+            <p className="text-center text-[11px] text-gray-500 mt-1.5">Carrier declined this risk</p>
+          </>
+        )}
+
+        {!quoted && (
+          <p className="mt-4 pt-3.5 text-center text-[11.5px] leading-relaxed text-gray-500"
+            style={{ borderTop: '1px solid var(--line)' }}>
+            {carrier.noquote}.
+          </p>
+        )}
+
+        {/* The name is back under the mark. It went when the tile was
+            landscape and a wordmark could be read in it; a square is
+            width-bound for a 3.5:1 lockup like Berkshire Hathaway GUARD's,
+            which comes out 19px tall and unreadable. The mark is decorative
+            again now that something beside it says the name. */}
+        <div className="mt-auto pt-5 flex flex-col items-center gap-2">
+          <CarrierLogo carrier={carrier} size={88} />
+          <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
+            {carrier.name}
+          </span>
+        </div>
+      </div>
+
+    </div>
   )
 }
 
-/* ─────────── Version 1 — the carrier leads ─────────── */
+/* ─────────── Version 2 — the carrier leads ─────────── */
 
 /* One carrier, one tile, identified first: the mark and the name across the
    top, the price under them, and what the carrier will do with the
    submission as a chip above the button. */
-function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
+function CarrierTileCarrier({ carrier, onSelect, open, onToggle }) {
   const quoted = !carrier.noquote
 
   return (
@@ -206,7 +307,8 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
       /* Every tile is drawn the same. The cheapest used to carry a brand
          edge and a glow, which read as a market already chosen rather than
          the one that happens to be first in a list sorted by price. */
-      className="rounded-2xl overflow-hidden flex flex-col transition"
+      className={`rounded-2xl overflow-hidden flex flex-col transition ${quoted ? 'im-pick-card im-pick-lift' : ''}`}
+      {...(quoted ? pickProps(onSelect, carrier.name) : {})}
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: '1.5px solid var(--line)',
@@ -245,21 +347,16 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
 
             <SlaRows carrier={carrier} className="mt-3.5 pt-3 space-y-1.5" />
 
-            {/* What the carrier will do with this submission leads — it is
-                the thing that changes what happens next. */}
+            {/* What the carrier will do with this submission is the last
+                thing on the tile, and the auto margin holds it to the foot
+                — so a row stays level and the height the recommended
+                banner adds to one tile is shared between its siblings'
+                gaps instead of opening a hole in one of them. */}
             <div className="flex flex-wrap items-center gap-2 mt-auto pt-3.5">
               <span className={`im-chip ${carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
                 {carrier.bind ? 'Instant bind' : 'Refer to underwriter'}
               </span>
               {carrier.promo && <PromoBadge carrier={carrier} />}
-            </div>
-
-            {/* Two auto margins — here and above the chips — so a row stays
-                level and the height the recommended banner adds to one tile
-                is shared between its siblings' gaps instead of opening a
-                hole in one of them. */}
-            <div className="mt-auto pt-5">
-              <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
             </div>
           </>
         ) : (
@@ -277,120 +374,33 @@ function CarrierTileV1({ carrier, onSelect, open, onToggle }) {
   )
 }
 
-/* ─────────── Version 2 — the price leads ─────────── */
-
-/* The production screen's order, in our own chrome: the price is the first
-   thing on the card, the carrier signs the bottom, and what decides what
-   happens after Select is a tab notched into the card's top edge. */
-function CarrierTileV2({ carrier, onSelect }) {
-  const quoted = !carrier.noquote
-
-  return (
-    <div
-      /* No overflow clip: the status tab has to hang over the top edge, so
-         the detail panel rounds its own corners. */
-      className="rounded-2xl relative flex flex-col transition"
-      style={{
-        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
-        boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
-      }}
-    >
-            <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
-        {/* A referral is stated rather than left to be inferred from a
-            missing tab, so every card in the row reads the same way. */}
-        {quoted && (
-          <span
-            className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-[3px] rounded-md text-[9.5px] font-extrabold tracking-[0.08em] inline-flex items-center gap-1.5 ${
-              carrier.bind ? 'im-bind-tab' : 'im-bind-tab-soft'
-            }`}
-          >
-            {/* Three children, so the flex gap falls evenly either side of
-                the separator — inline it sat tight against the first word and
-                loose against the second. */}
-            <span>{carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}</span>
-            {carrier.reco && (
-              <>
-                <span aria-hidden="true" style={{ opacity: 0.55 }}>&middot;</span>
-                <span>RECOMMENDED</span>
-                <RecoDot />
-              </>
-            )}
-          </span>
-        )}
-
-        {quoted ? (
-          <>
-            {/* Solid, not the brand gradient. The gradient made the one
-                number on the tile the decorative thing on it. */}
-            <p className="text-center text-[28px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
-              {money(carrier.price)}
-            </p>
-            <p className="text-center text-[11px] text-gray-500 mt-1.5">
-              Est. annual
-              {carrier.promo && <> &middot; <PromoBadge carrier={carrier} tab /></>}
-            </p>
-          </>
-        ) : (
-          <>
-            {/* Where the price would be, so the card still lines up with the
-                row it sits in. */}
-            <p className="text-center text-[17px] font-bold leading-none text-gray-700">Not available</p>
-            <p className="text-center text-[11px] text-gray-500 mt-1.5">Carrier declined this risk</p>
-          </>
-        )}
-
-        {!quoted && (
-          <p className="mt-4 pt-3.5 text-center text-[11.5px] leading-relaxed text-gray-500"
-            style={{ borderTop: '1px solid var(--line)' }}>
-            {carrier.noquote}.
-          </p>
-        )}
-
-        {/* The name is back under the mark. It went when the tile was
-            landscape and a wordmark could be read in it; a square is
-            width-bound for a 3.5:1 lockup like Berkshire Hathaway GUARD's,
-            which comes out 19px tall and unreadable. The mark is decorative
-            again now that something beside it says the name. */}
-        <div className="mt-auto pt-5 flex flex-col items-center gap-2">
-          <CarrierLogo carrier={carrier} size={88} />
-          <span className={`text-[13px] font-bold leading-tight text-center ${quoted ? 'text-gray-900' : 'text-gray-700'}`}>
-            {carrier.name}
-          </span>
-        </div>
-
-        {quoted && (
-          <div className="pt-4">
-            <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
-          </div>
-        )}
-      </div>
-
-    </div>
-  )
-}
-
-
 /* ─────────── Version 3 — the accordion stack ─────────── */
 
 /* CBIC's Price Indication and GL-BOP's Compare draw the same row: a brand dot
-   and the name, the pills that qualify it, the price with its monthly and
-   total underneath, and the action on the right. The whole row is the
-   switch, and what opens is a pair of panels rather than a list. */
+   and the name, the pills that qualify it, and the price with its monthly
+   and total underneath. Both of those screens end the row with Select; ours
+   has none, so the row is the pick and the caret on the right is what opens
+   the pair of panels under it. A market that declined has nothing to pick,
+   so there the row is still the switch. */
 function CarrierRowV3({ carrier, onSelect, open, onToggle, best }) {
   const quoted = !carrier.noquote
   const fees = quoted ? feesFor(carrier.price) : null
 
   return (
     <div
-      className="rounded-xl overflow-hidden transition"
+      className={`rounded-xl overflow-hidden transition ${quoted ? 'im-pick-card' : ''}`}
       style={{
         background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
         border: `1.5px solid ${best ? '#7C3AED' : 'var(--line)'}`,
         boxShadow: best ? '0 2px 12px rgba(92,46,212,0.12)' : 'none',
       }}
     >
-      <div className="px-4 py-3.5 cursor-pointer" onClick={onToggle}>
+      <div
+        className="px-4 py-3.5 cursor-pointer"
+        {...(quoted
+          ? pickProps(onSelect, carrier.name)
+          : { role: 'button', tabIndex: 0, onClick: onToggle })}
+      >
         <div className="flex items-center justify-between gap-3 mb-2.5">
           <div className="flex items-center gap-2.5 min-w-0 flex-wrap">
             {/* The small brand anchor both of those screens start a row with. */}
@@ -416,12 +426,23 @@ function CarrierRowV3({ carrier, onSelect, open, onToggle, best }) {
             )}
             {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"
-            style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
-            aria-hidden="true">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
+          {/* Its own control, not a mark on a row that does something else:
+              the row picks the market now, so the caret has to be pressable
+              in its own right for the panels to be reachable at all. */}
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-expanded={open}
+            aria-label={`${carrier.name} servicing details`}
+            className="shrink-0 -m-1.5 p-1.5 rounded-md transition"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
+              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="block"
+              style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+              aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
         </div>
 
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -442,20 +463,6 @@ function CarrierRowV3({ carrier, onSelect, open, onToggle, best }) {
                 {open ? 'Hide details' : 'See why →'}
               </span>
             </span>
-          )}
-
-          {quoted && (
-            /* The source screens fill the best row's button and outline the
-               rest, so the grid carries one recommended action rather than
-               seven equal ones. */
-            <button
-              type="button"
-              onClick={e => { e.stopPropagation(); onSelect() }}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition shrink-0 ${best ? '' : 'im-btn-outline'}`}
-              style={best ? { background: BRAND_GRADIENT, color: '#fff' } : undefined}
-            >
-              Select
-            </button>
           )}
         </div>
       </div>
@@ -516,7 +523,9 @@ function CostRow({ label, value, bold }) {
 /* GL-BOP's coverage tiers: a pill floating over the top edge, the name and
    its one-line promise, a price big enough to be the whole point, and then
    every term as a labelled row on a fixed height so the rows line up across
-   the cards. The action is a bar across the foot, not a button inside. */
+   the cards. GL-BOP ends it with a bar across the foot; ours has no Select
+   at all, so the card is the action and the foot carries nothing — except
+   on a market that declined, which says so there. */
 function CarrierTierV4({ carrier, onSelect, best }) {
   const quoted = !carrier.noquote
   const rows = [
@@ -529,7 +538,13 @@ function CarrierTierV4({ carrier, onSelect, best }) {
   ]
 
   return (
-    <div className="relative">
+    /* The lift belongs to the shell, so the pill straddling the top edge
+       rises with the card it is pinned to; the brand edge is the card's,
+       which is why it is reached through the shell's hover. */
+    <div
+      className={`relative ${quoted ? 'im-pick-card im-pick-lift' : ''}`}
+      {...(quoted ? pickProps(onSelect, carrier.name) : {})}
+    >
       {carrier.reco && quoted && (
         <div
           className="im-reco-tab absolute left-1/2 -translate-x-1/2 -top-3 z-10 text-[10px] font-bold pl-3 pr-4 py-1 rounded-full text-white whitespace-nowrap inline-flex items-center gap-2"
@@ -539,7 +554,7 @@ function CarrierTierV4({ carrier, onSelect, best }) {
         </div>
       )}
       <div
-        className="rounded-2xl overflow-hidden h-full flex flex-col transition"
+        className="im-tier-card rounded-2xl overflow-hidden h-full flex flex-col transition"
         style={{
           background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
           border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
@@ -608,21 +623,7 @@ function CarrierTierV4({ carrier, onSelect, best }) {
           ))}
         </div>
 
-        {quoted ? (
-          /* GL-BOP fills this bar to say the tier is the one you picked. We
-             have no picked state — Select carries straight on to the carrier's
-             own questions — so a filled bar on every instant-bind card read as
-             four cards already chosen and no way to tell which one you had
-             actually pressed. The bar is the action and nothing else; the
-             recommended carrier is still marked by its pill and its edge. */
-          <button
-            type="button"
-            onClick={onSelect}
-            className="im-tier-bar w-full py-3.5 text-sm font-bold"
-          >
-            Select
-          </button>
-        ) : (
+        {!quoted && (
           <div className="w-full py-3.5 text-sm font-bold text-center text-gray-400"
             style={{ borderTop: '1px solid var(--line)' }}>
             Declined
@@ -633,106 +634,22 @@ function CarrierTierV4({ carrier, onSelect, best }) {
   )
 }
 
-/* ─────────── Version 5 — the outcome card ─────────── */
-
-/* Inland's Compare Quotes. Its one strong idea is that the headline is the
-   total, not the premium: that is the number the bind screen will charge,
-   and a card leading with the premium alone reads cheaper than it is. What
-   makes up the difference is listed under it rather than hidden behind it. */
-function CarrierOutcomeV5({ carrier, onSelect, open, onToggle }) {
-  const quoted = !carrier.noquote
-  const fees = quoted ? feesFor(carrier.price) : null
-
-  return (
-    <div
-      className="rounded-2xl p-5 flex flex-col relative"
-      style={{
-        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
-        boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
-      }}
-    >
-      {/* The floor was the logo's, back when every tile was the same height.
-          Tiles hug their marks now, so the header carries it instead — and
-          the mark is narrower, to leave the name room enough not to wrap. */}
-      <div className="flex items-center gap-3 mb-4 pr-8 min-h-[56px]">
-        <CarrierLogo carrier={carrier} size={52} />
-        <div className="min-w-0">
-          <p className={`text-[15px] font-bold leading-tight ${quoted ? 'text-gray-900' : 'text-gray-500'}`}>
-            {carrier.name}
-          </p>
-          <p className="text-[11.5px] text-gray-400">{carrier.sub}</p>
-        </div>
-      </div>
-
-      <Chevron open={open} onToggle={onToggle} label={carrier.name} className="absolute top-4 right-4" />
-
-      {/* One line, reserved: a card whose chips wrap starts its price a row
-          below its neighbours'. The endorsement is on the card's own edge
-          now, so this row is back to one chip and a promo at most. */}
-      <div className="flex flex-wrap items-start content-start gap-2 mb-3 min-h-[27px]">
-        <span className={`im-chip ${!quoted ? 'im-chip-muted' : carrier.bind ? 'im-chip-good' : 'im-chip-muted'}`}>
-          {!quoted ? 'Declined' : carrier.bind ? 'Instant bind' : 'UW review'}
-        </span>
-        {carrier.promo && quoted && <PromoBadge carrier={carrier} />}
-      </div>
-
-      {quoted ? (
-        <>
-          <SectionLabel className="mb-1">Total annual cost</SectionLabel>
-          <p className="text-[30px] font-bold leading-none" style={{ color: 'var(--ink)' }}>
-            {money(fees.total)}
-          </p>
-          <p className="text-[12px] text-gray-400 mt-1">per year, fees included</p>
-
-          {/* What the headline is made of, and who services it — behind the
-              chevron, because the card was saying several things twice. The
-              total was the headline and the last line of its own breakdown;
-              "Bind online today" was the Instant bind chip again, in the
-              same teal, eight lines further down. */}
-          {open && (
-            <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--line)' }}>
-              <CostRow label="Premium" value={money(carrier.price)} />
-              <CostRow label="BTIS service fee" value={money(fees.service)} />
-              <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--line)' }}>
-                {/* The turnarounds come back here. They were an eyebrow on the
-                    face, which is why the panel did not repeat them. */}
-                <CostRow label="Quote" value={carrier.slaShort || carrier.sla} />
-                <CostRow label="Endorsement" value={carrier.endorsementSla} />
-                {detailRows(carrier).map(([label, value]) => (
-                  <CostRow key={label} label={label} value={value} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-auto pt-4">
-            <SelectButton onClick={onSelect} className="w-full h-10 text-sm" />
-          </div>
-        </>
-      ) : (
-        <p className="text-[12.5px] text-gray-500 leading-relaxed">{carrier.noquote}.</p>
-      )}
-    </div>
-  )
-}
-
 /* The prototype's threshold: the callout is offered only once prices are back
    and only when the cheapest of them is over this, so most submissions never
    see it. */
 const REFERRAL_THRESHOLD = 20000
 
-/* The three treatments, named where the switcher reads them. */
+/* The four treatments, named where the switcher reads them. The price-led
+   card leads, since it is the one the production screen is closest to. */
 export const INDICATION_VERSIONS = [
-  { value: 1, label: 'V1', title: 'Carrier-led cards — ours' },
-  { value: 2, label: 'V2', title: 'Price-led cards — ours' },
+  { value: 1, label: 'V1', title: 'Price-led cards — ours' },
+  { value: 2, label: 'V2', title: 'Carrier-led cards — ours' },
   { value: 3, label: 'V3', title: 'Accordion stack — CBIC / GL-BOP Compare' },
   { value: 4, label: 'V4', title: 'Tier cards — GL-BOP Package' },
-  { value: 5, label: 'V5', title: 'Outcome cards — Inland Compare Quotes' },
 ]
 
 export default function Indication({
-  formData, onPickCarrier, onRefer, referralInPlay = false, version = 2,
+  formData, onPickCarrier, onRefer, referralInPlay = false, version = 1,
 }) {
   /* No market-selection screen any more, so an absent list means every
      carrier rather than none. A record written when that screen existed
@@ -769,10 +686,17 @@ export default function Indication({
 
   return (
     <div className="w-full">
-      {/* Select is the decision — it carries straight on to the carrier's
-          own questions, as the prototype's tiles do. The switch is one for
-          the whole grid: these rows are here to be read across carriers,
-          and opening them together is also what keeps a row level. */}
+      {/* Nothing on a card says "press me" any more, so the instruction is
+          given once over the grid rather than six times inside it. */}
+      <p className="text-[12.5px] text-gray-500 mb-4">
+        Choose a market to carry on to its own questions.
+      </p>
+
+      {/* The card is the decision — pressing one carries straight on to that
+          carrier's own questions, as the prototype's tiles do. The switch is
+          one for the whole grid: these rows are here to be read across
+          carriers, and opening them together is also what keeps a row
+          level. */}
       {version === 3 ? (
         <div className="space-y-3">
           {results.map(r => (
@@ -799,28 +723,16 @@ export default function Indication({
             />
           ))}
         </div>
-      ) : version === 5 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
-          {results.map(r => (
-            <CarrierOutcomeV5
-              key={r.id}
-              carrier={r}
-              onSelect={() => onPickCarrier(r)}
-              open={detailsOpen}
-              onToggle={() => setDetailsOpen(o => !o)}
-            />
-          ))}
-        </div>
       ) : (
-        /* V2's rows are set wider apart than its columns because the status
+        /* V1's rows are set wider apart than its columns because the status
            tab hangs over each card's top edge — at an even 12px gap it came
-           within a couple of pixels of the Select button on the card above.
-           V1 has no tab, so its rows sit at the column gap. */
+           within a couple of pixels of the card above. V2 has no tab, so its
+           rows sit at the column gap. */
         <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 items-stretch ${
-          version === 1 ? 'gap-3' : 'gap-x-3 gap-y-10'
+          version === 2 ? 'gap-3' : 'gap-x-3 gap-y-10'
         }`}>
           {results.map(r => {
-            const Tile = version === 1 ? CarrierTileV1 : CarrierTileV2
+            const Tile = version === 2 ? CarrierTileCarrier : CarrierTilePrice
             return (
               <Tile
                 key={r.id}

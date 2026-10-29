@@ -219,6 +219,10 @@ export function AnswerRow({ label, help, stacked = false, children }) {
 export function Modal({ title, onDismiss, children, footer, footerAlign = 'between', width = 420 }) {
   return (
     <div
+      /* Marked, because this renders where it is written rather than through
+         a portal: on a card that is itself pressable, a click meant for the
+         dialog or its backdrop would otherwise bubble into the card. */
+      data-overlay=""
       className="bop-page fixed inset-0 z-[10000] flex items-center justify-center p-6"
       style={{ background: 'rgba(15,10,40,0.4)', backdropFilter: 'blur(4px)' }}
       onClick={onDismiss}

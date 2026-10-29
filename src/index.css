@@ -1622,22 +1622,39 @@ html[data-dark="true"] body .print-btn-text {
 [data-dark="true"] .im-promo-tab { color: #E879F9 !important; }
 [data-dark="true"] .im-promo-tab:hover { color: #C4B5FD !important; }
 
-/* The tier card's action bar. Flat until you point at it, then the brand
-   gradient — a fill that follows the cursor says "this is what you are
-   about to press", which is the one thing a fill here can say when nothing
-   on this screen is ever in a chosen state. */
-.im-tier-bar {
-  background: var(--surface-soft);
-  color: var(--ink-2);
-  border-top: 1px solid var(--line);
-  transition: background 140ms, color 140ms, border-color 140ms;
+/* The indication's cards carry no Select any more — the card is the control.
+   So the card has to do under the pointer what the outline button used to do
+   when you reached for it: take the brand edge and say it is about to be
+   pressed. The !important beats the border each tile sets inline, which is
+   per-carrier and so cannot live in a class. */
+.im-pick-card {
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
-.im-tier-bar:hover,
-[data-dark="true"] .im-tier-bar:hover,
-[data-dark="true"] .bop-page .im-tier-bar:hover {
-  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%) !important;
-  color: #FFFFFF !important;
-  border-top-color: transparent !important;
+.im-pick-card:hover {
+  border-color: #7C3AED !important;
+  box-shadow: 0 6px 22px rgba(92,46,212,0.18) !important;
+}
+.im-pick-card:focus-visible {
+  outline: 2px solid #A614C3;
+  outline-offset: 3px;
+}
+/* The lift is for a card in a grid. The accordion stack takes the edge
+   without it — a full-width row rising two pixels reads as a wobble. */
+.im-pick-lift:hover { transform: translateY(-2px); }
+/* The tier card is wrapped in a positioned shell so its pill can straddle
+   the top edge: the shell takes the lift, and the edge belongs to the card
+   inside it. */
+.im-pick-card:hover > .im-tier-card {
+  border-color: #7C3AED !important;
+  box-shadow: 0 6px 22px rgba(92,46,212,0.18) !important;
+}
+[data-dark="true"] .im-pick-card:hover,
+[data-dark="true"] .bop-page .im-pick-card:hover,
+[data-dark="true"] .im-pick-card:hover > .im-tier-card,
+[data-dark="true"] .bop-page .im-pick-card:hover > .im-tier-card {
+  border-color: #A78BFA !important;
+  box-shadow: 0 6px 22px rgba(167,139,250,0.22) !important;
 }
 
 /* The status tab on a price tile. It straddles the card's top edge, so what
