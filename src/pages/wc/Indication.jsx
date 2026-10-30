@@ -300,7 +300,7 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
             was saying it twice. It carries the name as its alt text rather
             than in print, and the card and its button say it too. */}
         <div className="mt-auto pt-5 flex justify-center">
-          <CarrierLogo carrier={carrier} size={88} named />
+          <CarrierLogo carrier={carrier} size={88} named className="im-carrier-tile-bare" />
         </div>
 
         {/* V2 only. The signature above it already carries the auto margin,
@@ -756,8 +756,12 @@ export default function Indication({
            because the status tab hangs over each card's top edge — at an
            even 12px gap it came within a couple of pixels of the card above.
            The carrier card has no tab, so its rows sit at the column gap. */
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch ${
-          version === 3 ? 'gap-3' : 'gap-x-3 gap-y-10'
+        /* Four to a row suits the price card, which carries one number and
+           a mark. The carrier-led card carries a name, a price with its
+           unit, two servicing rows and a tag strip, and at 215px all four
+           of those wrapped — so it stops at three. */
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch ${
+          version === 3 ? 'gap-3' : 'xl:grid-cols-4 gap-x-3 gap-y-10'
         }`}>
           {results.map(r => {
             const Tile = version === 3 ? CarrierTileCarrier : CarrierTilePrice

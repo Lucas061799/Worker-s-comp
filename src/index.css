@@ -1317,6 +1317,16 @@ button.force-white-text,
   background: #FFFFFF !important;
   border-color: rgba(0,0,0,0.08) !important;
 }
+/* The price card shows the mark alone at 88px, where the plate read as a
+   second card drawn inside the card. Transparent rather than none, so the
+   1px still counts and the mark keeps the size and padding it was given.
+   Dark keeps its white ground — these marks are full colour — but the
+   edge goes there too. */
+.im-carrier-tile.im-carrier-tile-bare,
+[data-dark="true"] .im-carrier-tile.im-carrier-tile-bare,
+[data-dark="true"] .bop-page .im-carrier-tile.im-carrier-tile-bare {
+  border-color: transparent !important;
+}
 
 .im-toggle-knob { background: #FFFFFF !important; }
 
