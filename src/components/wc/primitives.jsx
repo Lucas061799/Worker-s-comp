@@ -113,6 +113,14 @@ const CARRIER_MARKS = {
    where the square gave 17px to 60px. */
 const BAND = { box: 64, width: 144, ink: 58 }
 
+/* Optical correction, applied on top of the band. Fitting to a box sizes a
+   mark by its bounding ratio, and a bounding box is not what the eye reads:
+   CNA is three bold letters with nothing around them, so at the band's full
+   width it came out heavier than every mark beside it. A number here is the
+   fraction of the band that mark is allowed, and only marks that read wrong
+   need one. */
+const MARK_SCALE = { cna: 0.7 }
+
 /* A carrier's mark, on a white ground in dark mode. White is the one thing
    that does not follow the theme: these are navy, red and grey marks drawn
    for paper, and the carriers publish no light-on-dark variants. In light
@@ -123,6 +131,7 @@ const BAND = { box: 64, width: 144, ink: 58 }
    the small square chip that sits beside a carrier's name. */
 export function CarrierLogo({ carrier, size = 40, band = false, named = false, className = '' }) {
   const mark = CARRIER_MARKS[carrier?.id]
+  const optical = MARK_SCALE[carrier?.id] ?? 1
   return (
     <div
       className={`im-carrier-tile rounded-xl inline-flex items-center justify-center shrink-0 ${className}`}
@@ -146,7 +155,12 @@ export function CarrierLogo({ carrier, size = 40, band = false, named = false, c
              ratio, maxWidth holds the wide wordmarks, and `contain` keeps
              them in proportion inside the box that clamping leaves. */
           style={band
-            ? { height: BAND.ink, width: 'auto', maxWidth: BAND.width, objectFit: 'contain' }
+            ? {
+                height: BAND.ink * optical,
+                width: 'auto',
+                maxWidth: BAND.width * optical,
+                objectFit: 'contain',
+              }
             : { width: '100%', height: '100%', objectFit: 'contain' }}
         />
       ) : (
