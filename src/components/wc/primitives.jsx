@@ -99,22 +99,38 @@ const CARRIER_MARKS = {
   icwzenith:     markIcwZenith,
 }
 
-/* A carrier's mark on a white tile. One square, the same for every carrier,
-   whatever shape its lockup is — the marks differ enough on their own without
-   the tiles differing too. The mark is fitted inside, so a wide wordmark sits
-   short in the square and a stacked one nearly fills it; the square has to be
-   generous for that reason.
+/* The band the mark gets when it stands alone, as the signature of a card.
+   A square was the wrong frame for it: fitted inside one, every lockup came
+   out the same width and a wildly different height, so AmTrust's stacked
+   mark painted 64x60 and the GUARD wordmark painted 64x17 — the same marks,
+   read at four times the weight. The band is wide and short instead, and the
+   mark is capped on both axes, so a wordmark runs to the full width while a
+   stacked one is held by the height. The box's own height is fixed for all
+   of them, which is what puts the row on one centre line.
 
-   White is the one thing that does not follow the theme: these are navy, red
-   and grey marks drawn for paper, and the carriers publish no light-on-dark
-   variants. In light mode it is invisible against the card; in dark mode it
-   is the ground the mark needs. */
-export function CarrierLogo({ carrier, size = 40, named = false, className = '' }) {
+   Measured against the marks we carry, whose ink runs 1.07:1 (AmTrust) to
+   3.68:1 (GUARD): nothing paints shorter than 39px or taller than 58px now,
+   where the square gave 17px to 60px. */
+const BAND = { box: 64, width: 144, ink: 58 }
+
+/* A carrier's mark, on a white ground in dark mode. White is the one thing
+   that does not follow the theme: these are navy, red and grey marks drawn
+   for paper, and the carriers publish no light-on-dark variants. In light
+   mode the ground is invisible against the card; in dark mode it is what
+   the mark needs to be read at all.
+
+   `band` is for the card that shows the mark alone. Without it the tile is
+   the small square chip that sits beside a carrier's name. */
+export function CarrierLogo({ carrier, size = 40, band = false, named = false, className = '' }) {
   const mark = CARRIER_MARKS[carrier?.id]
   return (
     <div
       className={`im-carrier-tile rounded-xl inline-flex items-center justify-center shrink-0 ${className}`}
-      style={{ width: size, height: size, padding: Math.round(size * (mark ? 0.13 : 0.2)) }}
+      /* Width is left to the content in a band, so the white ground in dark
+         mode hugs the mark rather than trailing off past a short one. */
+      style={band
+        ? { height: BAND.box, padding: '0 8px' }
+        : { width: size, height: size, padding: Math.round(size * (mark ? 0.13 : 0.2)) }}
       title={carrier?.name}
     >
       {mark ? (
@@ -124,11 +140,19 @@ export function CarrierLogo({ carrier, size = 40, named = false, className = '' 
         <img
           src={mark}
           alt={named ? carrier.name : ''}
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          /* Height is given rather than capped: one of these marks is an SVG
+             with no usable intrinsic size, and on `height: auto` it laid out
+             at nothing at all. With the height set, the width follows the
+             ratio, maxWidth holds the wide wordmarks, and `contain` keeps
+             them in proportion inside the box that clamping leaves. */
+          style={band
+            ? { height: BAND.ink, width: 'auto', maxWidth: BAND.width, objectFit: 'contain' }
+            : { width: '100%', height: '100%', objectFit: 'contain' }}
         />
       ) : (
         <svg
-          width={Math.round(size * 0.46)} height={Math.round(size * 0.46)}
+          width={Math.round((band ? BAND.ink : size) * 0.46)}
+          height={Math.round((band ? BAND.ink : size) * 0.46)}
           viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5"
           aria-hidden="true"
         >

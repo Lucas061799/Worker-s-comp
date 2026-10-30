@@ -300,14 +300,18 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
             was saying it twice. It carries the name as its alt text rather
             than in print, and the card and its button say it too. */}
         <div className="mt-auto pt-5 flex justify-center">
-          <CarrierLogo carrier={carrier} size={88} named className="im-carrier-tile-bare" />
+          <CarrierLogo carrier={carrier} band named className="im-carrier-tile-bare" />
         </div>
 
-        {/* V2 only. The signature above it already carries the auto margin,
-            so the button lands at the foot and the row stays level. */}
-        {quoted && withSelect && (
+        {/* V2 only. The declined card gets the slot without the button:
+            there is nothing to press on it, but the slot is what holds the
+            row's line — left out, its mark dropped the height of a button
+            below its neighbours'. */}
+        {withSelect && (
           <div className="pt-5">
-            <SelectButton onClick={onSelect} label={carrier.name} className="w-full h-10 text-sm" />
+            {quoted
+              ? <SelectButton onClick={onSelect} label={carrier.name} className="w-full h-10 text-sm" />
+              : <div className="h-10" aria-hidden="true" />}
           </div>
         )}
       </div>
