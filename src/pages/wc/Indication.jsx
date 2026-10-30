@@ -178,11 +178,14 @@ function Chevron({ open, label, onToggle, className = '' }) {
   )
 }
 
-/* Outlined, not filled. Six solid gradient buttons in a grid read as six
-   carriers already chosen; the choice has not been made yet, and filling in
-   is what Bind does. Only V2 carries one, and V2 is V1 — the same card,
-   drawn twice, so the button is the only thing that differs between them
-   and the question can be asked on its own. */
+/* Quiet, not solid. Six gradient buttons in a grid read as six carriers
+   already chosen; the choice has not been made yet, and filling in is what
+   Bind does. It used to say that with an outline, but the card around it
+   has no edge of its own any more and the outline was the last stroke
+   left inside one — so it says it with a ground instead, and keeps the
+   gradient for the hover. Only V2 carries one, and V2 is V1 — the same
+   card, drawn twice, so the button is the only thing that differs between
+   them and the question can be asked on its own. */
 function SelectButton({ onClick, label, className = '' }) {
   return (
     <button
@@ -191,7 +194,7 @@ function SelectButton({ onClick, label, className = '' }) {
       /* Nothing printed beside it says which carrier it belongs to, so the
          button has to say so itself. */
       aria-label={label ? `Select ${label}` : undefined}
-      className={`im-btn-outline inline-flex items-center justify-center rounded-xl font-bold transition ${className}`}
+      className={`im-btn-quiet inline-flex items-center justify-center rounded-xl font-bold transition ${className}`}
     >
       Select
     </button>
@@ -234,19 +237,26 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
 
   return (
     <div
-      /* No overflow clip: the status tab has to hang over the top edge, so
-         the detail panel rounds its own corners. */
+      /* No overflow clip: the status tab has to hang over the top edge. */
       className={`rounded-2xl relative flex flex-col transition ${
         quoted && !withSelect ? 'im-pick-card im-pick-lift' : ''
       }`}
       {...(quoted && !withSelect ? pickProps(onSelect, carrier.name) : {})}
       style={{
-        background: quoted ? 'var(--surface-card)' : 'var(--surface-soft)',
-        border: `1.5px solid ${carrier.reco && quoted ? '#7C3AED' : 'var(--line)'}`,
-        boxShadow: carrier.reco && quoted ? '0 4px 20px rgba(92,46,212,0.15)' : 'none',
+        /* The declined card used to take the soft ground, which is the
+           page's own colour — without an edge to cut it out it would have
+           disappeared into the page. It is white like the rest now, and
+           what mutes it is the type on it and the shadow it does not get. */
+        background: 'var(--surface-card)',
+        /* Transparent rather than absent: the width still counts, so
+           nothing shifts, and hover still has an edge to colour. */
+        border: '1.5px solid transparent',
+        boxShadow: carrier.reco && quoted
+          ? '0 4px 20px rgba(92,46,212,0.15)'
+          : quoted ? '0 1px 3px rgba(16,24,40,0.06)' : 'none',
       }}
     >
-            <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
+      <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (

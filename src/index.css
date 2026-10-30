@@ -919,6 +919,32 @@ button.force-white-text,
   color: #FFFFFF;
   box-shadow: 0 4px 14px rgba(166,20,195,0.25);
 }
+/* The same button with a ground instead of an edge, for the card that has
+   no stroke left on it. Same gradient on hover, so the two read as one
+   family and only the resting state differs. */
+.im-btn-quiet {
+  background: var(--surface-soft);
+  border: 1px solid transparent;
+  color: #4B5563;
+  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+.im-btn-quiet:hover {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(166,20,195,0.25);
+}
+[data-dark="true"] .im-btn-quiet,
+[data-dark="true"] .bop-page .im-btn-quiet {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: transparent !important;
+  color: #D1D5DB !important;
+}
+[data-dark="true"] .im-btn-quiet:hover,
+[data-dark="true"] .bop-page .im-btn-quiet:hover {
+  background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%) !important;
+  color: #FFFFFF !important;
+}
+
 /* Matching the blanket dark `.border` shim's weight so the edge survives it. */
 [data-dark="true"] .im-btn-outline,
 [data-dark="true"] .bop-page .im-btn-outline {
