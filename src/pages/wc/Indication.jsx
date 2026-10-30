@@ -295,13 +295,6 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
           </>
         )}
 
-        {!quoted && (
-          <p className="mt-4 pt-3.5 text-center text-[11.5px] leading-relaxed text-gray-500"
-            style={{ borderTop: '1px solid var(--line)' }}>
-            {carrier.noquote}.
-          </p>
-        )}
-
         {/* The mark signs the card on its own — most of these lockups spell
             the carrier out inside the artwork, so a line of type under them
             was saying it twice. It carries the name as its alt text rather
