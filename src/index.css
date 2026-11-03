@@ -1675,6 +1675,23 @@ html[data-dark="true"] body .print-btn-text {
   outline: 2px solid #A614C3;
   outline-offset: 3px;
 }
+
+/* The same edge without the affordance, for a card whose button is the
+   control rather than the card itself. No cursor and no lift — only the
+   border, which the card carries at transparent so hover has something
+   there to colour. */
+.im-hover-edge {
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+.im-hover-edge:hover {
+  border-color: #7C3AED !important;
+  box-shadow: 0 6px 22px rgba(92,46,212,0.18) !important;
+}
+[data-dark="true"] .im-hover-edge:hover,
+[data-dark="true"] .bop-page .im-hover-edge:hover {
+  border-color: #A78BFA !important;
+  box-shadow: 0 6px 22px rgba(167,139,250,0.22) !important;
+}
 /* The lift is for a card in a grid. The accordion stack takes the edge
    without it — a full-width row rising two pixels reads as a wobble. */
 .im-pick-lift:hover { transform: translateY(-2px); }

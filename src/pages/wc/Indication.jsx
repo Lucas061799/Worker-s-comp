@@ -238,8 +238,12 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
   return (
     <div
       /* No overflow clip: the status tab has to hang over the top edge. */
+      /* V1's card is the control, so it takes the pointer and the lift
+         along with the edge. V2's is not — its button is — so it takes the
+         edge alone: the card answers the pointer without claiming to be the
+         thing you press. */
       className={`rounded-2xl relative flex flex-col transition ${
-        quoted && !withSelect ? 'im-pick-card im-pick-lift' : ''
+        !quoted ? '' : withSelect ? 'im-hover-edge' : 'im-pick-card im-pick-lift'
       }`}
       {...(quoted && !withSelect ? pickProps(onSelect, carrier.name) : {})}
       style={{
