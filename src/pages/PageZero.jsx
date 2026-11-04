@@ -157,7 +157,7 @@ export default function PageZero({ onStart, initial, isDark = false }) {
                   <span className="text-gradient">One Easy Application.</span>
                 </h1>
                 <p className="text-sm md:text-base text-gray-500 leading-relaxed">
-                  First, tell us a bit about the business.
+                  First, tell us a bit about your business.
                 </p>
               </div>
 
