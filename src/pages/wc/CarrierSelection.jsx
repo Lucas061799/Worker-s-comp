@@ -88,39 +88,6 @@ export const CARRIERS = [
   },
 ]
 
-function InfoPop({ carrier, onClose }) {
-  return (
-    <div
-      className="im-info-pop absolute right-2 top-14 w-72 rounded-2xl overflow-hidden text-xs z-20"
-      onClick={e => e.stopPropagation()}
-    >
-      <div className="im-info-pop-head flex items-center justify-between gap-3 px-4 py-3">
-        <div className="min-w-0">
-          <h4 className="text-sm font-bold text-gray-900 truncate">{carrier.name}</h4>
-          <p className="text-[11px] text-gray-500 mt-0.5">{carrier.sla}</p>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="im-info-pop-close w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition"
-        >
-          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <path d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div className="px-4 py-3 text-[12.5px] text-gray-600 leading-relaxed">
-        <ul className="space-y-1.5 list-disc pl-4">
-          <li>{carrier.own}</li>
-          <li>{carrier.why}</li>
-          <li>Checked = BTIS approaches this market and it's blocked for direct submission on this risk.</li>
-        </ul>
-      </div>
-    </div>
-  )
-}
-
 /* The prototype is careful here: this is a heads-up, not a nudge. Our version
    warned the promotion "won't apply", which reads as pressure to keep the
    carrier checked — theirs says plainly that removing them is the agent's call
@@ -151,7 +118,6 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
   const data = formData.carrierSelection || {}
   const checked = data.checked || Object.fromEntries(CARRIERS.map(c => [c.id, true]))
 
-  const [openInfo, setOpenInfo] = useState(null)
   const [showPromo, setShowPromo] = useState(false)
 
   // Persist the default all-checked state so downstream screens see it.
@@ -182,15 +148,17 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
         you'd like to skip.
       </p>
 
-      {/* gap-y is larger than gap-x: the ribbons straddle the top border,
-          so each row needs room to clear the card above it. */}
-      <div className="grid sm:grid-cols-2 gap-x-3 gap-y-5">
+      {/* Tiles that are the mark and nothing else, so the logos are what the
+          grid reads as — the servicing detail waits for the price cards.
+          gap-y is larger than gap-x: the ribbons straddle the top border, so
+          each row needs room to clear the card above it. */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-5">
         {CARRIERS.map(c => {
           const isChecked = !!checked[c.id]
           return (
             <div
               key={c.id}
-              className="relative rounded-xl transition-all cursor-pointer group"
+              className="relative rounded-xl transition-all cursor-pointer group flex flex-col"
               /* Every card is checked by default, so a brand border on the
                  selected state painted the whole grid purple. The checkbox
                  already says which markets are in. */
@@ -211,7 +179,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                   floating inside. */}
               {(c.reco || c.promo) && (
                 <div
-                  className="absolute right-3 flex items-center gap-1.5 z-10"
+                  className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 whitespace-nowrap"
                   style={{ top: '-9px' }}
                 >
                   {c.reco && (
@@ -238,35 +206,20 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                 </div>
               )}
 
-              <div className="flex items-center gap-4 px-5 py-4">
-                {/* Smaller than on the indication card. There the mark is the only
-                  thing naming the carrier; here the name is right beside it,
-                  so the mark is an adornment on a list row and a 96px-wide
-                  one took a fifth of the row. */}
-              <CarrierLogo carrier={c} size={52} />
+              {/* The mark alone, large and centred: on this screen it is what
+                  the agent recognises a market by, and most of these marks
+                  spell the carrier out, so a printed name under them was
+                  saying it twice. The mark carries the name as its alt text. */}
+              {/* CNA's three heavy letters still read larger than the other
+                  marks at the shared size, so it takes a smaller scale here. */}
+              <div className="aspect-[16/9] flex items-center justify-center px-4 pt-7 pb-3">
+                <CarrierLogo carrier={c} band bandScale={c.id === 'cna' ? 1 : 1.2} named className="im-carrier-tile-bare" />
+              </div>
 
-                {/* Name + tagline */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-[15px] font-bold truncate mb-0.5" style={{ color: '#1F2937' }}>
-                    {c.name}
-                  </p>
-                  <p className="text-[11px] text-gray-500 leading-snug line-clamp-2">
-                    {c.tagline}
-                  </p>
-                </div>
-
-                {/* Info + check — the sidebar's step-marker tile: a
-                    rounded-md square, tinted when on, grey when off. */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setOpenInfo(prev => prev === c.id ? null : c.id) }}
-                    aria-label={`About ${c.name}`}
-                    data-open={openInfo === c.id}
-                    className="im-info-dot w-4 h-4 text-[10px] rounded-full flex items-center justify-center font-bold shrink-0"
-                  >
-                    i
-                  </button>
+                {/* The check in the top-right corner — the sidebar's
+                    step-marker tile: a rounded-md square, tinted when on,
+                    grey when off. */}
+                <div className="absolute top-3 right-3">
                   {/* The Checkbox primitive's own look, so this toggle
                       matches every other checkbox in the app. */}
                   <div
@@ -288,11 +241,6 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
                     )}
                   </div>
                 </div>
-              </div>
-
-              {openInfo === c.id && (
-                <InfoPop carrier={c} onClose={() => setOpenInfo(null)} />
-              )}
             </div>
           )
         })}

@@ -6,6 +6,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 import { Children, useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import markAmtrust from '../../assets/carrier-amtrust.png'
 import markGuard from '../../assets/carrier-clearspring.png'
 import markCna from '../../assets/carrier-cna.svg'
@@ -128,17 +129,18 @@ const MARK_SCALE = { cna: 0.7 }
    the mark needs to be read at all.
 
    `band` is for the card that shows the mark alone. Without it the tile is
-   the small square chip that sits beside a carrier's name. */
-export function CarrierLogo({ carrier, size = 40, band = false, named = false, className = '' }) {
+   the small square chip that sits beside a carrier's name. `bandScale`
+   enlarges a band for a card where the mark is the whole point of it. */
+export function CarrierLogo({ carrier, size = 40, band = false, bandScale = 1, named = false, className = '' }) {
   const mark = CARRIER_MARKS[carrier?.id]
-  const optical = MARK_SCALE[carrier?.id] ?? 1
+  const optical = (MARK_SCALE[carrier?.id] ?? 1) * bandScale
   return (
     <div
       className={`im-carrier-tile rounded-xl inline-flex items-center justify-center shrink-0 ${className}`}
       /* Width is left to the content in a band, so the white ground in dark
          mode hugs the mark rather than trailing off past a short one. */
       style={band
-        ? { height: BAND.box, padding: '0 8px' }
+        ? { height: BAND.box * bandScale, padding: '0 8px' }
         : { width: size, height: size, padding: Math.round(size * (mark ? 0.13 : 0.2)) }}
       title={carrier?.name}
     >
@@ -305,6 +307,50 @@ export function Modal({ title, onDismiss, children, footer, footerAlign = 'betwe
         )}
       </div>
     </div>
+  )
+}
+
+/* A panel on the right edge, from under the top bar to the bottom of the
+   window. It does not cover the form: while it is open the page's main
+   column narrows by its width (html[data-side-sheet] in index.css), so what
+   it explains stays in view beside it. Escape or the X puts it away.
+
+   Through a portal, because it is often opened from a pressable card whose
+   hover lift is a transform — and a transform makes a fixed child fixed to
+   the card rather than to the window. Marked as an overlay all the same,
+   since React still bubbles its clicks up to that card. */
+export function SideSheet({ title, onClose, children }) {
+  // Start where the scrolling column starts, below the brand bar.
+  const [top] = useState(() => document.querySelector('#root main')?.getBoundingClientRect().top ?? 0)
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.setAttribute('data-side-sheet', '')
+    return () => root.removeAttribute('data-side-sheet')
+  }, [])
+
+  return createPortal(
+    <aside role="dialog" aria-label={title} data-overlay=""
+      style={{ top }}
+      className="im-sheet fixed right-0 bottom-0 z-40 w-[360px] max-w-full overflow-hidden flex flex-col">
+      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
+        <h3 className="flex-1 text-[15px] font-bold text-navy">{title}</h3>
+        <button type="button" onClick={onClose} aria-label="Close"
+          className="im-sheet-close w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
+          </svg>
+        </button>
+      </div>
+      {children}
+    </aside>,
+    document.body,
   )
 }
 

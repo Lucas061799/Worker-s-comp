@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
   BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoPanel,
-  Modal, ModalButton, Tag,
+  Modal, ModalButton, Tag, SideSheet,
 } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
@@ -78,11 +78,19 @@ function detailRows(carrier) {
   ].filter(([, v]) => v)
 }
 
-function DetailPanel({ carrier, className = '', style }) {
+/* V6 has no turnarounds on its face, so they lead its panel instead. */
+function DetailPanel({ carrier, withSla = false, className = '', style, onClick }) {
+  const rows = [
+    ...(withSla ? [
+      ['Quote', carrier.slaShort || carrier.sla],
+      ['Endorsement', carrier.endorsementSla],
+    ].filter(([, v]) => v) : []),
+    ...detailRows(carrier),
+  ]
   return (
-    <dl className={`px-5 pt-3.5 pb-4 space-y-2 ${className}`}
+    <dl className={`px-5 pt-3.5 pb-4 space-y-2 ${className}`} onClick={onClick}
       style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-soft)', ...style }}>
-      {detailRows(carrier).map(([label, value]) => (
+      {rows.map(([label, value]) => (
         <div key={label} className="flex justify-between gap-4 text-[11.5px] leading-snug">
           <dt className="font-semibold shrink-0 text-navy">{label}</dt>
           <dd className="text-right" style={{ color: 'var(--ink-2)' }}>{value}</dd>
@@ -160,6 +168,105 @@ function RecoDot() {
   )
 }
 
+/* What the recommended carrier's marketing sheet says. Placeholder copy for
+   the prototype — marketing owns the real wording, and the promotions in
+   particular change by quarter. */
+const RECO_MARKETING = {
+  cna: {
+    promotions: [
+      {
+        title: 'New business incentive',
+        body: '+1.5% commission on new CNA workers’ comp policies bound through BTIS by Dec 31, 2026.',
+      },
+      {
+        title: 'Premium finance',
+        body: 'No-fee premium finance on CNA policies over $25,000 annual premium.',
+      },
+    ],
+    highlights: [
+      'Strong appetite for artisan contractors with 3+ years in business',
+      'BTIS handles endorsements and billing end-to-end',
+      'Same-day endorsement turnaround, handled in-house',
+      'Broker fee collected at new business and at renewal',
+    ],
+  },
+}
+
+const SheetHeading = ({ children }) => (
+  <h4 className="text-[11px] font-bold uppercase tracking-[0.08em] text-navy mb-2">{children}</h4>
+)
+
+/* The recommended carrier's marketing sheet: why BTIS recommends it, what
+   promotions are running, and what it is good at. */
+function RecoSheet({ carrier, onClose }) {
+  const m = RECO_MARKETING[carrier.id] || {}
+  const promotions = [
+    ...(carrier.promo ? [{
+      title: 'Q3 promotion',
+      body: `+2% boosted commission on ${carrier.name} binds through BTIS this quarter.`,
+    }] : []),
+    ...(m.promotions || []),
+  ]
+
+  return (
+    <SideSheet title="BTIS Recommended" onClose={onClose}>
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scroll px-5 pb-6 space-y-6">
+        <div className="flex items-center gap-3 pt-1">
+          <CarrierLogo carrier={carrier} size={40} />
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-navy leading-tight">{carrier.name}</p>
+            {carrier.tagline && (
+              <p className="text-[12px] text-gray-500 leading-snug mt-0.5">{carrier.tagline}</p>
+            )}
+          </div>
+        </div>
+
+        <section>
+          <SheetHeading>Why we recommend {carrier.name}</SheetHeading>
+          <p className="text-[12.5px] leading-relaxed" style={{ color: 'var(--ink-2)' }}>
+            BTIS holds full authority with this carrier for all processing — quicker quoting,
+            faster endorsement turnaround, and in-house billing that collects your broker fee at
+            new business and at renewal.
+          </p>
+        </section>
+
+        {promotions.length > 0 && (
+          <section>
+            <SheetHeading>Current promotions</SheetHeading>
+            <ul className="space-y-2">
+              {promotions.map(p => (
+                <li key={p.title} className="im-reco-promo rounded-xl px-3.5 py-3">
+                  <p className="text-[12.5px] font-semibold text-navy">{p.title}</p>
+                  <p className="text-[12px] leading-snug mt-0.5" style={{ color: 'var(--ink-2)' }}>{p.body}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {m.highlights && (
+          <section>
+            <SheetHeading>Highlights</SheetHeading>
+            <ul className="space-y-1.5">
+              {m.highlights.map(h => (
+                <li key={h} className="flex gap-2 text-[12.5px] leading-snug" style={{ color: 'var(--ink-2)' }}>
+                  <span aria-hidden="true" className="im-note-brand">✓</span>
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <p className="text-[12px] text-gray-500 leading-relaxed pt-4"
+          style={{ borderTop: '1px solid var(--line)' }}>
+          Questions about {carrier.name} or a promotion? Call BTIS at 877.649.6682.
+        </p>
+      </div>
+    </SideSheet>
+  )
+}
+
 function Chevron({ open, label, onToggle, className = '' }) {
   return (
     <button
@@ -231,9 +338,21 @@ function pickProps(onSelect, name) {
 
 /* The production screen's order, in our own chrome: the price is the first
    thing on the card, the carrier signs the bottom, and what decides what
-   happens after Select is a tab notched into the card's top edge. */
-function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
+   happens after Select is a tab notched into the card's top edge.
+
+   V6 is V1 with V3's disclosure: a chevron in the card's corner that opens
+   the carrier's turnarounds and servicing under the mark, for the agent who
+   wants them, without putting them on every card's face. Each card opens on
+   its own — it is one carrier's details being asked for, not a column to
+   read across — and its row-mates keep their own height (see the grid). */
+function CarrierTilePrice({ carrier, onSelect, withSelect = false, withDetails = false }) {
   const quoted = !carrier.noquote
+  const [open, setOpen] = useState(false)
+  const onToggle = () => setOpen(o => !o)
+  const [recoSheet, setRecoSheet] = useState(false)
+  /* V6 keeps the status tab for what happens after Select, and gives the
+     recommendation a band of its own across the card's foot. */
+  const recoCard = withDetails && carrier.reco && quoted
 
   return (
     <div
@@ -254,13 +373,20 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
         background: 'var(--surface-card)',
         /* Transparent rather than absent: the width still counts, so
            nothing shifts, and hover still has an edge to colour. */
-        border: '1.5px solid transparent',
+        border: recoCard
+          ? '1.5px solid #3A2968'
+          : '1.5px solid transparent',
         boxShadow: carrier.reco && quoted
           ? '0 4px 20px rgba(92,46,212,0.15)'
           : quoted ? '0 1px 3px rgba(16,24,40,0.06)' : 'none',
       }}
     >
       <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
+        {withDetails && (
+          <Chevron open={open} onToggle={onToggle} label={carrier.name}
+            className="absolute top-3 right-3" />
+        )}
+
         {/* A referral is stated rather than left to be inferred from a
             missing tab, so every card in the row reads the same way. */}
         {quoted && (
@@ -269,14 +395,16 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
                four cards to a row leaves 215px, and the one tab that carries
                both words came out 230px wide and hung off both edges. */
             className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-[3px] rounded-md text-[9px] font-extrabold tracking-[0.04em] inline-flex items-center gap-1 ${
-              carrier.bind ? 'im-bind-tab' : 'im-bind-tab-soft'
+              carrier.bind ? (withDetails ? 'im-bind-tab-yellow' : 'im-bind-tab') : 'im-bind-tab-soft'
             }`}
           >
             {/* Three children, so the flex gap falls evenly either side of
                 the separator — inline it sat tight against the first word and
                 loose against the second. */}
             <span>{carrier.bind ? 'INSTANT BIND' : 'UNDERWRITER REVIEW'}</span>
-            {carrier.reco && (
+            {/* V6 gives the recommendation its own band (at the foot), so its
+                tab only ever says what happens after Select. */}
+            {carrier.reco && !withDetails && (
               <>
                 <span aria-hidden="true" style={{ opacity: 0.55 }}>&middot;</span>
                 <span>RECOMMENDED</span>
@@ -304,7 +432,9 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
           <>
             {/* Where the price would be, so the card still lines up with the
                 row it sits in. */}
-            <p className="text-center text-[17px] font-bold leading-none text-gray-700">Not available</p>
+            {/* The price's height, so the mark under it lands level with
+                the row's other marks. */}
+            <p className="h-[28px] flex items-center justify-center text-[17px] font-bold leading-none text-gray-700">Not available</p>
             <p className="text-center text-[11px] text-gray-500 mt-1.5">Carrier declined this risk</p>
           </>
         )}
@@ -313,7 +443,9 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
             the carrier out inside the artwork, so a line of type under them
             was saying it twice. It carries the name as its alt text rather
             than in print, and the card and its button say it too. */}
-        <div className="mt-auto pt-5 flex justify-center">
+        {/* V6 holds the mark under the price rather than at the card's foot,
+            so an open card beside it never pulls the row's marks out of line. */}
+        <div className={`${withDetails ? '' : 'mt-auto '}pt-5 flex justify-center`}>
           <CarrierLogo carrier={carrier} band named className="im-carrier-tile-bare" />
         </div>
 
@@ -329,6 +461,39 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false }) {
           </div>
         )}
       </div>
+
+      {/* Reading the details is not choosing the market, so a press inside
+          them stays inside them. Rounded at the foot to follow the card,
+          which has no clip of its own (the status tab hangs over its top). */}
+      {withDetails && open && (
+        <DetailPanel carrier={carrier} withSla
+          className={recoCard ? '' : 'rounded-b-2xl'}
+          onClick={e => e.stopPropagation()} />
+      )}
+
+      {/* V6: the recommendation as a band across the card's foot, set apart
+          from the status tab rather than sharing it. Under the mark, so it
+          adds to this card's height without moving the row's marks. It opens
+          the carrier's marketing sheet — a button, so pressing it does not
+          also pick the market. */}
+      {recoCard && (
+        <button type="button" onClick={() => setRecoSheet(true)}
+          aria-label={`Why BTIS recommends ${carrier.name}, and current promotions`}
+          className="im-reco-badge im-reco-band rounded-b-[14px] px-3 py-1.5 flex items-center justify-center gap-1.5 w-full transition">
+          <span className="text-[10px] font-bold tracking-wide">★ BTIS Recommended</span>
+          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </button>
+      )}
+      {/* Every other V6 card keeps the band's slot, empty, so all the cards
+          come out one height — across rows as well as within one. Not under
+          open details, which would leave a white strip below them. */}
+      {withDetails && !recoCard && !open && (
+        <div aria-hidden="true" className="invisible px-3 py-1.5 text-[10px] font-bold">&nbsp;</div>
+      )}
+      {recoSheet && <RecoSheet carrier={carrier} onClose={() => setRecoSheet(false)} />}
 
     </div>
   )
@@ -679,11 +844,14 @@ function CarrierTier({ carrier, onSelect, best }) {
    see it. */
 const REFERRAL_THRESHOLD = 20000
 
-/* The five treatments, named where the switcher reads them. The price-led
-   card leads, since it is the one the production screen is closest to — and
-   it is there twice, once as the card you press and once with a Select
-   under it, which is the one question worth asking on its own. */
+/* The six treatments, named where the switcher reads them. V6 leads and is
+   the one shown first (App's default): it is V1 with V3's details, the
+   current pick. The price-led card follows, since it is the one the
+   production screen is closest to — and it is there twice, once as the card
+   you press and once with a Select under it, which is the one question
+   worth asking on its own. */
 export const INDICATION_VERSIONS = [
+  { value: 6, label: 'V6', title: 'Price-led cards, with details — V1 + V3' },
   { value: 1, label: 'V1', title: 'Price-led cards — ours' },
   { value: 2, label: 'V2', title: 'Price-led cards, with Select — ours' },
   { value: 3, label: 'V3', title: 'Carrier-led cards — ours' },
@@ -778,7 +946,13 @@ export default function Indication({
            a mark. The carrier-led card carries a name, a price with its
            unit, two servicing rows and a tag strip, and at 215px all four
            of those wrapped — so it stops at three. */
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch ${
+        /* V6 aligns to the top rather than stretching: its closed cards are
+           already one height (each keeps the recommendation band's slot), and
+           an open one grows on its own instead of pulling its row-mates
+           taller. */
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${
+          version === 6 ? 'items-start' : 'items-stretch'
+        } ${
           version === 3 ? 'gap-3' : 'xl:grid-cols-4 gap-x-3 gap-y-10'
         }`}>
           {results.map(r => {
@@ -789,6 +963,7 @@ export default function Indication({
                 carrier={r}
                 onSelect={() => onPickCarrier(r)}
                 withSelect={version === 2}
+                withDetails={version === 6}
                 open={detailsOpen}
                 onToggle={() => setDetailsOpen(o => !o)}
               />

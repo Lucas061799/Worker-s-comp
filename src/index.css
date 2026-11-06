@@ -1644,41 +1644,35 @@ html[data-dark="true"] body .print-btn-text {
   box-shadow: none !important;
 }
 
-/* The dual-wage classifications panel: a floating card over the class rows,
-   lifted off them by its shadow rather than by a heavier border. */
-.im-wage-pop {
+/* The side sheet (SideSheet in primitives): a panel on the right edge that
+   slides in. Only its inner edge is drawn. */
+.im-sheet {
   background: var(--surface-card);
-  border: 1px solid var(--line);
-  box-shadow: 0 12px 32px rgba(16,24,40,0.12), 0 2px 6px rgba(16,24,40,0.06);
+  border-left: 1px solid var(--line);
+  box-shadow: -12px 0 32px rgba(16,24,40,0.12);
+  animation: imSheetSlideIn 220ms ease-out;
 }
-[data-dark="true"] .im-wage-pop,
-[data-dark="true"] .bop-page .im-wage-pop {
+[data-dark="true"] .im-sheet {
   background: #1E2240 !important;
   border-color: rgba(255,255,255,0.12) !important;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.45) !important;
+  box-shadow: -16px 0 40px rgba(0,0,0,0.45) !important;
 }
-/* As a right-edge sheet: only the inner edge is drawn, and it slides in. */
-.im-wage-sheet {
-  border-width: 0 0 0 1px;
-  box-shadow: -12px 0 32px rgba(16,24,40,0.12);
-  animation: imWageSlideIn 220ms ease-out;
-}
-@keyframes imWageSlideIn {
+@keyframes imSheetSlideIn {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .im-wage-sheet { animation: none; }
+  .im-sheet { animation: none; }
 }
 /* The form steps aside for the sheet rather than sitting under it. On a
    narrow window there is no room to give, so there it overlays. */
 @media (min-width: 1024px) {
   #root main { transition: margin-right 220ms ease-out; }
-  html[data-wage-sheet] #root main { margin-right: 360px; }
+  html[data-side-sheet] #root main { margin-right: 360px; }
 }
-.im-wage-close { color: #9CA3AF; transition: background 140ms, color 140ms; }
-.im-wage-close:hover { background: var(--fill-subtle); color: #4B5563; }
-[data-dark="true"] .im-wage-close:hover { background: rgba(255,255,255,0.10) !important; color: #E5E7EB !important; }
+.im-sheet-close { color: #9CA3AF; transition: background 140ms, color 140ms; }
+.im-sheet-close:hover { background: var(--fill-subtle); color: #4B5563; }
+[data-dark="true"] .im-sheet-close:hover { background: rgba(255,255,255,0.10) !important; color: #E5E7EB !important; }
 /* The way back to the panel once it has been put away. */
 /* Underlined and in the brand's magenta, because grey text that happens to
    be a button is not read as one. */
@@ -1778,6 +1772,36 @@ html[data-dark="true"] body .print-btn-text {
   background: linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%);
   color: #FFFFFF;
   box-shadow: 0 0 0 2.5px var(--surface-card);
+}
+/* V6: instant bind in a faded yellow. It is light, so the type on it is the
+   brand navy rather than white, which would not read at 9px. */
+.im-bind-tab-yellow {
+  background: #FDE68A;
+  color: #1B0750;
+  box-shadow: 0 0 0 2.5px var(--surface-card);
+}
+/* V6: the recommendation's own band, in V3's banner purple. It opens the
+   marketing sheet, so it lightens under the pointer. */
+.im-reco-badge {
+  background: #3A2968;
+  color: #FFFFFF;
+}
+.im-reco-band:hover { background: #4C3888; }
+/* A promotion on the recommended carrier's sheet: the brand wash. */
+.im-reco-promo {
+  background: linear-gradient(88.09deg, rgba(92,46,212,0.07) 0%, rgba(166,20,195,0.07) 100%);
+  border: 1px solid rgba(92,46,212,0.16);
+}
+[data-dark="true"] .im-reco-promo {
+  background: rgba(167,139,250,0.10) !important;
+  border-color: rgba(167,139,250,0.25) !important;
+}
+.im-reco-badge .im-info-dot { background: rgba(255,255,255,0.30); color: #FFFFFF; }
+.im-reco-badge .im-info-dot:hover,
+.im-reco-badge .im-info-dot[data-open="true"] { background: rgba(255,255,255,0.48); }
+[data-dark="true"] .im-reco-badge .im-info-dot {
+  background: rgba(255,255,255,0.30) !important;
+  color: #FFFFFF !important;
 }
 .im-bind-tab-soft {
   background: var(--surface-card);

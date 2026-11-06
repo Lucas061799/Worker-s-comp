@@ -10,6 +10,7 @@ import {
   YesNo,
   InfoPanel,
   Tag,
+  SideSheet,
 } from '../../components/wc/primitives'
 
 /* Policy-level, so it sits above the state cards — everything inside a
@@ -85,43 +86,11 @@ function dualLabel(code) {
 
 /* The classifications panel. It arrives with the twin — the moment the
    sheet gains a row nobody typed is the moment to say why — and can be
-   put away and called back.
-
-   A sheet on the right edge, from under the top bar to the bottom of the
-   window. It does not cover the form: while it is open the page's main
-   column narrows by its width (see html[data-wage-sheet] in index.css), so
-   the class rows it explains stay in view beside it. */
+   put away and called back. A side sheet, so the class rows it explains
+   stay in view beside it. */
 function DualWagePanel({ onClose }) {
-  const [top, setTop] = useState(0)
-
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
-
-  useEffect(() => {
-    const root = document.documentElement
-    root.setAttribute('data-wage-sheet', '')
-    // Start where the scrolling column starts, below the brand bar.
-    const main = document.querySelector('#root main')
-    if (main) setTop(main.getBoundingClientRect().top)
-    return () => root.removeAttribute('data-wage-sheet')
-  }, [])
-
   return (
-    <aside role="dialog" aria-label="Dual wage classifications"
-      style={{ top }}
-      className="im-wage-pop im-wage-sheet fixed right-0 bottom-0 z-40 w-[360px] max-w-full overflow-hidden flex flex-col">
-      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
-        <h3 className="flex-1 text-[15px] font-bold text-navy">Dual wage classifications</h3>
-        <button type="button" onClick={onClose} aria-label="Close"
-          className="im-wage-close w-7 h-7 rounded-full flex items-center justify-center shrink-0">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
-          </svg>
-        </button>
-      </div>
+    <SideSheet title="Dual wage classifications" onClose={onClose}>
       <p className="px-5 pb-4 text-[12px] leading-[18px] text-gray-500">
         In California some construction operations split into two classifications on the
         hourly wage paid. Both codes go on the submission, so the policy binds with each.
@@ -153,7 +122,7 @@ function DualWagePanel({ onClose }) {
           </tbody>
         </table>
       </div>
-    </aside>
+    </SideSheet>
   )
 }
 
