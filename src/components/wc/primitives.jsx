@@ -181,10 +181,12 @@ export function CarrierLogo({ carrier, size = 40, band = false, bandScale = 1, n
   )
 }
 
-/* Uppercase label above a group of fields. */
-export function SectionLabel({ children, className = '' }) {
+/* Uppercase label above a group of fields. `plain` is for the same type set
+   as a table's column heading or a single field's caption, which is not the
+   start of a group and so does not take the group heading's Razz dash. */
+export function SectionLabel({ children, className = '', plain = false }) {
   return (
-    <div className={`im-section-label text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5 ${className}`}>
+    <div className={`im-section-label${plain ? ' im-section-label--plain' : ''} text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5 ${className}`}>
       {children}
     </div>
   )

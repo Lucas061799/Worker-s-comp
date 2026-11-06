@@ -343,6 +343,10 @@ html:not([data-dark="true"]) textarea::placeholder { color: #9CA3AF; }
   flex-shrink: 0;
 }
 [data-dark="true"] .im-section-label::before { background: #C084FC; }
+/* A table's column headings and a single field's caption share the type but
+   do not start a group, so they go without the dash. */
+.im-section-label--plain::before,
+[data-dark="true"] .im-section-label--plain::before { content: none; }
 
 /* The step an interstitial has not reached yet. Light grey on white reads
    as "not yet"; the same grey on navy reads as a lit chip brighter than the

@@ -227,7 +227,7 @@ function GlCard({ label, children, className = '' }) {
   return (
     <div className={`im-field-card rounded-xl p-5 sm:p-6 ${className}`}
       style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-      <SectionLabel className="!mb-3">{label}</SectionLabel>
+      <SectionLabel plain className="!mb-3">{label}</SectionLabel>
       {children}
     </div>
   )
@@ -347,9 +347,11 @@ export function QuoteRail({ carrier, insured, premium, service, brokerFee, onBro
       <div>
         <h4 className="text-sm font-bold mb-4" style={{ color: 'var(--ink)' }}>Premium Breakdown</h4>
 
-        <div className="flex items-center gap-3 mb-4">
-          <CarrierLogo carrier={carrier} size={32} />
-          <p className="text-[12px] font-semibold leading-snug min-w-0" style={{ color: 'var(--ink)' }}>
+        {/* The carrier's mark on a line of its own, wide and unboxed as on
+            the quote card — a 32px square left the wordmarks unreadable. */}
+        <div className="mb-4">
+          <CarrierLogo carrier={carrier} band bandScale={0.75} named className="im-carrier-tile-bare !px-0" />
+          <p className="text-[12px] font-semibold leading-snug min-w-0 mt-2" style={{ color: 'var(--ink)' }}>
             {insured || carrier?.name}
           </p>
         </div>
@@ -400,7 +402,7 @@ export function QuoteRail({ carrier, insured, premium, service, brokerFee, onBro
 function DocBox({ title, required, uploaded, onToggle }) {
   return (
     <div>
-      <SectionLabel className="!mb-2">
+      <SectionLabel plain className="!mb-2">
         {title}{required && <span className="text-red-400 ml-0.5">*</span>}
       </SectionLabel>
       {uploaded ? (
@@ -751,7 +753,7 @@ export default function BindFlow({ carrier, premium, fees, quoteNumber, effectiv
                 </p>
               </div>
               <div className="w-full lg:flex-1 lg:pl-10 lg:border-l" style={{ borderColor: 'var(--line)' }}>
-                <SectionLabel className="!mb-1.5">Due today</SectionLabel>
+                <SectionLabel plain className="!mb-1.5">Due today</SectionLabel>
                 <p className="text-3xl font-bold leading-none" style={{ color: 'var(--ink)' }}>{money2(dueToday)}</p>
                 <p className="text-[12px] text-gray-500 mt-2">{planLine}</p>
                 <div className="space-y-4 mt-5">

@@ -50,7 +50,7 @@ function paymentLines(total) {
 function ProposalField({ label, lines }) {
   return (
     <div className="min-w-0">
-      <SectionLabel className="!mb-1 !text-[10px] !pl-0">{label}</SectionLabel>
+      <SectionLabel plain className="!mb-1 !text-[10px] !pl-0">{label}</SectionLabel>
       {[].concat(lines).map((line, i) => (
         <p key={i} className="text-[13.5px] font-semibold leading-snug" style={{ color: 'var(--ink)' }}>
           {line}
@@ -135,12 +135,20 @@ export default function Quote({ formData, updateFormData, onBound, onBack, onRef
           shrinking the card instead left the same emptiness beside it.
           Giving the space a job solves both. */}
       <div className="rounded-2xl p-6" style={{ background: 'white', border: '1px solid #E5E7EB' }}>
-        <div className="flex items-center gap-3 min-w-0 pb-5" style={{ borderBottom: '1px solid #F3F4F6' }}>
-          {carrierMeta && <CarrierLogo carrier={carrierMeta} size={44} />}
-          <div className="min-w-0">
-            <p className="text-[15px] font-bold text-gray-900 leading-tight">{carrier}</p>
-            <p className="text-[11.5px] text-gray-400">{carrierMeta?.sub}</p>
-          </div>
+        {/* The carrier's mark at full width, unboxed — the treatment it had
+            on the price card and the market tiles, so the market reads the
+            same from choosing it to binding it. A 44px square crushed the
+            wide wordmarks to a smudge. The mark names the carrier (as its
+            alt text too), so the name is printed only when there is no mark. */}
+        <div className="flex items-center gap-5 min-w-0 pb-5" style={{ borderBottom: '1px solid #F3F4F6' }}>
+          {carrierMeta
+            ? <CarrierLogo carrier={carrierMeta} band named className="im-carrier-tile-bare !px-0" />
+            : <p className="text-[15px] font-bold text-gray-900 leading-tight">{carrier}</p>}
+          {carrierMeta?.sub && (
+            <p className="text-[12px] text-gray-500 pl-5" style={{ borderLeft: '1px solid #E5E7EB' }}>
+              {carrierMeta.sub}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col lg:flex-row lg:items-stretch gap-6 lg:gap-0 pt-3">

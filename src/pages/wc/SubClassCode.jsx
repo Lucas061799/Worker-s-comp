@@ -56,9 +56,9 @@ export default function SubClassCode({ formData, updateFormData, carrierName, on
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--line)' }}>
           <div className="grid grid-cols-[88px_1fr_minmax(220px,1.1fr)] gap-3 px-3.5 py-2.5"
             style={{ background: 'var(--fill-subtle)', borderBottom: '1px solid var(--line)' }}>
-            <SectionLabel className="!mb-0 !text-[10px]">Class</SectionLabel>
-            <SectionLabel className="!mb-0 !text-[10px]">Description</SectionLabel>
-            <SectionLabel className="!mb-0 !text-[10px]">Sub-class code *</SectionLabel>
+            <SectionLabel plain className="!mb-0 !text-[10px] !pl-0">Class</SectionLabel>
+            <SectionLabel plain className="!mb-0 !text-[10px] !pl-0">Description</SectionLabel>
+            <SectionLabel plain className="!mb-0 !text-[10px] !pl-0">Sub-class code *</SectionLabel>
           </div>
 
           {rows.map((r, i) => (
