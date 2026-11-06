@@ -344,7 +344,7 @@ export default function BusinessInfo({ formData, updateFormData, showErrors = fa
         </div>
       </FieldGroup>
 
-      <FieldGroup label="Insured contact info">
+      <FieldGroup label="Applicant contact info">
         <div className="space-y-5">
           <FormGrid>
             <Input

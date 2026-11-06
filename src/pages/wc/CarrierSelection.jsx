@@ -143,7 +143,7 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">
+      <p className="im-page-intro text-sm text-gray-500 -mt-2">
         All markets are checked by default — get your price indication, or uncheck any
         you'd like to skip.
       </p>

@@ -316,6 +316,16 @@ main.wc-surface-white .field-fill:focus-visible {
    at equal weight the later rule wins — which is why it sat on their
    colour however dark this one was set. */
 .wc-ink-strong .im-section-label { color: #000000; font-weight: 700; }
+/* The line of instruction under a page's title — a step darker than the
+   other grey help text, since it is the first thing read on the page. Also
+   after the greys, for the same reason. Dark mode keeps its light grey. */
+.wc-ink-strong .im-page-intro { color: #374151; }
+/* Placeholders in typed fields come up from gray-300 to the grey the Select
+   trigger already uses for its own, so every empty field reads the same and
+   the hint can be read at a glance. Light mode only — dark mode keeps its
+   own placeholder rules. Outranks the fields' placeholder-gray-300. */
+html:not([data-dark="true"]) input::placeholder,
+html:not([data-dark="true"]) textarea::placeholder { color: #9CA3AF; }
 
 /* Each group heading opens with a short Razz dash, marking where a group
    starts. */

@@ -125,7 +125,7 @@ export default function Referral({
     <div className="w-full space-y-6">
       {/* The page's own subtitle, under the rule, where every other screen
           puts it — and the group below no longer repeats the page title. */}
-      <p className="text-sm text-gray-500 -mt-2">
+      <p className="im-page-intro text-sm text-gray-500 -mt-2">
         One screen, one submit — no separate review step. An underwriter will follow up directly.
       </p>
 

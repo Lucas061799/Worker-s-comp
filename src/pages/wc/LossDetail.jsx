@@ -33,7 +33,7 @@ export default function LossDetail({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
-      <p className="text-sm text-gray-500 -mt-2">
+      <p className="im-page-intro text-sm text-gray-500 -mt-2">
         Please enter any claims or work-related injuries during the last 4 years.
       </p>
 

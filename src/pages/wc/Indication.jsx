@@ -901,7 +901,7 @@ export default function Indication({
           over the grid rather than six times inside it — except on V2, which
           is the treatment that keeps the button and so says it itself. */}
       {version !== 2 && (
-        <p className="text-[12.5px] text-gray-500 mb-4">
+        <p className="im-page-intro text-[12.5px] text-gray-500 mb-4">
           Choose a market to carry on to its own questions.
         </p>
       )}
