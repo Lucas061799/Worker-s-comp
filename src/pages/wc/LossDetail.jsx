@@ -4,9 +4,14 @@ import {
   RemoveButton,
   AddAnother,
   InfoDot,
+  InfoPanel,
 } from '../../components/wc/primitives'
 
 const LOSS_TYPES = ['Medical', 'Indemnity', 'Both']
+
+// 4 or more claims go to an underwriter with loss runs, so the detail
+// screen stops at 3.
+const MAX_CLAIMS = 3
 
 const emptyLoss = () => ({ date: '', amount: '', type: 'Medical', description: '' })
 
@@ -22,7 +27,8 @@ export default function LossDetail({ formData, updateFormData }) {
     const next = losses.map((row, i) => i === idx ? { ...row, ...patchRow } : row)
     patch({ losses: next })
   }
-  const addLoss = () => patch({ losses: [...losses, emptyLoss()] })
+  const atMax = losses.length >= MAX_CLAIMS
+  const addLoss = () => { if (!atMax) patch({ losses: [...losses, emptyLoss()] }) }
   const removeLoss = (idx) => patch({ losses: losses.filter((_, i) => i !== idx) })
 
   return (
@@ -66,8 +72,26 @@ export default function LossDetail({ formData, updateFormData }) {
         </div>
 
         <div className="mt-5">
-          <AddAnother onClick={addLoss}>Add claim</AddAnother>
+          <AddAnother onClick={addLoss} disabled={atMax}>
+            Add claim
+          </AddAnother>
         </div>
+
+        {/* On the page rather than in a hover card, so it is read without
+            hunting for it and the address can be clicked. */}
+        {atMax && (
+          <InfoPanel
+            className="mt-3"
+            icon={<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>}
+          >
+            If there are more than 3 claims, please email currently valued loss runs
+            to <a href="mailto:comp@btisinc.com" className="font-semibold text-navy underline underline-offset-2">comp@btisinc.com</a>,
+            or upload them as a required document when this submission is referred to
+            underwriting. Be sure to reference the quote number above.
+          </InfoPanel>
+        )}
 
         {/* One explanation covering the claims above, rather than a box per
             row — and it belongs with them rather than in a panel of its own,

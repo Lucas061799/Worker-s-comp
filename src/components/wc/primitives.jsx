@@ -803,19 +803,22 @@ export function RemoveButton({ onClick, label = 'Remove' }) {
 }
 
 /* Dashed "add another" action. */
-export function AddAnother({ onClick, children }) {
+export function AddAnother({ onClick, children, disabled = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="add-another-btn w-full flex items-center justify-center gap-2 text-xs font-semibold border border-dashed border-[#A614C3]/30 rounded-xl px-4 py-3 transition"
+      disabled={disabled}
+      className={`add-another-btn w-full flex items-center justify-center gap-2 text-xs font-semibold border border-dashed rounded-xl px-4 py-3 transition ${
+        disabled ? 'add-another-btn--disabled' : 'border-[#A614C3]/30'
+      }`}
     >
       {/* The start of the gradient the label carries, so the mark and the
           words read as one sweep rather than two different purples. */}
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#5C2ED4' }}>
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={disabled ? undefined : { color: '#5C2ED4' }}>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
       </svg>
-      <span className="text-gradient">{children}</span>
+      <span className={disabled ? '' : 'text-gradient'}>{children}</span>
     </button>
   )
 }

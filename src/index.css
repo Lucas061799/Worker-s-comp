@@ -275,7 +275,7 @@ input, select, textarea, button {
    default. A white field on a white card has only its stroke to hold it,
    so the fill moves rather than disappears. Put `wc-surface-white` on a
    page's root alongside `wc-ink-strong`; take it off to go back. */
-main.wc-surface-white { background: var(--surface-soft) !important; }
+main.wc-surface-white { background: #F4F6F8 !important; }
 /* Transparent was fine on a white page; on the grey it reads as a hole
    rather than a button, so it stands on the card colour like everything
    else on that ground. */
@@ -315,7 +315,24 @@ main.wc-surface-white .field-fill:focus-visible {
 /* After the greys above: a group heading also carries .text-gray-400, and
    at equal weight the later rule wins — which is why it sat on their
    colour however dark this one was set. */
-.wc-ink-strong .im-section-label { color: #4B5563; }
+.wc-ink-strong .im-section-label { color: #000000; font-weight: 700; }
+
+/* Each group heading opens with a short Razz dash, marking where a group
+   starts. */
+.im-section-label {
+  display: flex;
+  align-items: center;
+}
+.im-section-label::before {
+  content: '';
+  width: 12px;
+  height: 3px;
+  border-radius: 1.5px;
+  background: #A614C3;
+  margin-right: 0.6em;
+  flex-shrink: 0;
+}
+[data-dark="true"] .im-section-label::before { background: #C084FC; }
 
 /* The step an interstitial has not reached yet. Light grey on white reads
    as "not yet"; the same grey on navy reads as a lit chip brighter than the
@@ -605,6 +622,26 @@ button.force-white-text,
 /* Add Another button hover — transparent gradient */
 .add-another-btn:hover {
   background: linear-gradient(88.09deg, rgba(92,46,212,0.08) 0.11%, rgba(166,20,195,0.08) 63.8%);
+}
+/* At its limit: greyed, with no fill on hover since there is nothing to press. */
+.add-another-btn--disabled,
+.add-another-btn--disabled:hover {
+  background: #F3F4F6;
+  border-color: #D1D5DB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+}
+[data-dark="true"] .bop-page .add-another-btn--disabled,
+[data-dark="true"] .bop-page .add-another-btn--disabled:hover,
+[data-dark="true"] .add-another-btn--disabled,
+[data-dark="true"] .add-another-btn--disabled:hover {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  color: #6B7280 !important;
+}
+[data-dark="true"] .bop-page .add-another-btn--disabled svg,
+[data-dark="true"] .add-another-btn--disabled svg {
+  color: #6B7280 !important;
 }
 
 /* Gradient border pill */
@@ -1619,6 +1656,25 @@ html[data-dark="true"] body .print-btn-text {
   background: #1E2240 !important;
   border-color: rgba(255,255,255,0.12) !important;
   box-shadow: 0 16px 40px rgba(0,0,0,0.45) !important;
+}
+/* As a right-edge sheet: only the inner edge is drawn, and it slides in. */
+.im-wage-sheet {
+  border-width: 0 0 0 1px;
+  box-shadow: -12px 0 32px rgba(16,24,40,0.12);
+  animation: imWageSlideIn 220ms ease-out;
+}
+@keyframes imWageSlideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .im-wage-sheet { animation: none; }
+}
+/* The form steps aside for the sheet rather than sitting under it. On a
+   narrow window there is no room to give, so there it overlays. */
+@media (min-width: 1024px) {
+  #root main { transition: margin-right 220ms ease-out; }
+  html[data-wage-sheet] #root main { margin-right: 360px; }
 }
 .im-wage-close { color: #9CA3AF; transition: background 140ms, color 140ms; }
 .im-wage-close:hover { background: var(--fill-subtle); color: #4B5563; }

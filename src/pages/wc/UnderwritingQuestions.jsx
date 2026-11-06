@@ -114,7 +114,7 @@ export default function UnderwritingQuestions({
           must do here is disagree where the insured does — which is worth
           more than a subtitle. */}
       <InfoPanel tone="warn" lead="Please validate every credit question for this risk.">
-        Change any answer that isn't true for this insured.
+        Change any answer that isn't true for this applicant.
       </InfoPanel>
 
       {/* Four topic groups, asked as a compact list — question on the

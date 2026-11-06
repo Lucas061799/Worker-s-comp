@@ -87,24 +87,42 @@ function dualLabel(code) {
    sheet gains a row nobody typed is the moment to say why — and can be
    put away and called back.
 
-   Pinned to the corner of the window rather than to the section. The
-   table is long: anchored to the rows it either covered them or had to
-   be cut short to stay clear of them. Down here it can run to most of
-   the window's height and the form stays readable behind it. */
+   A sheet on the right edge, from under the top bar to the bottom of the
+   window. It does not cover the form: while it is open the page's main
+   column narrows by its width (see html[data-wage-sheet] in index.css), so
+   the class rows it explains stay in view beside it. */
 function DualWagePanel({ onClose }) {
+  const [top, setTop] = useState(0)
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.setAttribute('data-wage-sheet', '')
+    // Start where the scrolling column starts, below the brand bar.
+    const main = document.querySelector('#root main')
+    if (main) setTop(main.getBoundingClientRect().top)
+    return () => root.removeAttribute('data-wage-sheet')
+  }, [])
+
   return (
-    <div className="im-wage-pop fixed bottom-6 right-6 z-40 w-[400px] max-w-[calc(100vw-3rem)] rounded-xl overflow-hidden flex flex-col"
-      style={{ maxHeight: 'calc(100vh - 3rem)' }}>
-      <div className="flex items-start gap-3 px-4 pt-3.5 pb-2">
-        <div className="im-section-label !mb-0 flex-1">Dual wage classifications</div>
+    <aside role="dialog" aria-label="Dual wage classifications"
+      style={{ top }}
+      className="im-wage-pop im-wage-sheet fixed right-0 bottom-0 z-40 w-[360px] max-w-full overflow-hidden flex flex-col">
+      <div className="flex items-center gap-3 px-5 pt-5 pb-3">
+        <h3 className="flex-1 text-[15px] font-bold text-navy">Dual wage classifications</h3>
         <button type="button" onClick={onClose} aria-label="Close"
-          className="im-wage-close w-5 h-5 rounded-full flex items-center justify-center shrink-0 -mt-0.5">
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+          className="im-wage-close w-7 h-7 rounded-full flex items-center justify-center shrink-0">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
             <path strokeLinecap="round" d="M7 7l10 10M17 7L7 17" />
           </svg>
         </button>
       </div>
-      <p className="px-4 pb-3 text-[11.5px] leading-[17px] text-gray-500">
+      <p className="px-5 pb-4 text-[12px] leading-[18px] text-gray-500">
         In California some construction operations split into two classifications on the
         hourly wage paid. Both codes go on the submission, so the policy binds with each.
         The splits below are the ones in force for this policy&rsquo;s effective date.
@@ -135,7 +153,7 @@ function DualWagePanel({ onClose }) {
           </tbody>
         </table>
       </div>
-    </div>
+    </aside>
   )
 }
 
@@ -222,6 +240,12 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
 
   // Only an included officer has payroll to schedule.
   const anyIncluded = officers.some(o => o.status !== 'exclude')
+
+  /* The listed officers' shares have to account for the whole company. Only
+     checked once a share has been typed, so an untouched row is not an error. */
+  const ownershipEntered = officers.some(o => String(o.ownership || '') !== '')
+  const ownershipSum = officers.reduce((sum, o) => sum + (Number(o.ownership) || 0), 0)
+  const ownershipOff = ownershipEntered && ownershipSum !== 100
 
   const subPct = Number(String(sd.subPercent || '').replace(/[^0-9.]/g, ''))
 
@@ -343,12 +367,14 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               <div className="grid grid-cols-[1fr_150px] lg:grid-cols-[1fr_1fr_120px_210px_40px] gap-3 items-end">
                 <Input
                   label={idx === 0 ? 'Name' : undefined}
+                  required
                   value={row.name}
                   onChange={val => updateOfficer(idx, { name: val })}
                   placeholder="Full name"
                 />
                 <Select
                   label={idx === 0 ? 'Title' : undefined}
+                  required
                   options={OFFICER_TITLES}
                   value={row.title}
                   onChange={val => updateOfficer(idx, { title: val })}
@@ -357,6 +383,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                     company has nowhere else to go. */}
                 <Input
                   label={idx === 0 ? 'Ownership %' : undefined}
+                  required
                   align="right"
                   value={row.ownership}
                   onChange={val => {
@@ -366,7 +393,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                   placeholder="%"
                 />
                 <div>
-                  {idx === 0 && <FieldLabel>Status</FieldLabel>}
+                  {idx === 0 && <FieldLabel required>Status</FieldLabel>}
                   <div className="h-[42px] flex items-center flex-nowrap">
                     <Segmented
                       size="field"
@@ -385,18 +412,29 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                   />
                 </div>
               </div>
-              {/* What excluding this person commits the agent to, on the row
-                  that made the election rather than in a notice further down
-                  that does not say who it is about. */}
-              {row.status === 'exclude' && (
+              {/* What the election commits the agent to, on the row that made
+                  it rather than in a notice further down that does not say
+                  who it is about. Include is the default, so it shows too. */}
+              {row.status === 'exclude' ? (
                 <p className="text-[11.5px] im-note-warn mt-1.5">
                   Excluded: don't schedule payroll for this person. A signed exclusion
                   form will be required for {STATE_NAMES[st] || st}.
+                </p>
+              ) : (
+                <p className="text-[11.5px] im-note-warn mt-1.5">
+                  Included: Schedule payroll for this person per state guidelines. A signed
+                  inclusion form is not required.
                 </p>
               )}
             </div>
           ))}
         </div>
+
+        {ownershipOff && (
+          <p role="alert" className="text-[11.5px] font-semibold text-red-500 mt-3">
+            Ownership sum must equal 100%
+          </p>
+        )}
 
         <div className="mt-5">
           <AddAnother onClick={() => setOfficers([...officers, emptyOfficer()])}>
@@ -427,10 +465,14 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
             <div key={idx} /* Location carries "Loc 1 — 1420 Prospect Rd, Saratoga" and was
                  clipped to "Loc 1 — 1…" at 126px, while the class code —
                  whose longest value measures 227px — had 412px to spread
-                 into. The 124px moves from one to the other. */
-              className="grid grid-cols-2 sm:grid-cols-[290px_minmax(0,1fr)_102px_52px_52px_32px] gap-3 items-end">
+                 into. The 124px moves from one to the other. Location can
+                 give some of it back when the column narrows (the dual wage
+                 sheet open beside it), before the class code is squeezed
+                 shut. */
+              className="grid grid-cols-2 sm:grid-cols-[minmax(160px,290px)_minmax(180px,1fr)_118px_52px_52px_32px] gap-3 items-end">
               <Select
                 label={idx === 0 ? 'Location' : undefined}
+                required
                 options={locationOptions}
                 wideMenu
                 /* A row can be holding a location that belonged to another
@@ -445,6 +487,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                   find the code, or type the code directly. */}
               <Input
                 label={idx === 0 ? 'Class code' : undefined}
+                required
                 value={row.code && row.description ? `${row.code} — ${row.description}` : row.code}
                 onChange={val => {
                   const [code, ...rest] = val.split('—')
@@ -455,6 +498,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               />
               <Input
                 label={idx === 0 ? 'Annual payroll' : undefined}
+                required
                 align="right"
                 value={row.payroll}
                 onChange={val => updateClass(idx, { payroll: val })}
@@ -462,6 +506,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               />
               <Input
                 label={idx === 0 ? 'FT' : undefined}
+                required
                 align="right"
                 value={row.ftEmployees}
                 onChange={val => updateClass(idx, { ftEmployees: val })}
@@ -469,6 +514,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
               />
               <Input
                 label={idx === 0 ? 'PT' : undefined}
+                required
                 align="right"
                 value={row.ptEmployees}
                 onChange={val => updateClass(idx, { ptEmployees: val })}
@@ -534,14 +580,17 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
                 value={sd.subCertificates}
                 onChange={val => patch({ subCertificates: val })}
               />
-              {/* The answer that costs money said nothing back. A sub
-                  without a certificate is rated as an employee, so the
-                  payroll above has to carry them. */}
-              {(sd.subCertificates === 'No' || sd.subCertificates === 'Sometimes') && (
+              {/* Every answer says something back. A sub without a
+                  certificate is rated as an employee, so the payroll above
+                  has to carry them — and a Yes holds only while the
+                  certificates do, since the audit checks them again. */}
+              {(sd.subCertificates === 'Yes' || sd.subCertificates === 'No' || sd.subCertificates === 'Sometimes') && (
                 <p className="text-xs mt-1.5 im-note-warn">
-                  {sd.subCertificates === 'No'
-                    ? 'Uninsured subs are rated as employees — include their pay in the class codes above.'
-                    : 'Any sub without a certificate is rated as an employee — include their pay above.'}
+                  {sd.subCertificates === 'Yes'
+                    ? 'Certificates must be maintained. Uninsured subcontractors may be included at audit.'
+                    : sd.subCertificates === 'No'
+                      ? 'Uninsured subs are rated as employees — include their pay in the class codes above.'
+                      : 'Any sub without a certificate is rated as an employee — include their pay above.'}
                 </p>
               )}
             </div>
