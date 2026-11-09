@@ -1229,7 +1229,9 @@ button.force-white-text,
    app's secondary text, which carries the darkened ink treatment, and on a
    toned panel the neutral grey came out muddy against the tint — about 4:1
    on the amber in dark. One step in from the DS in each theme. */
-.im-alert-desc { color: #4B5563; }
+/* Near the lead's own ink rather than a mid grey: on the tinted panel
+   grounds a grey body lost contrast and was hard to read. */
+.im-alert-desc { color: #1F2937; }
 [data-dark="true"] .im-alert-desc { color: #D1D5DB !important; }
 
 /* The mark's stroke, as stops so the theme can move it. */

@@ -84,6 +84,17 @@ export default function CoverageHistory({ formData, updateFormData }) {
 
   return (
     <div className="w-full space-y-6">
+      {/* Shown when the applicant's FEIN is blocked by another submission in
+          the last 30 days. Always on in the mockup — there is no clearance
+          check behind it yet. */}
+      <InfoPanel tone="warn" lead="Heads up.">
+        We found another submission for this applicant submitted within the past 30 days.
+        We operate on a jump-ball basis, so no Broker of Record (BOR) letter is required at
+        this time. We&rsquo;ll re-run this check again when bind is attempted to confirm there&rsquo;s
+        no duplicate submission — the first submission to bind coverage with the
+        applicant&rsquo;s approval gets the business.
+      </InfoPanel>
+
       {/* A form, not a question list: typed and chosen values carry their
           label above the field, the way Business info does. The compact
           label-left row is for Yes/No and segmented answers. */}
