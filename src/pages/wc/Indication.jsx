@@ -241,14 +241,13 @@ function RecoSheet({ carrier, onClose }) {
   return (
     <SideSheet title="BTIS Recommended" onClose={onClose}>
       <div className="flex-1 min-h-0 overflow-y-auto custom-scroll px-5 pb-6 space-y-6">
-        <div className="flex items-center gap-3 pt-1">
-          <CarrierLogo carrier={carrier} size={40} />
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-navy leading-tight">{carrier.name}</p>
-            {carrier.tagline && (
-              <p className="text-[12px] text-gray-500 leading-snug mt-0.5">{carrier.tagline}</p>
-            )}
-          </div>
+        {/* The mark wide and unboxed, naming the carrier on its own — the
+            printed name beside a 40px chip was saying it twice, small. */}
+        <div className="pt-1">
+          <CarrierLogo carrier={carrier} band bandScale={0.9} named className="im-carrier-tile-bare !px-0" />
+          {carrier.tagline && (
+            <p className="text-[12px] text-gray-500 leading-snug mt-2">{carrier.tagline}</p>
+          )}
         </div>
 
         <section>
