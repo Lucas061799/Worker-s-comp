@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { CARRIERS } from './CarrierSelection'
 import {
   BRAND_GRADIENT, BrandText, CarrierLogo, InfoDot, InfoPanel,
-  Modal, ModalButton, Tag, SideSheet,
+  ModalButton, Tag, SideSheet,
 } from '../../components/wc/primitives'
 
 /* Rough WC premium: rate × payroll × ex-mod × per-carrier factor. The rate is
@@ -162,23 +162,27 @@ function PromoBadge({ carrier, tab = false }) {
       >
         {tab ? '+2% promo' : <Tag tone="brand">Promo</Tag>}
       </button>
+      {/* A slide-in notice rather than a modal, as the recommendation's
+          marketing sheet is: the cards stay in view beside it. */}
       {open && (
-        <Modal
-          title="Q3 promotion"
-          width={420}
-          onDismiss={() => setOpen(false)}
-          footerAlign="end"
-          footer={<ModalButton onClick={() => setOpen(false)}>Got it</ModalButton>}
-        >
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-2)' }}>
-            <b className="font-semibold text-navy">
-              +2% boosted commission on {carrier.name} binds.
-            </b>{' '}
-            Applies to policies bound with {carrier.name} through BTIS this quarter.
-            Nothing to enrol in — the uplift is applied when the policy binds, on
-            new business and at renewal.
-          </p>
-        </Modal>
+        <SideSheet title="Q3 promotion" onClose={() => setOpen(false)}>
+          <div className="flex-1 min-h-0 overflow-y-auto custom-scroll px-5 pb-6 space-y-5">
+            <div className="pt-1">
+              <CarrierLogo carrier={carrier} band bandScale={0.75} named className="im-carrier-tile-bare !px-0" />
+            </div>
+            <div className="im-reco-promo rounded-xl px-4 py-3.5">
+              <p className="text-[13px] font-semibold text-navy">
+                +2% boosted commission on {carrier.name} binds
+              </p>
+              <p className="text-[12.5px] leading-relaxed mt-1" style={{ color: 'var(--ink-2)' }}>
+                Applies to policies bound with {carrier.name} through BTIS this quarter.
+                Nothing to enrol in — the uplift is applied when the policy binds, on
+                new business and at renewal.
+              </p>
+            </div>
+            <ModalButton onClick={() => setOpen(false)}>Got it</ModalButton>
+          </div>
+        </SideSheet>
       )}
     </>
   )

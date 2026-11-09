@@ -320,21 +320,41 @@ export function Modal({ title, onDismiss, children, footer, footerAlign = 'betwe
    Through a portal, because it is often opened from a pressable card whose
    hover lift is a transform — and a transform makes a fixed child fixed to
    the card rather than to the window. Marked as an overlay all the same,
-   since React still bubbles its clicks up to that card. */
+   since React still bubbles its clicks up to that card.
+
+   One at a time: opening a sheet tells any other open one to close, so two
+   are never stacked on the same edge. */
+let openSheetCount = 0
+
 export function SideSheet({ title, onClose, children }) {
+  const id = useId()
   // Start where the scrolling column starts, below the brand bar.
   const [top] = useState(() => document.querySelector('#root main')?.getBoundingClientRect().top ?? 0)
+  const onCloseRef = useRef(onClose)
+  useEffect(() => { onCloseRef.current = onClose }, [onClose])
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    const onKey = (e) => { if (e.key === 'Escape') onCloseRef.current() }
+    const onOther = (e) => { if (e.detail !== id) onCloseRef.current() }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+    window.addEventListener('im-side-sheet-open', onOther)
+    window.dispatchEvent(new CustomEvent('im-side-sheet-open', { detail: id }))
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('im-side-sheet-open', onOther)
+    }
+  }, [id])
 
+  /* Counted rather than set and cleared, so a sheet closing as another
+     opens does not take the column's margin away from the one still open. */
   useEffect(() => {
     const root = document.documentElement
+    openSheetCount += 1
     root.setAttribute('data-side-sheet', '')
-    return () => root.removeAttribute('data-side-sheet')
+    return () => {
+      openSheetCount -= 1
+      if (openSheetCount === 0) root.removeAttribute('data-side-sheet')
+    }
   }, [])
 
   return createPortal(
