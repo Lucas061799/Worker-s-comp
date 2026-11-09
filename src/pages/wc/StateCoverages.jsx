@@ -145,34 +145,24 @@ function FieldLabel({ children, required }) {
 
 /* A heading inside a state card. The rule above it is what separates one
    subsection from the next — the card itself is the state. */
-function SubSection({ title, sub, aside, gap, children }) {
+const STATE_CARD_STYLE = { background: '#F9FAFB', border: '1px solid #E5E7EB' }
+
+/* One section of a state, as its own card with its heading outside it —
+   the dashed group heading every other card on the flow wears, so the
+   page reads as a stack of headed boxes rather than one long one.
+   Anything that acts on the whole section (the classifications panel, say)
+   rides on the heading's line, at the far end of it. */
+function SubSection({ title, sub, aside, children }) {
   return (
-    /* 28 above the rule and 28 below it. The heading is 11px where the
-       column labels under it are 13px, so proximity has to carry the
-       hierarchy that type size does not: the gap between sections is now
-       comfortably larger than any gap inside one. */
-    <div className="mt-7 pt-7 border-t" style={{ borderColor: 'var(--line)' }}>
-      {/* Anything that acts on the whole section — the classifications
-          panel, say — rides on the heading's own line, at the far end of
-          it, rather than loose among the rows. */}
-      {/* 14px semibold navy, not the 11px grey caption it was. The field
-          labels beneath are 13px semibold, so at 11px the heading was the
-          smallest thing in its own section and the sections ran together.
-          The ladder now reads: card title 15, section 14, field 13. */}
-      <div className="flex items-center justify-between gap-4 mb-2">
-        <h4 className="text-[14px] font-semibold text-navy flex items-center gap-1.5 flex-1 min-w-0">{title}</h4>
+    <div>
+      <div className="flex items-center justify-between gap-4 mb-2.5">
+        <SectionLabel className="!mb-0">{title}</SectionLabel>
         {aside}
       </div>
-      {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed">{sub}</p>}
-      {/* 20px from the heading block to the fields either way. A section
-          with a sub-line measures that from the sub-line; one without it
-          was measuring 8 + 20 from the heading itself, which left the
-          11px label of a section like Subcontractors stranded.
-
-          `gap` overrides it for a section whose first content is itself a
-          row of labels: column headers carry about as much weight as the
-          section heading, so at 12px the two read as one block. */}
-      <div className={gap || (sub ? 'mt-5' : 'mt-3')}>{children}</div>
+      <div className="im-field-card rounded-xl p-5 sm:p-6" style={STATE_CARD_STYLE}>
+        {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed mb-5">{sub}</p>}
+        {children}
+      </div>
     </div>
   )
 }
@@ -270,9 +260,11 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
     setWagePanel(true)
   }
 
+  /* Four cards stacked rather than one: the state's own terms, then its
+     officers, its classes and its subcontractors, each boxed on its own. */
   return (
-    <div className="im-field-card rounded-xl p-5 sm:p-6"
-      style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+    <div className="space-y-6">
+    <div className="im-field-card rounded-xl p-5 sm:p-6" style={STATE_CARD_STYLE}>
 
       <div className="flex items-center gap-2.5">
         <Tag tone="brand" shape="chip">{st}</Tag>
@@ -311,6 +303,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
           </div>
         </div>
       </div>
+    </div>
 
       <SubSection title="Owners & officers">
         {/* One callout, not three. The entity rule was a grey sub-line, the
@@ -415,7 +408,6 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
 
       <SubSection
         title="Classes &amp; payroll"
-        gap="mt-6"
         aside={st === 'CA' ? (
           <button type="button" onClick={() => setWagePanel(true)}
             className="im-wage-link text-[12px] font-semibold shrink-0 inline-flex items-center gap-1.5 underline underline-offset-2">
