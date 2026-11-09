@@ -78,15 +78,41 @@ function detailRows(carrier) {
   ].filter(([, v]) => v)
 }
 
-/* V6 has no turnarounds on its face, so they lead its panel instead. */
+/* One fact in V6/V7's panel: a small caption over its value, both flush
+   left, so a long value wraps under itself instead of ragged against a
+   right edge with its label stranded across the card. */
+function DetailFact({ label, value }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-[10px] font-semibold uppercase tracking-[0.06em] text-gray-500">{label}</dt>
+      <dd className="text-[12px] font-semibold leading-snug mt-0.5" style={{ color: 'var(--ink)' }}>{value}</dd>
+    </div>
+  )
+}
+
+/* V6 has no turnarounds on its face, so they lead its panel instead: the
+   two of them side by side, as the pair an agent compares, then the
+   servicing facts one to a line. V3's panel keeps its label-and-value rows. */
 function DetailPanel({ carrier, withSla = false, className = '', style, onClick }) {
-  const rows = [
-    ...(withSla ? [
+  if (withSla) {
+    const turnaround = [
       ['Quote', carrier.slaShort || carrier.sla],
       ['Endorsement', carrier.endorsementSla],
-    ].filter(([, v]) => v) : []),
-    ...detailRows(carrier),
-  ]
+    ].filter(([, v]) => v)
+    return (
+      <dl className={`px-5 pt-4 pb-5 space-y-3 ${className}`} onClick={onClick}
+        style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-soft)', ...style }}>
+        {turnaround.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
+            {turnaround.map(([label, value]) => <DetailFact key={label} label={label} value={value} />)}
+          </div>
+        )}
+        {detailRows(carrier).map(([label, value]) => <DetailFact key={label} label={label} value={value} />)}
+      </dl>
+    )
+  }
+
+  const rows = detailRows(carrier)
   return (
     <dl className={`px-5 pt-3.5 pb-4 space-y-2 ${className}`} onClick={onClick}
       style={{ borderTop: '1px solid var(--line)', background: 'var(--surface-soft)', ...style }}>
@@ -344,11 +370,20 @@ function pickProps(onSelect, name) {
    the carrier's turnarounds and servicing under the mark, for the agent who
    wants them, without putting them on every card's face. Each card opens on
    its own — it is one carrier's details being asked for, not a column to
-   read across — and its row-mates keep their own height (see the grid). */
-function CarrierTilePrice({ carrier, onSelect, withSelect = false, withDetails = false }) {
+   read across — and its row-mates keep their own height (see the grid).
+
+   V7 is V6 with V1's purple Instant Bind tab, and with the details opening
+   on every card at once from any chevron (`openTogether`, driven by the
+   grid's one switch), so they can be read across the carriers. */
+function CarrierTilePrice({
+  carrier, onSelect, withSelect = false, withDetails = false,
+  openTogether = false, purpleBind = false,
+  open: sharedOpen = false, onToggle: sharedToggle,
+}) {
   const quoted = !carrier.noquote
-  const [open, setOpen] = useState(false)
-  const onToggle = () => setOpen(o => !o)
+  const [ownOpen, setOwnOpen] = useState(false)
+  const open = openTogether ? sharedOpen : ownOpen
+  const onToggle = openTogether ? sharedToggle : () => setOwnOpen(o => !o)
   const [recoSheet, setRecoSheet] = useState(false)
   /* V6 keeps the status tab for what happens after Select, and gives the
      recommendation a band of its own across the card's foot. */
@@ -381,7 +416,10 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false, withDetails =
           : quoted ? '0 1px 3px rgba(16,24,40,0.06)' : 'none',
       }}
     >
-      <div className="relative px-5 pb-5 pt-10 flex-1 flex flex-col">
+      {/* The body takes a stretched card's spare height, except under open
+          details: there the details take it, so the mark stays under the
+          price and the grey runs down to the card's foot. */}
+      <div className={`relative px-5 pb-5 pt-10 flex flex-col ${withDetails && open ? '' : 'flex-1'}`}>
         {withDetails && (
           <Chevron open={open} onToggle={onToggle} label={carrier.name}
             className="absolute top-3 right-3" />
@@ -395,7 +433,7 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false, withDetails =
                four cards to a row leaves 215px, and the one tab that carries
                both words came out 230px wide and hung off both edges. */
             className={`im-reco-tab absolute -top-[10px] left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-[3px] rounded-md text-[9px] font-extrabold tracking-[0.04em] inline-flex items-center gap-1 ${
-              carrier.bind ? (withDetails ? 'im-bind-tab-yellow' : 'im-bind-tab') : 'im-bind-tab-soft'
+              carrier.bind ? (withDetails && !purpleBind ? 'im-bind-tab-yellow' : 'im-bind-tab') : 'im-bind-tab-soft'
             }`}
           >
             {/* Three children, so the flex gap falls evenly either side of
@@ -467,7 +505,7 @@ function CarrierTilePrice({ carrier, onSelect, withSelect = false, withDetails =
           which has no clip of its own (the status tab hangs over its top). */}
       {withDetails && open && (
         <DetailPanel carrier={carrier} withSla
-          className={recoCard ? '' : 'rounded-b-2xl'}
+          className={`flex-1 ${recoCard ? '' : 'rounded-b-2xl'}`}
           onClick={e => e.stopPropagation()} />
       )}
 
@@ -844,13 +882,15 @@ function CarrierTier({ carrier, onSelect, best }) {
    see it. */
 const REFERRAL_THRESHOLD = 20000
 
-/* The six treatments, named where the switcher reads them. V6 leads and is
-   the one shown first (App's default): it is V1 with V3's details, the
-   current pick. The price-led card follows, since it is the one the
+/* The seven treatments, named where the switcher reads them. V7 leads and is
+   the one shown first (App's default): V6 — V1 with V3's details — with
+   V1's purple tab and the details opening together, the current pick. V6
+   sits beside it. The price-led card follows, since it is the one the
    production screen is closest to — and it is there twice, once as the card
    you press and once with a Select under it, which is the one question
    worth asking on its own. */
 export const INDICATION_VERSIONS = [
+  { value: 7, label: 'V7', title: 'V6 with purple Instant Bind, details open together' },
   { value: 6, label: 'V6', title: 'Price-led cards, with details — V1 + V3' },
   { value: 1, label: 'V1', title: 'Price-led cards — ours' },
   { value: 2, label: 'V2', title: 'Price-led cards, with Select — ours' },
@@ -949,9 +989,10 @@ export default function Indication({
         /* V6 aligns to the top rather than stretching: its closed cards are
            already one height (each keeps the recommendation band's slot), and
            an open one grows on its own instead of pulling its row-mates
-           taller. */
+           taller. V7 opens every card at once, so it does the opposite: every
+           row is the height of the tallest, and every card fills it. */
         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${
-          version === 6 ? 'items-start' : 'items-stretch'
+          version === 6 ? 'items-start' : version === 7 ? 'items-stretch auto-rows-fr' : 'items-stretch'
         } ${
           version === 3 ? 'gap-3' : 'xl:grid-cols-4 gap-x-3 gap-y-10'
         }`}>
@@ -963,7 +1004,9 @@ export default function Indication({
                 carrier={r}
                 onSelect={() => onPickCarrier(r)}
                 withSelect={version === 2}
-                withDetails={version === 6}
+                withDetails={version === 6 || version === 7}
+                openTogether={version === 7}
+                purpleBind={version === 7}
                 open={detailsOpen}
                 onToggle={() => setDetailsOpen(o => !o)}
               />
