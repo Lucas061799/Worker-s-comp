@@ -143,16 +143,39 @@ function FieldLabel({ children, required }) {
   )
 }
 
-/* A heading inside a state card. The rule above it is what separates one
-   subsection from the next — the card itself is the state. */
 const STATE_CARD_STYLE = { background: '#F9FAFB', border: '1px solid #E5E7EB' }
+
+/* The page's two layouts, switched from the demo control at its foot so
+   they can be compared on the same answers: every section of a state in
+   its own headed box, or the earlier single state card with its sections
+   divided by rules inside it. */
+const COVERAGE_LAYOUTS = [
+  { value: 'boxes', label: 'Separate boxes — one per section' },
+  { value: 'single', label: 'Single card — sections divided by rules' },
+]
 
 /* One section of a state, as its own card with its heading outside it —
    the dashed group heading every other card on the flow wears, so the
    page reads as a stack of headed boxes rather than one long one.
    Anything that acts on the whole section (the classifications panel, say)
-   rides on the heading's line, at the far end of it. */
-function SubSection({ title, sub, aside, children }) {
+   rides on the heading's line, at the far end of it.
+
+   Not `boxed`, it is the earlier layout's heading inside the state card:
+   14px navy, with the rule above it separating one section from the next. */
+function SubSection({ title, sub, aside, boxed = true, children }) {
+  if (!boxed) {
+    return (
+      <div className="mt-7 pt-7 border-t" style={{ borderColor: 'var(--line)' }}>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <h4 className="text-[14px] font-semibold text-navy flex items-center gap-1.5 flex-1 min-w-0">{title}</h4>
+          {aside}
+        </div>
+        {sub && <p className="text-[12.5px] text-gray-500 leading-relaxed">{sub}</p>}
+        <div className={sub ? 'mt-5' : 'mt-3'}>{children}</div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-2.5">
@@ -190,7 +213,7 @@ function officerRule(st, entityType) {
    its subcontractors. There is no "add state" control — a state arrives
    here by having a location added to it on Locations, which is the only
    place the address behind it is captured. */
-function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
+function StateCard({ st, locs, entityType, sd, patch, mod, setMod, layout = 'boxes' }) {
   /* Shown when a twin arrives, and whenever the agent asks for it back. */
   const [wagePanel, setWagePanel] = useState(false)
   const officers = sd.officers || []
@@ -260,12 +283,11 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
     setWagePanel(true)
   }
 
-  /* Four cards stacked rather than one: the state's own terms, then its
-     officers, its classes and its subcontractors, each boxed on its own. */
-  return (
-    <div className="space-y-6">
-    <div className="im-field-card rounded-xl p-5 sm:p-6" style={STATE_CARD_STYLE}>
+  const boxed = layout !== 'single'
 
+  /* The state's own terms: its name, its mod and its waiver. */
+  const head = (
+    <>
       <div className="flex items-center gap-2.5">
         <Tag tone="brand" shape="chip">{st}</Tag>
         <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
@@ -303,9 +325,12 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
           </div>
         </div>
       </div>
-    </div>
+    </>
+  )
 
-      <SubSection title="Owners & officers">
+  const sections = (
+    <>
+      <SubSection boxed={boxed} title="Owners & officers">
         {/* One callout, not three. The entity rule was a grey sub-line, the
             payroll guidance an amber panel and the exclusion note a small
             orange line — three weights for what is all the same kind of
@@ -407,6 +432,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
       </SubSection>
 
       <SubSection
+        boxed={boxed}
         title="Classes &amp; payroll"
         aside={st === 'CA' ? (
           <button type="button" onClick={() => setWagePanel(true)}
@@ -498,7 +524,7 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
         </div>
       </SubSection>
 
-      <SubSection title="Subcontractors">
+      <SubSection boxed={boxed} title="Subcontractors">
         {/* The card is already the state's, so the question does not name
             it. The radiogroup still does, since two cards are on the page
             and their names have to differ. */}
@@ -558,6 +584,21 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod }) {
           </div>
         )}
       </SubSection>
+    </>
+  )
+
+  /* Four cards stacked: the state's own terms, then its officers, its
+     classes and its subcontractors, each boxed on its own. Or, in the
+     earlier layout, all of it in the one state card. */
+  return boxed ? (
+    <div className="space-y-6">
+      <div className="im-field-card rounded-xl p-5 sm:p-6" style={STATE_CARD_STYLE}>{head}</div>
+      {sections}
+    </div>
+  ) : (
+    <div className="im-field-card rounded-xl p-5 sm:p-6" style={STATE_CARD_STYLE}>
+      {head}
+      {sections}
     </div>
   )
 }
@@ -580,6 +621,9 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
   /* Which state's section is open. The policy-level row above the tabs
      does not move with it — only everything below does. */
   const [activeState, setActiveState] = useState(states[0])
+  /* Which layout the demo control has picked. Not persisted — a reviewer's
+     comparison, not part of the submission. */
+  const [layout, setLayout] = useState('boxes')
   const active = states.includes(activeState) ? activeState : states[0]
   useEffect(() => {
     if (!states.includes(activeState)) setActiveState(states[0])
@@ -717,7 +761,25 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
           patch={patchState(active)}
           mod={modOf(active)}
           setMod={setModOf(active)}
+          layout={layout}
         />
+      </div>
+
+      {/* A demo control, not part of the flow — the payment step's kind:
+          the two layouts of this page, on the same answers. */}
+      <div className="pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
+        <div style={{ width: 340 }}>
+          <Select
+            label="Layout"
+            wideMenu
+            options={COVERAGE_LAYOUTS}
+            value={layout}
+            onChange={setLayout}
+          />
+        </div>
+        <p className="text-[11px] text-gray-400 mt-2">
+          Demo only — two layouts of this page, on the same answers.
+        </p>
       </div>
     </div>
   )
