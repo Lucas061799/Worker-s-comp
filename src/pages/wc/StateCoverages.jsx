@@ -721,16 +721,18 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
         </FormGrid>
       </FieldGroup>
 
+      {/* The state-level block as a tabbed folder. One tab per state, and
+          only the open one's sections below — the states are answered one
+          at a time, and stacking every card made a page long enough that
+          which answers belonged to which state stopped being obvious. The
+          tabs stand on the outline that holds everything they switch, so it
+          is plain which sections change with the state — and that
+          Employer's liability, above it, does not. A single-state
+          submission has nothing to switch between, so the tabs stay off. */}
       <div>
-        <SectionLabel>State-level coverage</SectionLabel>
-        {/* One tab per state, and only the open one's card below — the
-            states are answered one at a time, and stacking every card made
-            a page long enough that which answers belonged to which state
-            stopped being obvious. A single-state submission has nothing to
-            switch between, so the rail stays off. */}
         {states.length > 1 && (
           <div role="tablist" aria-label="States on this policy"
-            className="im-state-track inline-flex flex-wrap items-center gap-1 mb-3">
+            className="im-state-track flex flex-wrap items-end gap-1">
             {states.map(st => {
               const on = st === active
               return (
@@ -740,29 +742,33 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
                   role="tab"
                   aria-selected={on}
                   onClick={() => setActiveState(st)}
-                  className={`im-state-tab${on ? ' im-state-tab-on' : ''} inline-flex items-center gap-2 h-8 px-3 rounded-lg text-xs font-semibold`}
+                  className={`im-state-tab${on ? ' im-state-tab-on' : ''} inline-flex items-center gap-2 h-10 px-5 rounded-t-lg text-[13px] font-semibold`}
                 >
-                  {/* The code reads as the segment's mark and takes the
-                      brand gradient when open; the name goes to full ink
-                      beside it. Closed, both stay on the track's grey. */}
-                  <span className={`font-bold tracking-[0.06em]${on ? ' text-gradient' : ''}`}>{st}</span>
-                  <span className={on ? 'im-state-tab-name' : ''}>{STATE_NAMES[st] || st}</span>
+                  {/* The code a step quieter than the name beside it, so the
+                      name is what reads. */}
+                  <span className="im-state-tab-code font-bold tracking-[0.06em] text-[11px]">{st}</span>
+                  <span>{STATE_NAMES[st] || st}</span>
                 </button>
               )
             })}
           </div>
         )}
-        <StateCard
-          key={active}
-          st={active}
-          locs={allLocations.filter(l => l.state === active)}
-          entityType={entityType}
-          sd={stateDataFor(active)}
-          patch={patchState(active)}
-          mod={modOf(active)}
-          setMod={setModOf(active)}
-          layout={layout}
-        />
+        {/* Square at the top-left only while tabs stand on it, so the first
+            tab runs straight down into the panel's edge. */}
+        <div className={`im-state-panel rounded-2xl p-3 sm:p-5${states.length > 1 ? ' rounded-tl-none' : ''}`}>
+          <SectionLabel>State-level coverage</SectionLabel>
+          <StateCard
+            key={active}
+            st={active}
+            locs={allLocations.filter(l => l.state === active)}
+            entityType={entityType}
+            sd={stateDataFor(active)}
+            patch={patchState(active)}
+            mod={modOf(active)}
+            setMod={setModOf(active)}
+            layout={layout}
+          />
+        </div>
       </div>
 
       {/* A demo control, not part of the flow — the payment step's kind:

@@ -61,11 +61,12 @@ export function StepHeader({ title, subtitle, aside }) {
 }
 
 /* A demo switch, not part of the flow: the same screen drawn more than one
-   way, so a reviewer can put the treatments side by side. The segmented
-   track the state tabs use — it is the same job, picking one of a few. */
+   way, so a reviewer can put the treatments side by side. A quiet segmented
+   track — the state tabs' old look, kept here where a demo control should
+   not compete with the page. */
 export function VersionSwitch({ options, value, onChange, label = 'Layout version' }) {
   return (
-    <div className="im-state-track inline-flex items-center gap-1" role="group" aria-label={label}>
+    <div className="im-seg-track inline-flex items-center gap-1" role="group" aria-label={label}>
       {options.map(opt => {
         const on = opt.value === value
         return (
@@ -75,9 +76,9 @@ export function VersionSwitch({ options, value, onChange, label = 'Layout versio
             onClick={() => onChange(opt.value)}
             aria-pressed={on}
             title={opt.title}
-            className={`im-state-tab px-2.5 h-7 rounded-lg text-[11.5px] font-bold transition ${on ? 'im-state-tab-on' : ''}`}
+            className={`im-seg-tab px-2.5 h-7 rounded-lg text-[11.5px] font-bold transition ${on ? 'im-seg-tab-on' : ''}`}
           >
-            <span className={on ? 'im-state-tab-name' : undefined}>{opt.label}</span>
+            <span className={on ? 'im-seg-tab-name' : undefined}>{opt.label}</span>
           </button>
         )
       })}
@@ -183,10 +184,12 @@ export function CarrierLogo({ carrier, size = 40, band = false, bandScale = 1, n
 
 /* Uppercase label above a group of fields. `plain` is for the same type set
    as a table's column heading or a single field's caption, which is not the
-   start of a group and so does not take the group heading's Razz dash. */
+   start of a group and so does not take the group heading's Razz dash.
+   A group heading is set 2px larger than a plain caption, so it reads as
+   the start of a section rather than as one more label in it. */
 export function SectionLabel({ children, className = '', plain = false }) {
   return (
-    <div className={`im-section-label${plain ? ' im-section-label--plain' : ''} text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5 ${className}`}>
+    <div className={`im-section-label${plain ? ' im-section-label--plain text-[11px]' : ' text-[13px]'} font-semibold uppercase tracking-[0.1em] text-gray-400 mb-2.5 pl-0.5 ${className}`}>
       {children}
     </div>
   )
