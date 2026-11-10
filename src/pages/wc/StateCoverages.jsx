@@ -159,6 +159,7 @@ const COVERAGE_LAYOUTS = [
    each opening in place under its own header. */
 const STATE_SWITCHERS = [
   { value: 'tabs', label: 'Tabs — one state at a time' },
+  { value: 'toggle', label: 'Toggle — bordered buttons, open sections' },
   { value: 'accordion', label: 'Accordion — every state stacked' },
 ]
 
@@ -761,7 +762,46 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
           is plain which sections change with the state — and that
           Employer's liability, above it, does not. A single-state
           submission has nothing to switch between, so the tabs stay off. */}
-      {switcher === 'tabs' ? (
+      {switcher === 'toggle' ? (
+        /* The toggle on its own: the state buttons sit in a bordered track
+           of their own and the sections below stand on the page, without
+           an outline round them. */
+        <div>
+          <SectionLabel>State-level coverage</SectionLabel>
+          {states.length > 1 && (
+            <div role="tablist" aria-label="States on this policy"
+              className="im-state-toggle inline-flex flex-wrap items-center gap-1.5 p-1.5 rounded-xl mb-6">
+              {states.map(st => {
+                const on = st === active
+                return (
+                  <button
+                    key={st}
+                    type="button"
+                    role="tab"
+                    aria-selected={on}
+                    onClick={() => setActiveState(st)}
+                    className={`im-state-toggle-btn${on ? ' im-state-toggle-on' : ''} inline-flex items-center gap-2 h-9 px-4 rounded-lg text-[13px] font-semibold`}
+                  >
+                    <span className="im-state-tab-code font-bold tracking-[0.06em] text-[11px]">{st}</span>
+                    <span>{STATE_NAMES[st] || st}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+          <StateCard
+            key={active}
+            st={active}
+            locs={allLocations.filter(l => l.state === active)}
+            entityType={entityType}
+            sd={stateDataFor(active)}
+            patch={patchState(active)}
+            mod={modOf(active)}
+            setMod={setModOf(active)}
+            layout={layout}
+          />
+        </div>
+      ) : switcher === 'tabs' ? (
       <div>
         {states.length > 1 && (
           <div role="tablist" aria-label="States on this policy"

@@ -1718,6 +1718,42 @@ html[data-dark="true"] body .print-btn-text {
 }
 [data-dark="true"] .im-state-tab-on .im-state-tab-code { color: #C4B5FD !important; }
 
+/* The toggle version of the state switch: white buttons in a bordered
+   track of their own, the open one outlined in purple. Only the buttons
+   are bordered; the sections below stand on the page. */
+.im-state-toggle {
+  border: 1.5px solid rgba(124,58,237,0.35);
+  background: #FFFFFF;
+}
+.im-state-toggle-btn {
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  color: #4B5563;
+  transition: background 140ms, color 140ms, border-color 140ms;
+}
+.im-state-toggle-btn:hover { color: #1F2937; border-color: #D1D5DB; }
+.im-state-toggle-on,
+.im-state-toggle-on:hover {
+  background: #F5F0FF;
+  border-color: #7C3AED;
+  color: #5C2ED4;
+}
+.im-state-toggle-on .im-state-tab-code { color: #7C3AED; }
+[data-dark="true"] .im-state-toggle {
+  background: var(--surface) !important;
+  border-color: rgba(167,139,250,0.35) !important;
+}
+[data-dark="true"] .im-state-toggle-btn {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  color: #C7CBDA !important;
+}
+[data-dark="true"] .im-state-toggle-on {
+  background: rgba(167,139,250,0.14) !important;
+  border-color: #A78BFA !important;
+  color: #E9D5FF !important;
+}
+
 /* The accordion version of the state switch: each state in the tabbed
    panel's outline, under a header bar that opens it in place. Closed, the
    bar is the quiet tab grey; open, it takes the open tab's purple. */
