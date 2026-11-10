@@ -154,6 +154,29 @@ const COVERAGE_LAYOUTS = [
   { value: 'single', label: 'Single card — sections divided by rules' },
 ]
 
+/* How the states are moved between, from the same demo control: folder
+   tabs with one state open at a time, or an accordion of every state,
+   each opening in place under its own header. */
+const STATE_SWITCHERS = [
+  { value: 'tabs', label: 'Tabs — one state at a time' },
+  { value: 'accordion', label: 'Accordion — every state stacked' },
+]
+
+/* The one-line summary an accordion header carries, so a collapsed state
+   still says how much is scheduled under it. */
+function stateSummary(sd) {
+  const classes = (sd.classes || []).filter(c => (c.code || '').trim())
+  const payroll = (sd.classes || []).reduce(
+    (sum, c) => sum + (Number(String(c.payroll || '').replace(/[^0-9.]/g, '')) || 0), 0)
+  const officers = (sd.officers || []).filter(o => (o.name || '').trim()).length
+  const parts = [
+    `${classes.length} class code${classes.length === 1 ? '' : 's'}`,
+    payroll ? `$${payroll.toLocaleString('en-US')} payroll` : 'No payroll yet',
+  ]
+  if (officers) parts.push(`${officers} officer${officers === 1 ? '' : 's'}`)
+  return parts.join(' · ')
+}
+
 /* One section of a state, as its own card with its heading outside it —
    the dashed group heading every other card on the flow wears, so the
    page reads as a stack of headed boxes rather than one long one.
@@ -213,7 +236,7 @@ function officerRule(st, entityType) {
    its subcontractors. There is no "add state" control — a state arrives
    here by having a location added to it on Locations, which is the only
    place the address behind it is captured. */
-function StateCard({ st, locs, entityType, sd, patch, mod, setMod, layout = 'boxes' }) {
+function StateCard({ st, locs, entityType, sd, patch, mod, setMod, layout = 'boxes', showTitle = true }) {
   /* Shown when a twin arrives, and whenever the agent asks for it back. */
   const [wagePanel, setWagePanel] = useState(false)
   const officers = sd.officers || []
@@ -288,15 +311,18 @@ function StateCard({ st, locs, entityType, sd, patch, mod, setMod, layout = 'box
   /* The state's own terms: its name, its mod and its waiver. */
   const head = (
     <>
-      <div className="flex items-center gap-2.5">
-        <Tag tone="brand" shape="chip">{st}</Tag>
-        <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
-      </div>
+      {/* The accordion's header already names the state. */}
+      {showTitle && (
+        <div className="flex items-center gap-2.5 mb-5">
+          <Tag tone="brand" shape="chip">{st}</Tag>
+          <h3 className="text-[15px] font-bold text-navy">{STATE_NAMES[st] || st}</h3>
+        </div>
+      )}
       {/* The two state-level terms, side by side: what the state's bureau
           says the risk is worth, and whether the policy waives subrogation
           across the board. The liability limits are back above the tabs —
           they belong to the policy, not to whichever state is open. */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 mt-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
         <div>
           <Input
             label={
@@ -624,6 +650,12 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
   /* Which layout the demo control has picked. Not persisted — a reviewer's
      comparison, not part of the submission. */
   const [layout, setLayout] = useState('boxes')
+  const [switcher, setSwitcher] = useState('tabs')
+  /* The accordion's open states, independent of one another. The first
+     starts open so the page does not land on a column of closed bars. */
+  const [openStates, setOpenStates] = useState(() => [states[0]])
+  const toggleOpen = (st) => setOpenStates(cur =>
+    cur.includes(st) ? cur.filter(s => s !== st) : [...cur, st])
   const active = states.includes(activeState) ? activeState : states[0]
   useEffect(() => {
     if (!states.includes(activeState)) setActiveState(states[0])
@@ -729,6 +761,7 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
           is plain which sections change with the state — and that
           Employer's liability, above it, does not. A single-state
           submission has nothing to switch between, so the tabs stay off. */}
+      {switcher === 'tabs' ? (
       <div>
         {states.length > 1 && (
           <div role="tablist" aria-label="States on this policy"
@@ -770,21 +803,81 @@ export default function StateCoverages({ formData, updateFormData, replaceFormSe
           />
         </div>
       </div>
+      ) : (
+        /* The same block as an accordion: every state on the page at once,
+           each under a header bar that opens it in place, drawn in the
+           tabbed panel's outline so what one header opens is plain. */
+        <div>
+          <SectionLabel>State-level coverage</SectionLabel>
+          <div className="space-y-3">
+            {states.map(st => {
+              const open = openStates.includes(st)
+              const sd = stateDataFor(st)
+              return (
+                <div key={st} className={`im-state-acc rounded-2xl${open ? ' im-state-acc-open' : ''}`}>
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    onClick={() => toggleOpen(st)}
+                    className="im-state-acc-head w-full flex items-center gap-3 px-4 sm:px-5 h-14 text-left rounded-2xl"
+                  >
+                    <span className="im-state-tab-code font-bold tracking-[0.06em] text-[11px]">{st}</span>
+                    <span className="text-[14px] font-semibold">{STATE_NAMES[st] || st}</span>
+                    <span className="im-state-acc-sum ml-auto text-[12px] truncate hidden sm:block">
+                      {stateSummary(sd)}
+                    </span>
+                    <svg className={`w-4 h-4 shrink-0 transition-transform ml-auto sm:ml-0${open ? ' rotate-180' : ''}`}
+                      fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  {open && (
+                    <div className="px-3 pb-3 sm:px-5 sm:pb-5 pt-1">
+                      <StateCard
+                        st={st}
+                        locs={allLocations.filter(l => l.state === st)}
+                        entityType={entityType}
+                        sd={sd}
+                        patch={patchState(st)}
+                        mod={modOf(st)}
+                        setMod={setModOf(st)}
+                        layout={layout}
+                        showTitle={false}
+                      />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* A demo control, not part of the flow — the payment step's kind:
           the two layouts of this page, on the same answers. */}
       <div className="pt-4" style={{ borderTop: '1px solid var(--line-soft)' }}>
-        <div style={{ width: 340 }}>
-          <Select
-            label="Layout"
-            wideMenu
-            options={COVERAGE_LAYOUTS}
-            value={layout}
-            onChange={setLayout}
-          />
+        <div className="flex flex-wrap gap-4">
+          <div style={{ width: 340, maxWidth: '100%' }}>
+            <Select
+              label="Layout"
+              wideMenu
+              options={COVERAGE_LAYOUTS}
+              value={layout}
+              onChange={setLayout}
+            />
+          </div>
+          <div style={{ width: 340, maxWidth: '100%' }}>
+            <Select
+              label="States"
+              wideMenu
+              options={STATE_SWITCHERS}
+              value={switcher}
+              onChange={setSwitcher}
+            />
+          </div>
         </div>
         <p className="text-[11px] text-gray-400 mt-2">
-          Demo only — two layouts of this page, on the same answers.
+          Demo only — other layouts of this page, on the same answers.
         </p>
       </div>
     </div>

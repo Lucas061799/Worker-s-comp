@@ -1718,6 +1718,35 @@ html[data-dark="true"] body .print-btn-text {
 }
 [data-dark="true"] .im-state-tab-on .im-state-tab-code { color: #C4B5FD !important; }
 
+/* The accordion version of the state switch: each state in the tabbed
+   panel's outline, under a header bar that opens it in place. Closed, the
+   bar is the quiet tab grey; open, it takes the open tab's purple. */
+.im-state-acc {
+  border: 1.5px solid #D9DCE3;
+  background: #ECEEF2;
+  transition: background 140ms, border-color 140ms;
+}
+.im-state-acc-open {
+  border-color: rgba(124,58,237,0.35);
+  background: #F4F6F8;
+}
+.im-state-acc-head { color: #4B5563; }
+.im-state-acc-head:hover { color: #1F2937; }
+.im-state-acc-open .im-state-acc-head { color: #5C2ED4; }
+.im-state-acc-open .im-state-tab-code { color: #7C3AED; }
+.im-state-acc-sum { color: #6B7280; font-weight: 500; }
+[data-dark="true"] .im-state-acc {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+}
+[data-dark="true"] .im-state-acc-open {
+  background: var(--surface) !important;
+  border-color: rgba(167,139,250,0.35) !important;
+}
+[data-dark="true"] .im-state-acc-head { color: #C7CBDA !important; }
+[data-dark="true"] .im-state-acc-open .im-state-acc-head { color: #E9D5FF !important; }
+[data-dark="true"] .im-state-acc-sum { color: #9CA3AF !important; }
+
 /* The side sheet (SideSheet in primitives): a panel on the right edge that
    slides in. Only its inner edge is drawn. */
 .im-sheet {
