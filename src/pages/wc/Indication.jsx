@@ -28,14 +28,14 @@ export function estimatePremium(formData, factor = 1) {
    risk it was drawn against — $480K CA plumbing payroll, 0.87 mod — lands back
    on its figures while everything still scales with payroll. ICW/Zenith always
    declines there, which is the only way the declined-market state is reachable
-   at all. Pie and Employers quote but need underwriting, so they do not bind
+   at all. Employers quotes but needs underwriting, so it does not bind
    online. */
 export const FACTORS = {
   amtrust:       { factor: 1.000, bind: true },
   clearspring:   { factor: 1.178, bind: true },
   cna:           { factor: 1.274, bind: true },
   greatamerican: { factor: 1.074, bind: true },
-  pie:           { factor: 1.445, bind: false },
+  pie:           { factor: 0.960, bind: true },  // the recommended market, priced to lead
   employers:     { factor: 1.673, bind: false },
   icwzenith:     { factor: 1, bind: false,
                    noquote: 'This class and payroll combination falls outside their current underwriting appetite' },
@@ -202,21 +202,21 @@ function RecoDot() {
    the prototype — marketing owns the real wording, and the promotions in
    particular change by quarter. */
 const RECO_MARKETING = {
-  cna: {
+  pie: {
     promotions: [
       {
         title: 'New business incentive',
-        body: '+1.5% commission on new CNA workers’ comp policies bound through BTIS by Dec 31, 2026.',
+        body: '+1.5% commission on new Pie workers’ comp policies bound through BTIS by Dec 31, 2026.',
       },
       {
         title: 'Premium finance',
-        body: 'No-fee premium finance on CNA policies over $25,000 annual premium.',
+        body: 'No-fee premium finance on Pie policies over $25,000 annual premium.',
       },
     ],
     highlights: [
       'Strong appetite for artisan contractors with 3+ years in business',
-      'BTIS handles endorsements and billing end-to-end',
-      'Same-day endorsement turnaround, handled in-house',
+      'Instant bind on eligible classes',
+      'Same-day endorsement turnaround',
       'Broker fee collected at new business and at renewal',
     ],
   },

@@ -234,7 +234,7 @@ export default function PrintSummary({ formData, visible, onClose, onEdit }) {
                     ? <Row label="Selected" value="None" />
                     : selectedCarriers.map(c => (
                       <Row key={c.id} label={c.name}
-                        value={c.reco ? 'BTIS Serviced' : c.promo ? 'Promo active' : 'Selected'} />
+                        value={c.serviced ? 'BTIS Serviced' : c.promo ? 'Promo active' : 'Selected'} />
                     ))}
                 </Panel>
 

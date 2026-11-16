@@ -16,6 +16,7 @@ export const CARRIERS = [
     sub: 'Direct bill only · +2% promo',
     tagline: 'Carrier-controlled turnaround',
     promo: true,
+    reco: true,
     sla: '1 business day',
     own: 'Carrier-controlled turnaround',
     billing: 'Direct bill only',
@@ -50,7 +51,9 @@ export const CARRIERS = [
     id: 'cna',        name: 'CNA',
     sub: 'Agency bill · premium finance available',
     tagline: 'BTIS handles endorsements and billing end-to-end',
-    reco: true,
+    /* BTIS services it in-house — the market page's ribbon. Separate from
+       `reco`, the recommendation on the price cards. */
+    serviced: true,
     sla: '~2 hrs',
     own: 'BTIS handles endorsements + billing',
     billing: 'Agency bill · premium finance available',
@@ -180,12 +183,12 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
               {/* Corner ribbon badges — straddle the top border of the
                   card so they read as "attached" tags instead of
                   floating inside. */}
-              {(c.reco || c.promo) && (
+              {(c.serviced || c.promo) && (
                 <div
                   className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 whitespace-nowrap"
                   style={{ top: '-9px' }}
                 >
-                  {c.reco && (
+                  {c.serviced && (
                     <span
                       className="text-[9px] font-bold px-2 py-1 rounded-md text-white uppercase tracking-wider shrink-0"
                       style={{ background: BRAND_GRADIENT, boxShadow: '0 2px 8px rgba(92,46,212,0.35)' }}
