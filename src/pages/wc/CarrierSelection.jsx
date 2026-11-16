@@ -8,13 +8,24 @@ const BRAND_GRADIENT = 'linear-gradient(88.09deg, #5C2ED4 0.11%, #A614C3 63.8%)'
    the same `clearspring` id. The Hartford and Travelers appear in neither the
    prototype nor either BRD, so they are gone; Great American, Pie and
    ICW/Zenith were missing. Logos are the generic set we hold, reused as
-   placeholders until real marks arrive. */
+   placeholders until real marks arrive. Pie leads the list while it
+   carries the promotion. */
 export const CARRIERS = [
   {
-    id: 'amtrust',    name: 'AmTrust',
-    sub: 'Agency bill only · +2% promo',
-    tagline: 'Instant on eligible classes',
+    id: 'pie',        name: 'Pie',
+    sub: 'Direct bill only · +2% promo',
+    tagline: 'Carrier-controlled turnaround',
     promo: true,
+    sla: '1 business day',
+    own: 'Carrier-controlled turnaround',
+    billing: 'Direct bill only',
+    endorsementSla: '2 business days',
+    why: 'Competitive where the class fits; underwriting reviews the risk.',
+  },
+  {
+    id: 'amtrust',    name: 'AmTrust',
+    sub: 'Agency bill only',
+    tagline: 'Instant on eligible classes',
     sla: 'Instant on eligible classes',
     /* The tile face shows the turnaround beside a 24px price, so the one
        carrier whose quote SLA is a sentence carries a face-length form of
@@ -57,16 +68,6 @@ export const CARRIERS = [
     why: 'Same-day service with turnaround in BTIS control.',
   },
   {
-    id: 'pie',        name: 'Pie',
-    sub: 'Direct bill only',
-    tagline: 'Carrier-controlled turnaround',
-    sla: '1 business day',
-    own: 'Carrier-controlled turnaround',
-    billing: 'Direct bill only',
-    endorsementSla: '2 business days',
-    why: 'Competitive where the class fits; underwriting reviews the risk.',
-  },
-  {
     id: 'employers',  name: 'Employers',
     sub: 'Direct bill only',
     tagline: 'Strong small-business appetite',
@@ -91,22 +92,22 @@ export const CARRIERS = [
 /* The prototype is careful here: this is a heads-up, not a nudge. Our version
    warned the promotion "won't apply", which reads as pressure to keep the
    carrier checked — theirs says plainly that removing them is the agent's call
-   and affects nothing else. */
-function PromoModal({ onKeep, onUncheck }) {
+   and affects nothing else. It names whichever carrier holds the promotion. */
+function PromoModal({ carrier, onKeep, onUncheck }) {
   return (
     <Modal
-      title="Before you remove AmTrust"
+      title={`Before you remove ${carrier.name}`}
       width={520}
       onDismiss={onKeep}
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onUncheck}>Remove AmTrust anyway</ModalButton>
-          <ModalButton onClick={onKeep}>Keep AmTrust</ModalButton>
+          <ModalButton variant="ghost" onClick={onUncheck}>Remove {carrier.name} anyway</ModalButton>
+          <ModalButton onClick={onKeep}>Keep {carrier.name}</ModalButton>
         </>
       }
     >
       <p className="text-[14px] text-gray-600 leading-relaxed">
-        FYI: AmTrust is running <b className="text-navy">+2% commission</b> on CA artisan
+        FYI: {carrier.name} is running <b className="text-navy">+2% commission</b> on CA artisan
         classes bound by Sept 30. This is informational only — removing them is entirely
         your call and doesn't affect other markets.
       </p>
@@ -119,6 +120,8 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
   const checked = data.checked || Object.fromEntries(CARRIERS.map(c => [c.id, true]))
 
   const [showPromo, setShowPromo] = useState(false)
+  // The carrier running the promotion, whose removal asks first.
+  const promoCarrier = CARRIERS.find(c => c.promo)
 
   // Persist the default all-checked state so downstream screens see it.
   useEffect(() => {
@@ -128,14 +131,14 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
   }, [data.checked, checked, updateFormData])
 
   const toggle = (carrierId) => {
-    if (carrierId === 'amtrust' && checked.amtrust) {
+    if (carrierId === promoCarrier?.id && checked[carrierId]) {
       setShowPromo(true)
       return
     }
     updateFormData('carrierSelection', { checked: { ...checked, [carrierId]: !checked[carrierId] } })
   }
-  const forceUncheckAmtrust = () => {
-    updateFormData('carrierSelection', { checked: { ...checked, amtrust: false } })
+  const forceUncheckPromo = () => {
+    updateFormData('carrierSelection', { checked: { ...checked, [promoCarrier.id]: false } })
     setShowPromo(false)
   }
 
@@ -287,10 +290,11 @@ export default function CarrierSelection({ formData, updateFormData, onGetIndica
         </button>
       </div>
 
-      {showPromo && (
+      {showPromo && promoCarrier && (
         <PromoModal
+          carrier={promoCarrier}
           onKeep={() => setShowPromo(false)}
-          onUncheck={forceUncheckAmtrust}
+          onUncheck={forceUncheckPromo}
         />
       )}
     </div>
